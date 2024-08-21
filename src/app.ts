@@ -5,6 +5,7 @@ import {
   createConversation,
 } from "@grammyjs/conversations";
 import config from "./config/config";
+import { root } from "./controllers";
 
 type BotContext = Context & ConversationFlavor;
 
@@ -22,7 +23,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     );
 
     bot.use(conversations());
-    // bot.command("start", root.start);
+    bot.command("start", root.start);
     // bot.command("settings", root.settings);
     // bot.command("help", root.help);
     // bot.command("chat", root.chat);

@@ -1,5 +1,4 @@
 import { CommandContext, Context } from "grammy";
-import base58 from "bs58";
 
 export const start = async (ctx: CommandContext<Context>) => {
   const id = ctx.message?.from.id;
@@ -9,23 +8,30 @@ export const start = async (ctx: CommandContext<Context>) => {
   // create user
   // }
 
-  const wallet = web3.Keypair.fromSecretKey(base58.decode(user.wallet ?? ""));
-  const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
-  const balance = await connection.getBalance(wallet.publicKey);
-  console.log(balance);
-  console.log(wallet);
-  console.log(user.user);
+  const wallet = "TFkv5u8XTsZUqG2QDMjziCLQSGM5weSw8z";
+  const balance = 0;
+
   await ctx.reply(
     `
-        <b>Welcome to Tron Telegram Bot</b>\n\n${
+        <b>Welcome to Electron</b>
+Trons fastest bot to trade any coin!
+        \n${
+          // @ts-ignore
           balance === 0
-            ? "You currently have no TRX balance. To get started with trading, send some SOL to your Bot wallet address:"
-            : `Your balance is <b>${
-                balance / web3.LAMPORTS_PER_SOL
-              }</b> SOL. You can start trading with your wallet address:`
-        } \n\n<code>${wallet.publicKey}</code>`,
+            ? "You currently have no TRX in your wallet. Deposit TRX to your Tron wallet address:\n\n"
+            : ``
+        } <code>${wallet}</code> (tap to copy)
+         
+Once done, tap refresh and your balance will appear here.
+
+To buy a token enter token address, or a URL from sunpump (https://sunpump.meme/) or sun.io (https://sun.io/)
+
+For more info on your wallet and to retrieve your private key, tap the wallet button below. User funds are safe on Electron, but if you expose your private key we can't protect you!
+
+        `,
     {
       parse_mode: "HTML",
+
       reply_markup: {
         inline_keyboard: [
           [
@@ -50,16 +56,10 @@ export const start = async (ctx: CommandContext<Context>) => {
 export const settings = async (ctx: CommandContext<Context>) => {
   const id = ctx.message?.from.id;
 
-  let user = await User.findOne({ user: id });
+  let user = {};
 
   if (!user) {
-    const newWallet = TronClient.createWallet();
-
-    user = new User({
-      user: id,
-      wallet: base58.encode(newWallet.secretKey),
-    });
-    await user.save();
+    // const newWallet = TronClient.createWallet();
   }
 
   //@ts-ignore
