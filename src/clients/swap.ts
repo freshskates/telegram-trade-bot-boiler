@@ -2,18 +2,19 @@ import TronWeb from 'tronweb';
 
 export class SwapClient {
   private tronWeb: any;
-  private routerAddress: string;
+  private smartRouterAddress: string;
   private routerApiUrl: string;
 
   constructor() {
-    this.routerAddress = 'TQAvWQpT9H916GckwWDJNhYZvQMkuRL7PN'; // SunSwap v3 Router Address this version attempts to use only the v3 router, transactions reverted when trying, unsure why
+    this.smartRouterAddress = 'TFVisXFaijZfeyeSjCEVkHfex7HGdTxzF9'; // SunSwap v2 Router Address
     this.routerApiUrl = 'https://rot.endjgfsv.link/swap/router'; // SunSwap Router API URL
   }
 
   private async getSwapRoute(fromToken: string, toToken: string, amountIn: string): Promise<any> {
     try {
+      
       const amountInSun = this.tronWeb.toSun(amountIn);
-      const apiUrl = `${this.routerApiUrl}?fromToken=${fromToken}&toToken=${toToken}&amountIn=${amountInSun}&typeList=PSM,CURVE,CURVE_COMBINATION,WTRX,SUNSWAP_V1,SUNSWAP_V2,SUNSWAP_V3`;
+      const apiUrl = `${this.routerApiUrl}?fromToken=${fromToken}&toToken=${toToken}&amountIn=${amountInSun}&typeList=PSM,CURVE,CURVE_COMBINATION,WTRX,SUNSWAP_V2`;
       console.log('API Request URL:', apiUrl);
       const response = await fetch(apiUrl);
       const data = await response.json();
@@ -33,21 +34,21 @@ export class SwapClient {
     }
   }
 
-  async swap(privateKey: string, fromToken: string, toToken: string, amountIn: string, recipient: string): Promise<any> {
+  async swap(privateKey: string, fromToken: string, toToken: string, amountIn: string, slippage: number): Promise<any> {
     try {
+      this.tronWeb = new TronWeb({
+        fullHost: 'https://api.trongrid.io',
+        privateKey: privateKey,
+      });
+
       const WTRX = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb';
 
       if (fromToken === 'TRX') {
-          fromToken = WTRX;
+        fromToken = WTRX;
       }
       if (toToken === 'TRX') {
-          toToken = WTRX;
+        toToken = WTRX;
       }
-
-      this.tronWeb = new TronWeb({
-          fullHost: 'https://api.trongrid.io',
-          privateKey: privateKey,
-      });
 
       console.log('Initialized TronWeb with address:', this.tronWeb.defaultAddress.base58);
 
@@ -55,42 +56,39 @@ export class SwapClient {
       console.log('Route Info:', routeInfo);
 
       const paths = routeInfo.tokens;
-      console.log('Swap Path:', paths);
-
       const poolVersions = routeInfo.poolVersions;
-      console.log('Pool Versions:', poolVersions);
+      const fees = routeInfo.poolFees;
+      const versionLen = [paths.length]; // The length of each pool path
 
       const amountInSun = Math.floor(this.tronWeb.toSun(amountIn));
-      const amountOutMinimumSun = Math.floor(this.tronWeb.toSun(routeInfo.amountOut));
+      const amountOutMinimumSun = Math.floor(this.tronWeb.toSun(routeInfo.amountOut) * (1 - slippage / 100));
       const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10-minute deadline
-      const totalFee = routeInfo.poolFees.reduce((acc: any, fee: any) => acc + parseFloat(fee), 0);
-      console.log("fee:", totalFee)
-      let method = "exactInputSingle";
 
-      // If the path includes more than one token, use exactInput
-      if (paths.length > 2) {
-        method = "exactInput";
-      }
-
-      const swapParams = {
-        tokenIn: fromToken,
-        tokenOut: toToken,
-        fee: totalFee, // Unsure if this is correct, all fees added together  
-        recipient: recipient,
-        deadline: deadline.toString(),
+      const swapData = {
         amountIn: amountInSun.toString(),
-        amountOutMinimum: amountOutMinimumSun.toString(),
-        sqrtPriceLimitX96: 0, // Default to no price limit setting this to 0 makes it so there is no limits
+        amountOutMin: amountOutMinimumSun.toString(),
+        to: this.tronWeb.defaultAddress.base58,
+        deadline: deadline.toString(),
       };
 
-      console.log('Swap Params:', swapParams);
+      console.log('Paths:', paths);
+      console.log('Pool Versions:', poolVersions);
+      console.log('Version Lengths:', versionLen);
+      console.log('Fees:', fees);
+      console.log('Swap Data:', swapData);
 
-      const router = await this.tronWeb.contract().at(this.routerAddress);
-      console.log('Successfully initialized contract at:', this.routerAddress);
+      const router = await this.tronWeb.contract().at(this.smartRouterAddress);
+      console.log('Successfully initialized Smart Router contract at:', this.smartRouterAddress);
 
-      const transaction = await router[method](swapParams).send({
-          feeLimit: 15000000000, //maxed out
-          shouldPollResponse: true,
+      const transaction = await router.swapExactInput(
+        paths,
+        poolVersions,
+        versionLen,
+        fees,
+        swapData
+      ).send({
+        feeLimit: 15000000,
+        shouldPollResponse: true,
       });
 
       console.log('Transaction:', transaction);

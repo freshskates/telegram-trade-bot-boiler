@@ -14,6 +14,12 @@ async function checkBalance(address: string) {
   console.log('TRX Balance:', balance);
 }
 
+async function checkTransaction(txid: string) {
+  const tronClient = new TronClient();
+  const balance = await tronClient.getTransactionInfo(txid);
+  console.log('TRX Balance:', balance);
+}
+
 async function getTRXPrice() {
   const tronClient = new TronClient();
   const price = await tronClient.getTRXPrice();
@@ -48,6 +54,15 @@ yargs(hideBin(process.argv))
     },
   }, (argv) => {
     checkBalance(argv.address);
+  })
+  .command('check-tx', 'Check tx', {
+    txid: {
+      describe: 'The txid to check',
+      type: 'string',
+      demandOption: true,
+    },
+  }, (argv) => {
+    checkTransaction(argv.txid);
   })
   .command('get-trx-price', 'Get the current TRX price in USD', {}, getTRXPrice)
   .command('check-token-balance', 'Check token balance', {
@@ -104,13 +119,13 @@ yargs(hideBin(process.argv))
       type: 'string',
       demandOption: true,
     },
-    recipient: {
-      describe: 'The address to receive the output token',
+    slippage: {
+      describe: 'slippage amount',
       type: 'string',
       demandOption: true,
     },
   }, (argv) => {
-    swap(argv.privateKey, argv.fromToken, argv.toToken, argv.amountIn, argv.recipient);
+    swap(argv.privateKey, argv.fromToken, argv.toToken, argv.amountIn, argv.slippage);
   })
   .demandCommand(1, 'You need to specify at least one command')
   .help()

@@ -98,4 +98,15 @@ export class TronClient {
       throw error;
     }
   }
+
+  async getTransactionInfo(txId: string) {
+    try {
+        const transactionInfo = await this.tronWeb.trx.getTransactionInfo(txId);
+        let hexMessage = transactionInfo.resMessage;
+        let decodedMessage = Buffer.from(hexMessage, 'hex').toString('utf8');
+        console.log('Transaction Info:', decodedMessage);
+    } catch (error) {
+        console.error('Error fetching transaction info:', error);
+    }
+}
 }
