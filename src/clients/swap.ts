@@ -1,4 +1,5 @@
 import TronWeb from 'tronweb';
+import { BN } from 'bn.js';
 
 export class SwapClient {
   private tronWeb: any;
@@ -6,7 +7,7 @@ export class SwapClient {
   private routerApiUrl: string;
 
   constructor() {
-    this.smartRouterAddress = 'TFVisXFaijZfeyeSjCEVkHfex7HGdTxzF9'; // SunSwap v2 Router Address
+    this.smartRouterAddress = 'TFVisXFaijZfeyeSjCEVkHfex7HGdTxzF9'; // SunSwap smart router CA
     this.routerApiUrl = 'https://rot.endjgfsv.link/swap/router'; // SunSwap Router API URL
   }
 
@@ -60,15 +61,17 @@ export class SwapClient {
       const fees = routeInfo.poolFees;
       const versionLen = [paths.length]; // The length of each pool path
 
-      const amountInSun = Math.floor(this.tronWeb.toSun(amountIn));
-      const amountOutMinimumSun = Math.floor(this.tronWeb.toSun(routeInfo.amountOut) * (1 - slippage / 100));
-      const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10-minute deadline
+      const amountInSun = new BN(this.tronWeb.toSun(amountIn)).toString(10);
+      const amountOutMinimumSun = new BN(
+        Math.floor(this.tronWeb.toSun(routeInfo.amountOut) * (1 - slippage / 100))
+      ).toString(10);
+      const deadline = new BN(Math.floor(Date.now() / 1000) + 60 * 10).toString(10); // 10-minute deadline
 
       const swapData = {
-        amountIn: amountInSun.toString(),
-        amountOutMin: amountOutMinimumSun.toString(),
-        to: this.tronWeb.defaultAddress.base58,
-        deadline: deadline.toString(),
+        amountIn: amountInSun,                                      // uint256
+        amountOutMin: amountOutMinimumSun,                              // uint256
+        to: this.tronWeb.defaultAddress.hex, // address in hex format
+        deadline: deadline                                          // uint256
       };
 
       console.log('Paths:', paths);
