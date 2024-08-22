@@ -115,8 +115,9 @@ export async function fetchPumpTokenPrice(tokenAddress: string): Promise<number>
     const apiUrl = `https://api-v2.sunpump.meme/pump-api/token/${tokenAddress}`;
     try {
       const response = await axios.get(apiUrl);
-      if (response.data && response.data.priceInTrx) {
-        return parseFloat(response.data.priceInTrx);
+      console.log(response.data)
+      if (response.data && response.data.data.priceInTrx) {
+        return parseFloat(response.data.data.priceInTrx);
       } else {
         throw new Error("Token price not found in API response");
       }

@@ -2,7 +2,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { TronClient } from "./src/clients/tron";
 import { SwapClient } from "./src/clients/swap";
-import { testRateLimiting } from "./src/lib/helpers";
+import { PumpClient } from "./src/clients/pump";
 
 async function createWallet() {
   const wallet = await TronClient.createWallet();
@@ -28,11 +28,13 @@ async function getTRXPrice() {
 }
 
 async function checkTokenBalance(
+  privateKey: string,
   address: string,
   tokenContractAddress: string,
 ) {
   const tronClient = new TronClient();
   const balance = await tronClient.checkTokenBalance(
+    privateKey,
     address,
     tokenContractAddress,
   );
@@ -63,9 +65,41 @@ async function swap(
   console.log("Swap Result:", result);
 }
 
+async function pumpPurchase(
+  privateKey: string,
+  toToken: string,
+  amountIn: string,
+  slippage: number,
+) {
+  const pumpClient = new PumpClient();
+  const result = await pumpClient.pumpPurchase(
+    privateKey,
+    toToken,
+    amountIn,
+    slippage,
+  );
+  console.log("Buy Result:", result);
+}
+
+async function 
+pumpSell(
+  privateKey: string,
+  tokenAmount: number | string,
+  token: string,
+  slippage: number,
+) {
+  const pumpClient = new PumpClient();
+  const result = await pumpClient.pumpSellToken(
+    privateKey,
+    tokenAmount,
+    token,
+    slippage,
+  );
+  console.log("Sell Result:", result);
+}
+
 yargs(hideBin(process.argv))
   .command("create-wallet", "Create a new Tron wallet", {}, createWallet)
-  .command("test-limits", "test rate limits", {}, testRateLimiting)
   .command(
     "check-balance",
     "Check TRX balance",
@@ -99,6 +133,11 @@ yargs(hideBin(process.argv))
     "check-token-balance",
     "Check token balance",
     {
+      privateKey: {
+        describe: "Private key of the wallet to check",
+        type: "string",
+        demandOption: true,
+      },
       address: {
         describe: "The address of the wallet to check",
         type: "string",
@@ -111,7 +150,7 @@ yargs(hideBin(process.argv))
       },
     },
     (argv) => {
-      checkTokenBalance(argv.address, argv.tokenContractAddress);
+      checkTokenBalance(argv.privateKey, argv.address, argv.tokenContractAddress);
     },
   )
   .command(
@@ -174,6 +213,76 @@ yargs(hideBin(process.argv))
         argv.fromToken,
         argv.toToken,
         argv.amountIn,
+        argv.slippage,
+      );
+    },
+  )
+
+  .command(
+    "buy-pump",
+    "Buy tokens using SunPump",
+    {
+      privateKey: {
+        describe: "The private key of the user's wallet",
+        type: "string",
+        demandOption: true,
+      },
+      toToken: {
+        describe: "The address of the token to buy",
+        type: "string",
+        demandOption: true,
+      },
+      amountIn: {
+        describe: "The amount of tokens to buy",
+        type: "string",
+        demandOption: true,
+      },
+      slippage: {
+        describe: "slippage amount",
+        type: "number",
+        demandOption: true,
+      },
+    },
+    (argv) => {
+      pumpPurchase(
+        argv.privateKey,
+        argv.toToken,
+        argv.amountIn,
+        argv.slippage,
+      );
+    },
+  )
+
+  .command(
+    "sell-pump",
+    "sell tokens using SunPump",
+    {
+      privateKey: {
+        describe: "The private key of the user's wallet",
+        type: "string",
+        demandOption: true,
+      },
+      amount: {
+        describe: "The amount of tokens to sell",
+        type: "string",
+        demandOption: true,
+      },
+      token: {
+        describe: "The CA of the token on pump",
+        type: "string",
+        demandOption: true,
+      },
+      slippage: {
+        describe: "slippage amount",
+        type: "number",
+        demandOption: true,
+      },
+    },
+    (argv) => {
+      pumpSell(
+        argv.privateKey,
+        argv.amount,
+        argv.token,
         argv.slippage,
       );
     },

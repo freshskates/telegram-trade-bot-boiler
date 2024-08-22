@@ -1,4 +1,5 @@
 import TronWeb from "tronweb";
+import { ERC20_ABI } from "../abi/erc20_abi";
 
 export class TronClient {
   private tronWeb: any;
@@ -62,16 +63,23 @@ export class TronClient {
 
   /**
    * Checks the balance of a specific token in a Tron wallet.
+   * @param privateKey The private key of the wallet.
    * @param address The address of the wallet to check.
    * @param tokenContractAddress The contract address of the token.
    * @returns {Promise<string>} The balance of the token in the wallet.
    */
   async checkTokenBalance(
+    privateKey: string,
     address: string,
     tokenContractAddress: string,
   ): Promise<string> {
     try {
-      const contract = await this.tronWeb.contract().at(tokenContractAddress);
+      const tronWebWithKey = new TronWeb({
+        fullHost: "https://api.trongrid.io",
+        privateKey: privateKey, // Initialize with provided private key
+      });
+      const contract = await tronWebWithKey.contract(ERC20_ABI, tokenContractAddress);
+      console.log(address)
       const balance = await contract.balanceOf(address).call();
       const decimals = await contract.decimals().call();
       return (balance / Math.pow(10, decimals)).toString(); // Adjust for token decimals
