@@ -1,4 +1,5 @@
 import { ERC20_ABI } from "../abi/erc20_abi";
+import axios from 'axios';
 
 export async function estimateGasFee(
   tronWeb: any,
@@ -109,3 +110,18 @@ export async function approveToken(
     throw error;
   }
 }
+
+export async function fetchPumpTokenPrice(tokenAddress: string): Promise<number> {
+    const apiUrl = `https://api-v2.sunpump.meme/pump-api/token/${tokenAddress}`;
+    try {
+      const response = await axios.get(apiUrl);
+      if (response.data && response.data.priceInTrx) {
+        return parseFloat(response.data.priceInTrx);
+      } else {
+        throw new Error("Token price not found in API response");
+      }
+    } catch (error) {
+      console.error("Error fetching token price:", error);
+      throw error;
+    }
+  }

@@ -4,6 +4,7 @@
     "@grammyjs/conversations": "^1.2.0",
     "@noble/secp256k1": "^2.1.0",
     "@types/yargs": "^17.0.33",
+    "axios": "^1.7.4",
     "bn.js": "^5.2.1",
     "bs58": "^6.0.0",
     "ethers": "^6.13.2",

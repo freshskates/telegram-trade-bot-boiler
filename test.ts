@@ -2,6 +2,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { TronClient } from "./src/clients/tron";
 import { SwapClient } from "./src/clients/swap";
+import { testRateLimiting } from "./src/lib/helpers";
 
 async function createWallet() {
   const wallet = await TronClient.createWallet();
@@ -49,7 +50,7 @@ async function swap(
   fromToken: string,
   toToken: string,
   amountIn: string,
-  recipient: string,
+  slippage: number,
 ) {
   const swapClient = new SwapClient();
   const result = await swapClient.swap(
@@ -57,13 +58,14 @@ async function swap(
     fromToken,
     toToken,
     amountIn,
-    recipient,
+    slippage,
   );
   console.log("Swap Result:", result);
 }
 
 yargs(hideBin(process.argv))
   .command("create-wallet", "Create a new Tron wallet", {}, createWallet)
+  .command("test-limits", "test rate limits", {}, testRateLimiting)
   .command(
     "check-balance",
     "Check TRX balance",
@@ -162,7 +164,7 @@ yargs(hideBin(process.argv))
       },
       slippage: {
         describe: "slippage amount",
-        type: "string",
+        type: "number",
         demandOption: true,
       },
     },
