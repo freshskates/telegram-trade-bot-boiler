@@ -1,132 +1,180 @@
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
-import { TronClient } from './src/clients/tron';
-import { SwapClient } from './src/clients/swap';
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+import { TronClient } from "./src/clients/tron";
+import { SwapClient } from "./src/clients/swap";
 
 async function createWallet() {
   const wallet = await TronClient.createWallet();
-  console.log('New Wallet:', wallet);
+  console.log("New Wallet:", wallet);
 }
 
 async function checkBalance(address: string) {
   const tronClient = new TronClient();
   const balance = await tronClient.checkBalance(address);
-  console.log('TRX Balance:', balance);
+  console.log("TRX Balance:", balance);
 }
 
 async function checkTransaction(txid: string) {
   const tronClient = new TronClient();
   const balance = await tronClient.getTransactionInfo(txid);
-  console.log('TRX Balance:', balance);
+  console.log("TRX Balance:", balance);
 }
 
 async function getTRXPrice() {
   const tronClient = new TronClient();
   const price = await tronClient.getTRXPrice();
-  console.log('Current TRX Price:', price, 'USD');
+  console.log("Current TRX Price:", price, "USD");
 }
 
-async function checkTokenBalance(address: string, tokenContractAddress: string) {
+async function checkTokenBalance(
+  address: string,
+  tokenContractAddress: string,
+) {
   const tronClient = new TronClient();
-  const balance = await tronClient.checkTokenBalance(address, tokenContractAddress);
-  console.log('Token Balance:', balance);
+  const balance = await tronClient.checkTokenBalance(
+    address,
+    tokenContractAddress,
+  );
+  console.log("Token Balance:", balance);
 }
 
 async function withdraw(privateKey: string, toAddress: string, amount: string) {
   const tronClient = new TronClient();
   const result = await tronClient.withdraw(privateKey, toAddress, amount);
-  console.log('Withdraw Result:', result);
+  console.log("Withdraw Result:", result);
 }
 
-async function swap(privateKey: string, fromToken: string, toToken: string, amountIn: string, recipient: string) {
+async function swap(
+  privateKey: string,
+  fromToken: string,
+  toToken: string,
+  amountIn: string,
+  recipient: string,
+) {
   const swapClient = new SwapClient();
-  const result = await swapClient.swap(privateKey, fromToken, toToken, amountIn, recipient);
-  console.log('Swap Result:', result);
+  const result = await swapClient.swap(
+    privateKey,
+    fromToken,
+    toToken,
+    amountIn,
+    recipient,
+  );
+  console.log("Swap Result:", result);
 }
 
 yargs(hideBin(process.argv))
-  .command('create-wallet', 'Create a new Tron wallet', {}, createWallet)
-  .command('check-balance', 'Check TRX balance', {
-    address: {
-      describe: 'The address of the wallet to check',
-      type: 'string',
-      demandOption: true,
+  .command("create-wallet", "Create a new Tron wallet", {}, createWallet)
+  .command(
+    "check-balance",
+    "Check TRX balance",
+    {
+      address: {
+        describe: "The address of the wallet to check",
+        type: "string",
+        demandOption: true,
+      },
     },
-  }, (argv) => {
-    checkBalance(argv.address);
-  })
-  .command('check-tx', 'Check tx', {
-    txid: {
-      describe: 'The txid to check',
-      type: 'string',
-      demandOption: true,
+    (argv) => {
+      checkBalance(argv.address);
     },
-  }, (argv) => {
-    checkTransaction(argv.txid);
-  })
-  .command('get-trx-price', 'Get the current TRX price in USD', {}, getTRXPrice)
-  .command('check-token-balance', 'Check token balance', {
-    address: {
-      describe: 'The address of the wallet to check',
-      type: 'string',
-      demandOption: true,
+  )
+  .command(
+    "check-tx",
+    "Check tx",
+    {
+      txid: {
+        describe: "The txid to check",
+        type: "string",
+        demandOption: true,
+      },
     },
-    tokenContractAddress: {
-      describe: 'The contract address of the token',
-      type: 'string',
-      demandOption: true,
+    (argv) => {
+      checkTransaction(argv.txid);
     },
-  }, (argv) => {
-    checkTokenBalance(argv.address, argv.tokenContractAddress);
-  })
-  .command('withdraw', 'Withdraw TRX to another address', {
-    privateKey: {
-      describe: 'The private key of the sender wallet',
-      type: 'string',
-      demandOption: true,
+  )
+  .command("get-trx-price", "Get the current TRX price in USD", {}, getTRXPrice)
+  .command(
+    "check-token-balance",
+    "Check token balance",
+    {
+      address: {
+        describe: "The address of the wallet to check",
+        type: "string",
+        demandOption: true,
+      },
+      tokenContractAddress: {
+        describe: "The contract address of the token",
+        type: "string",
+        demandOption: true,
+      },
     },
-    toAddress: {
-      describe: 'The address to send TRX to',
-      type: 'string',
-      demandOption: true,
+    (argv) => {
+      checkTokenBalance(argv.address, argv.tokenContractAddress);
     },
-    amount: {
-      describe: 'The amount of TRX to send',
-      type: 'string',
-      demandOption: true,
+  )
+  .command(
+    "withdraw",
+    "Withdraw TRX to another address",
+    {
+      privateKey: {
+        describe: "The private key of the sender wallet",
+        type: "string",
+        demandOption: true,
+      },
+      toAddress: {
+        describe: "The address to send TRX to",
+        type: "string",
+        demandOption: true,
+      },
+      amount: {
+        describe: "The amount of TRX to send",
+        type: "string",
+        demandOption: true,
+      },
     },
-  }, (argv) => {
-    withdraw(argv.privateKey, argv.toAddress, argv.amount);
-  })
-  .command('swap', 'Swap tokens using SunSwap', {
-    privateKey: {
-      describe: 'The private key of the user\'s wallet',
-      type: 'string',
-      demandOption: true,
+    (argv) => {
+      withdraw(argv.privateKey, argv.toAddress, argv.amount);
     },
-    fromToken: {
-      describe: 'The address of the token to swap from',
-      type: 'string',
-      demandOption: true,
+  )
+  .command(
+    "swap",
+    "Swap tokens using SunSwap",
+    {
+      privateKey: {
+        describe: "The private key of the user's wallet",
+        type: "string",
+        demandOption: true,
+      },
+      fromToken: {
+        describe: "The address of the token to swap from",
+        type: "string",
+        demandOption: true,
+      },
+      toToken: {
+        describe: "The address of the token to swap to",
+        type: "string",
+        demandOption: true,
+      },
+      amountIn: {
+        describe: "The amount of the input token to swap",
+        type: "string",
+        demandOption: true,
+      },
+      slippage: {
+        describe: "slippage amount",
+        type: "string",
+        demandOption: true,
+      },
     },
-    toToken: {
-      describe: 'The address of the token to swap to',
-      type: 'string',
-      demandOption: true,
+    (argv) => {
+      swap(
+        argv.privateKey,
+        argv.fromToken,
+        argv.toToken,
+        argv.amountIn,
+        argv.slippage,
+      );
     },
-    amountIn: {
-      describe: 'The amount of the input token to swap',
-      type: 'string',
-      demandOption: true,
-    },
-    slippage: {
-      describe: 'slippage amount',
-      type: 'string',
-      demandOption: true,
-    },
-  }, (argv) => {
-    swap(argv.privateKey, argv.fromToken, argv.toToken, argv.amountIn, argv.slippage);
-  })
-  .demandCommand(1, 'You need to specify at least one command')
-  .help()
-  .argv;
+  )
+  .demandCommand(1, "You need to specify at least one command")
+  .help().argv;

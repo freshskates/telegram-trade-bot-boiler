@@ -1,11 +1,11 @@
-import TronWeb from 'tronweb';
+import TronWeb from "tronweb";
 
 export class TronClient {
   private tronWeb: any;
 
   constructor() {
     this.tronWeb = new TronWeb({
-      fullHost: 'https://api.trongrid.io',
+      fullHost: "https://api.trongrid.io",
     });
   }
 
@@ -15,15 +15,15 @@ export class TronClient {
    */
   static async createWallet(): Promise<any> {
     try {
-      const TronWeb = (await import('tronweb')).default;
+      const TronWeb = (await import("tronweb")).default;
       const tronWeb = new TronWeb({
-        fullHost: 'https://api.trongrid.io',
+        fullHost: "https://api.trongrid.io",
       });
 
       const account = await tronWeb.createAccount();
       return account;
     } catch (error) {
-      console.error('Error creating wallet:', error);
+      console.error("Error creating wallet:", error);
       throw error;
     }
   }
@@ -38,7 +38,7 @@ export class TronClient {
       const balance = await this.tronWeb.trx.getBalance(address);
       return this.tronWeb.fromSun(balance); // Convert from SUN to TRX
     } catch (error) {
-      console.error('Error checking balance:', error);
+      console.error("Error checking balance:", error);
       throw error;
     }
   }
@@ -49,11 +49,13 @@ export class TronClient {
    */
   async getTRXPrice(): Promise<number> {
     try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usd');
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usd",
+      );
       const data = await response.json();
       return data.tron.usd;
     } catch (error) {
-      console.error('Error fetching TRX price:', error);
+      console.error("Error fetching TRX price:", error);
       throw error;
     }
   }
@@ -64,14 +66,17 @@ export class TronClient {
    * @param tokenContractAddress The contract address of the token.
    * @returns {Promise<string>} The balance of the token in the wallet.
    */
-  async checkTokenBalance(address: string, tokenContractAddress: string): Promise<string> {
+  async checkTokenBalance(
+    address: string,
+    tokenContractAddress: string,
+  ): Promise<string> {
     try {
       const contract = await this.tronWeb.contract().at(tokenContractAddress);
       const balance = await contract.balanceOf(address).call();
       const decimals = await contract.decimals().call();
       return (balance / Math.pow(10, decimals)).toString(); // Adjust for token decimals
     } catch (error) {
-      console.error('Error checking token balance:', error);
+      console.error("Error checking token balance:", error);
       throw error;
     }
   }
@@ -83,30 +88,37 @@ export class TronClient {
    * @param amount The amount of TRX to send.
    * @returns {Promise<any>} The transaction result.
    */
-  async withdraw(privateKey: string, toAddress: string, amount: string): Promise<any> {
+  async withdraw(
+    privateKey: string,
+    toAddress: string,
+    amount: string,
+  ): Promise<any> {
     try {
       const tronWebWithKey = new TronWeb({
-        fullHost: 'https://api.trongrid.io',
+        fullHost: "https://api.trongrid.io",
         privateKey: privateKey, // Initialize with provided private key
       });
 
       const amountInSun = tronWebWithKey.toSun(amount); // Convert amount to SUN (smallest unit)
-      const transaction = await tronWebWithKey.trx.sendTransaction(toAddress, amountInSun);
+      const transaction = await tronWebWithKey.trx.sendTransaction(
+        toAddress,
+        amountInSun,
+      );
       return transaction;
     } catch (error) {
-      console.error('Error withdrawing TRX:', error);
+      console.error("Error withdrawing TRX:", error);
       throw error;
     }
   }
 
   async getTransactionInfo(txId: string) {
     try {
-        const transactionInfo = await this.tronWeb.trx.getTransactionInfo(txId);
-        let hexMessage = transactionInfo.resMessage;
-        let decodedMessage = Buffer.from(hexMessage, 'hex').toString('utf8');
-        console.log('Transaction Info:', decodedMessage);
+      const transactionInfo = await this.tronWeb.trx.getTransactionInfo(txId);
+      let hexMessage = transactionInfo.resMessage;
+      let decodedMessage = Buffer.from(hexMessage, "hex").toString("utf8");
+      console.log("Transaction Info:", decodedMessage);
     } catch (error) {
-        console.error('Error fetching transaction info:', error);
+      console.error("Error fetching transaction info:", error);
     }
-}
+  }
 }
