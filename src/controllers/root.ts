@@ -43,7 +43,7 @@ export const start = async (ctx: CommandContext<Context>) => {
           [{ text: "Refresh", callback_data: "refresh" }],
         ],
       },
-    }
+    },
   );
 };
 

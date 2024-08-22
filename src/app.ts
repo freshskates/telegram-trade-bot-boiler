@@ -18,7 +18,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
         initial() {
           return {};
         },
-      })
+      }),
     );
 
     bot.use(conversations());
