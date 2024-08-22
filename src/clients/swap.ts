@@ -10,9 +10,45 @@ export class SwapClient {
     this.routerApiUrl = 'https://rot.endjgfsv.link/swap/router'; // SunSwap Router API URL
   }
 
-  private async getSwapRoute(fromToken: string, toToken: string, amountIn: string): Promise<any> {
+  private async estimateGasFee(transactionParams: any): Promise<number> {
     try {
-      const amountInSun = this.tronWeb.toSun(amountIn);
+      const { paths, poolVersions, versionLen, fees, data } = transactionParams;
+
+      // Convert addresses to hex for the gas estimation
+      const hexPaths = paths.map((address: string) => this.tronWeb.address.toHex(address));
+      const hexData = [...data];
+      hexData[2] = this.tronWeb.address.toHex(data[2]); // Convert the address in data[2] to hex
+
+      const estimatedGas = await this.tronWeb.transactionBuilder.triggerConstantContract(
+        this.smartRouterAddress,
+        'swapExactInput(address[],string[],uint256[],uint24[],tuple(uint256,uint256,address,uint256))',
+        {},
+        [
+          { type: 'address[]', value: paths },
+          { type: 'string[]', value: poolVersions },
+          { type: 'uint256[]', value: versionLen },
+          { type: 'uint24[]', value: fees },
+          { type: 'tuple(uint256,uint256,address,uint256)', value: hexData },
+        ]
+      );
+
+      const energyUsed = estimatedGas.energy_used;
+      const netUsed = estimatedGas.net_usage;
+      const energyPrice = await this.tronWeb.trx.getEnergyFee();
+
+      // Calculate estimated fee
+      const fee = energyUsed * energyPrice + netUsed;
+
+      console.log('Estimated Fee:', fee);
+      return fee;
+    } catch (error) {
+      console.error('Error estimating gas fee:', error);
+      throw error;
+    }
+  }
+  private async getSwapRoute(fromToken: string, toToken: string, amountInSun: string): Promise<any> {
+    try {
+
       const apiUrl = `${this.routerApiUrl}?fromToken=${fromToken}&toToken=${toToken}&amountIn=${amountInSun}&typeList=PSM,CURVE,CURVE_COMBINATION,WTRX,SUNSWAP_V2`;
       console.log('API Request URL:', apiUrl);
       const response = await fetch(apiUrl);
@@ -32,6 +68,45 @@ export class SwapClient {
       throw error;
     }
   }
+
+  
+
+  private async approveToken(tokenAddress: string, amount: string) {
+    try {
+      const ERC20_ABI = [
+        {
+          "constant": false,
+          "inputs": [
+            {
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "approve",
+          "outputs": [
+            {
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "type": "function"
+        }
+      ];
+      
+      const contract = await this.tronWeb.contract(ERC20_ABI, tokenAddress);
+      const result = await contract.methods.approve(this.smartRouterAddress, amount).send();
+      console.log('Token approved:', result);
+      return result;
+    } catch (error) {
+      console.error('Error during token approval:', error);
+      throw error;
+    }
+  }
+  
 
   async swap(privateKey: string, fromToken: string, toToken: string, amountIn: string, slippage: number): Promise<any> {
 
@@ -325,25 +400,66 @@ export class SwapClient {
       }
 
       console.log('Initialized TronWeb with address:', this.tronWeb.defaultAddress.base58);
-
-      const routeInfo = await this.getSwapRoute(fromToken, toToken, amountIn);
-      console.log('Route Info:', routeInfo);
-
-      const paths = routeInfo.tokens;
-      const poolVersions = routeInfo.poolVersions;
-      const fees = routeInfo.poolFees;
-
-      const versionLen = paths.map((_: any, index: number) => (index === 0 ? 2 : 1));
-
       // Convert the amount based on the token decimals
       let amountInSun: string;
       if (fromToken === WTRX) {
-        amountInSun = this.tronWeb.toSun(amountIn).toString(10); // TRX is 6 decimals
+        amountInSun = this.tronWeb.toSun(amountIn).toString(); // TRX is 6 decimals
       } else {
-        amountInSun = (parseFloat(amountIn) * 1e18).toString(10); // Assuming 18 decimals for other tokens TODO: pull decimals from the chain for calculation.
+        amountInSun = (BigInt(parseFloat(amountIn)) * BigInt(1e18)).toString(); // Assuming 18 decimals for other tokens
       }
 
-      const amountOutMinimumSun = Math.floor(parseFloat(amountInSun) * (1 - slippage / 100)).toString(10);
+      const routeInfo = await this.getSwapRoute(fromToken, toToken, amountInSun);
+      console.log('Route Info:', routeInfo);
+
+      const paths = routeInfo.tokens;
+     
+      const fees = routeInfo.poolFees;
+
+      const poolVersions = [];
+      const versionLen = [];
+      
+      let currentVersion = routeInfo.poolVersions[0];
+      let currentLength = 1;  // Start with 1 since the first token is always part of the first pool
+      
+      // Loop through the tokens, starting from the second token
+      for (let i = 1; i < routeInfo.tokens.length; i++) {
+        const previousToken = routeInfo.tokens[i - 1];
+        const currentToken = routeInfo.tokens[i];
+      
+        // If the pool version for this swap is the same as the current version, increment the length
+        if (routeInfo.poolVersions[i - 1] === currentVersion) {
+          currentLength++;
+        } else {
+          // If the pool version changes, push the current version and its length, then reset
+          poolVersions.push(currentVersion);
+          versionLen.push(currentLength);
+          
+          currentVersion = routeInfo.poolVersions[i - 1];
+          currentLength = 1;  // Reset length for the new pool version
+        }
+      }
+      
+      // Push the final segment
+      poolVersions.push(currentVersion);
+      versionLen.push(currentLength);
+      
+      console.log('Final Pool Versions:', poolVersions);
+      console.log('Final Version Lengths:', versionLen);
+      
+      console.log('Final Pool Versions:', poolVersions);
+      console.log('Final Version Lengths:', versionLen);
+
+
+      let amountOutSun: string;
+      if (toToken === WTRX) {
+        amountOutSun = this.tronWeb.toSun(routeInfo.amountOut).toString(10); // TRX (WTRX) uses 6 decimals
+      } else {
+        amountOutSun = (parseFloat(routeInfo.amountOut) * 1e18).toString(10); // Assuming 18 decimals for other tokens
+      }
+
+      // Calculate amountOutMinimumSun using the expected output amount with slippage tolerance
+      const amountOutMinimumSun = Math.floor(parseFloat(amountOutSun) * (1 - slippage / 100)).toString(10);
+
       const deadline = (Math.floor(Date.now() / 1000) + 60 * 10).toString(10); // 10-minute deadline
 
       const data = [
@@ -352,6 +468,20 @@ export class SwapClient {
         this.tronWeb.defaultAddress.base58,
         deadline,
       ];
+
+      const transactionParams = {
+        paths,
+        poolVersions,
+        versionLen,
+        fees,
+        data,
+      };
+
+      if (fromToken !== WTRX) {
+        await this.approveToken(fromToken, amountInSun);
+      }
+
+
 
       console.log('Paths:', paths);
       console.log('Pool Versions:', poolVersions);
@@ -374,7 +504,7 @@ export class SwapClient {
         data
       ).send({
         callValue: fromToken === WTRX ? amountInSun : 0,
-        feeLimit: 150000000, // fee set to 150 trx
+        feeLimit: 100 * 1e6,
         shouldPollResponse: true,
       });
 
