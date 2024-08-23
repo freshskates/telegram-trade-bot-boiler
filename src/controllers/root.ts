@@ -24,7 +24,7 @@ Tron's fastest bot to trade any coin\\!
     
 ${
   // @ts-ignore
-  balance === 0
+  balance === 0 // show bal in trx ?usdt?
     ? "You currently have no TRX in your wallet. Deposit TRX to your Tron wallet address:\n\n"
     : ``
 } 

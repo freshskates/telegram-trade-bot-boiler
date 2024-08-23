@@ -43,7 +43,8 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     bot.use(createConversation(settings.buyButtonConversation, "buybutton"));
     bot.callbackQuery("buybutton", settings.buybutton);
 
-    bot.callbackQuery("buy", buy.start);
+    bot.use(createConversation(settings.buyButtonConversation, "buyprompt"));
+    bot.callbackQuery("buy", buy.prompt);
 
     // buy button X setting
 

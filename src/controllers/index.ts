@@ -4,5 +4,5 @@ export * as settings from "./settings";
 export * as buy from "./buy";
 
 //
-export * as gasFee from "./responses/gasfee";
-export * as buyButtonLayout from "./responses/buyButtonLayout";
+export * as gasFee from "./responses/setGasFee";
+export * as buyButtonLayout from "./responses/setButtonLayout";
