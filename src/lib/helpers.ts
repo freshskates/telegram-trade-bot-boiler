@@ -102,7 +102,7 @@ export async function approveToken(
     console.log("Token approved:", result);
 
     // Wait for 2 seconds to ensure the transaction is processed
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
     return result;
   } catch (error) {
