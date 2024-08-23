@@ -73,7 +73,6 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     bot.callbackQuery("buy_button_br", async (ctx) => {
       await ctx.conversation.enter("trxAmountSettingConversation");
     });
-
     // end of buy button X setting
 
     // gas fee setting
