@@ -3,6 +3,7 @@ import { hideBin } from "yargs/helpers";
 import { TronClient } from "./src/clients/tron";
 import { SwapClient } from "./src/clients/swap";
 import { PumpClient } from "./src/clients/pump";
+import { fetchTokenDetails } from "./src/lib/helpers";
 
 async function createWallet() {
   const wallet = await TronClient.createWallet();
@@ -25,6 +26,16 @@ async function getTRXPrice() {
   const tronClient = new TronClient();
   const price = await tronClient.getTRXPrice();
   console.log("Current TRX Price:", price, "USD");
+}
+
+
+async function fetchTokenInfo(tokenAddress: string) {
+  try {
+    const tokenDetails = await fetchTokenDetails(tokenAddress);
+    console.log("Token Details:", tokenDetails);
+  } catch (error) {
+    console.error("Error testing function:", error);
+  }
 }
 
 async function checkTokenBalance(
@@ -81,8 +92,7 @@ async function pumpPurchase(
   console.log("Buy Result:", result);
 }
 
-async function 
-pumpSell(
+async function pumpSell(
   privateKey: string,
   tokenAmount: number | string,
   token: string,
@@ -113,6 +123,20 @@ yargs(hideBin(process.argv))
     (argv) => {
       checkBalance(argv.address);
     },
+  )
+  .command(
+    "token-info",
+    "Fetch Token Info",
+    {
+      tokenAddress: {
+        describe: "The token CA for the token you need info on",
+        type: "string",
+        demandOption: true,
+      },
+    },
+    (argv) => {
+      fetchTokenInfo(argv.tokenAddress);
+    }
   )
   .command(
     "check-tx",

@@ -126,3 +126,48 @@ export async function fetchPumpTokenPrice(tokenAddress: string): Promise<number>
       throw error;
     }
   }
+
+  export async function fetchTokenDetails(tokenAddress: string) {
+    const apiUrl = `https://apilist.tronscanapi.com/api/token_trc20?contract=${tokenAddress}&showAll=1&start=&limit=`;
+
+    try {
+        const response = await axios.get(apiUrl);
+
+        if (response.data && response.data.trc20_tokens && response.data.trc20_tokens.length > 0) {
+            const tokenData = response.data.trc20_tokens[0];
+
+            const socialMedia = tokenData.social_media_list || [];
+            let twitterUrl = '';
+            let telegramUrl = '';
+
+            socialMedia.forEach((media: { name: string; url: string }) => {
+                if (media.name.toLowerCase() === 'twitter') {
+                    twitterUrl = media.url ? media.url.replace(/[\[\]"]/g, '') : ''; 
+                }
+                if (media.name.toLowerCase() === 'telegram') {
+                    telegramUrl = media.url ? media.url.replace(/[\[\]"]/g, '') : ''; 
+                }
+            });
+            const priceInUsd = parseFloat(tokenData.market_info?.priceInUsd || '0');
+            const totalSupply = parseFloat(tokenData.total_supply_with_decimals) / 1e18; 
+            const marketCap = priceInUsd * totalSupply;
+            const tokenDetails = {
+                priceInUsd: priceInUsd,
+                marketCap: marketCap, 
+                volume24h: tokenData.market_info?.volume24hInTrx || 'N/A',
+                liquidity: tokenData.market_info?.liquidity || 'N/A',
+                name: tokenData.name || 'N/A',
+                imageUrl: tokenData.icon_url || 'N/A',
+                twitter: twitterUrl || 'N/A',
+                telegram: telegramUrl || 'N/A',
+            };
+
+            return tokenDetails;
+        } else {
+            throw new Error('Token data not found in API response');
+        }
+    } catch (error) {
+        console.error('Error fetching token details:', error);
+        throw error;
+    }
+}
