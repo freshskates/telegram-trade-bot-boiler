@@ -1,69 +1,67 @@
 import { CommandContext, Context } from "grammy";
+import { ParseMode } from "grammy/types";
+import { PrismaClient } from "@prisma/client";
+import { UserClient } from "../clients/user";
 
 export const start = async (ctx: CommandContext<Context>) => {
   const id = ctx.message?.from.id;
-  const referral = ctx.message?.text?.replace("/start", "")?.trim();
 
-  // if (!user) {
-  // create user
-  // }
+  if (!id) {
+    throw Error("No user ID");
+  }
+
+  if (!id) {
+    throw Error("No user ID found");
+  }
 
   const wallet = "TFkv5u8XTsZUqG2QDMjziCLQSGM5weSw8z";
   const balance = 0;
 
   await ctx.reply(
     `
-        <b>Welcome to Electron</b>
-Trons fastest bot to trade any coin!
-        \n${
-          // @ts-ignore
-          balance === 0
-            ? "You currently have no TRX in your wallet. Deposit TRX to your Tron wallet address:\n\n"
-            : ``
-        } <code>${wallet}</code> (tap to copy)
-         
-Once done, tap refresh and your balance will appear here.
-
-To buy a token enter token address, or a URL from sunpump (https://sunpump.meme/) or sun.io (https://sun.io/)
-
-For more info on your wallet and to retrieve your private key, tap the wallet button below. User funds are safe on Electron, but if you expose your private key we can't protect you!
-
-        `,
+**Welcome to Electron**  
+Tron's fastest bot to trade any coin\\!
+    
+${
+  // @ts-ignore
+  balance === 0
+    ? "You currently have no TRX in your wallet. Deposit TRX to your Tron wallet address:\n\n"
+    : ``
+} 
+\`${wallet}\` (tap to copy)
+    
+Once done, tap refresh, and your balance will appear here.
+    
+To buy a token, enter the token address or a URL from [sunpump](https://sunpump.meme/) or [sun.io](https://sun.io/).
+    
+💡 If you aren't already, we advise that you use any of the following bots to trade with. You will have the same wallets and settings across all bots, but it will be significantly faster due to lighter user load.
+    
+[Achilles](https://t.me/achilles_trojanbot) | [Odysseus](https://t.me/odysseus_trojanbot) | [Menelaus](https://t.me/menelaus_trojanbot) | [Diomedes](https://t.me/diomedes_trojanbot) 
+`,
     {
-      parse_mode: "HTML",
-
+      parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "Wallet", callback_data: "wallet" },
+            { text: "Buy", callback_data: "buy" },
             {
-              text: "Split Token",
-              callback_data: "split",
+              text: "Sell",
+              callback_data: "sell",
             },
           ],
+          [{ text: "Positions", callback_data: "positions" }],
           [
-            { text: "Buy", callback_data: "buy" },
-            { text: "Sell", callback_data: "sell" },
+            { text: "Referrals", callback_data: "referrals" },
+            { text: "Settings", callback_data: "settings" },
           ],
-
-          [{ text: "Refresh", callback_data: "refresh" }],
+          [
+            { text: "Help", callback_data: "help" },
+            { text: "Refresh", callback_data: "refresh" },
+          ],
         ],
       },
     }
   );
-};
-
-export const settings = async (ctx: CommandContext<Context>) => {
-  const id = ctx.message?.from.id;
-
-  let user = {};
-
-  if (!user) {
-    // const newWallet = TronClient.createWallet();
-  }
-
-  //@ts-ignore
-  await ctx.reply(...settingsContent(user));
 };
 
 export const help = async (ctx: CommandContext<Context>) => {

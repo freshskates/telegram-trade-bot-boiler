@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,18 +8,67 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  wallet    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  settings  Settings?
+  id          String     @id
+  username    String     @default("anon")
+  walletPk    String     
+  walletPb    String     // ease of use? optional tbh
+  referredBy  String?
+
+  // foreign keys
+  referrer    User?      @relation("UserReferrals", fields: [referredBy], references: [id])
+  referrals   User[]     @relation("UserReferrals")
+  settings    Settings?
+  positions   Position[] @relation("UserPositions")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Settings {
   id        String   @id @default(cuid())
   userId    String   @unique
+
+  // gas fees in TRX
+  gasFee    Float    @default(70)
+
+  // auto buy
+  autoBuy   Boolean  @default(false)
+  autoBuyTrx Float   @default(100)
+
+  // slippage
+  slippageBuy Float    @default(10)
+  slippageSell Float   @default(10)
+
+  // button layout [buy]
+  buyTopLeftX Float    @default(100)
+  buyTopCenterX Float  @default(500)
+  buyTopRightX Float   @default(1000)
+  buyBottomLeftX Float @default(1000)
+  buyBottomRightX Float @default(5000)
+
+  // button layout [sell]
+  sellLeftPercentX  Float   @default(100)
+  sellRightPercentX Float   @default(1000)
+
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  user      User     @relation(fields: [userId], references: [id])
+}
+
+
+model Position {
+  id               String   @id @default(cuid())
+  tokenSymbol      String   // e.g., DOGE, SHIB, etc.
+  tokenAddress     String
+  initialTrx       Float    // TRX amount initially spent
+  initialToken     Float    // Tokens initially received
+  currentTrx       Float    // Current value in TRX (after partial or full sell)
+  currentToken     Float    // Current number of tokens held
+  currentPricePerToken Float // The current price of the token in TRX (to calculate current value)
+  currentProfitLoss Float?  // Dynamic calculation of current profit or loss
+  closed           Boolean  @default(false)  // Indicates if the position is closed
+  userId           String
+
+  user             User     @relation("UserPositions", fields: [userId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
