@@ -17,12 +17,11 @@ async function fetchSlippageByButtonId(
     throw new Error("Settings not found for user.");
   }
 
-  // Return the appropriate slippage based on the button ID
   if (buttonId === "buy_slippagebutton_cb") {
     return settings.slippageBuy;
   }
 
-  return 0; // Default or custom logic for other cases
+  return 0;
 }
 
 export async function slippageConversation(

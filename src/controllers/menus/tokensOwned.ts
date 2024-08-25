@@ -23,6 +23,12 @@ export const start = async (ctx: BotContext) => {
         callback_data: "refresh_tokens_owned_cb",
       },
     ],
+    [
+      {
+        text: "TSig7s...Znb",
+        callback_data: "sell",
+      },
+    ],
   ];
 
   await ctx.reply(

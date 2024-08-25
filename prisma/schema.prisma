@@ -47,7 +47,7 @@ model Settings {
 
   // button layout [sell]
   sellLeftPercentX  Float   @default(100)
-  sellRightPercentX Float   @default(1000)
+  sellRightPercentX Float   @default(100)
 
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

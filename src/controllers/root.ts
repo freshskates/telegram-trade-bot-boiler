@@ -3,15 +3,11 @@ import { ParseMode } from "grammy/types";
 import { PrismaClient } from "@prisma/client";
 import { UserClient } from "../clients/user";
 
-export const start = async (ctx: CommandContext<Context>) => {
-  const id = ctx.message?.from.id;
+export const start = async (ctx: any) => {
+  const id = ctx?.from?.id;
 
   if (!id) {
     throw Error("No user ID");
-  }
-
-  if (!id) {
-    throw Error("No user ID found");
   }
 
   const wallet = "TFkv5u8XTsZUqG2QDMjziCLQSGM5weSw8z";

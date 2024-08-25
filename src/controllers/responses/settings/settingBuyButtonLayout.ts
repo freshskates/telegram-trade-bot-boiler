@@ -1,4 +1,4 @@
-import { BotContext, BotConversation } from "../../utils";
+import { BotContext, BotConversation } from "../../../utils";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();

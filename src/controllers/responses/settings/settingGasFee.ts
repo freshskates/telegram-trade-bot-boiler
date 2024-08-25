@@ -1,7 +1,7 @@
-import { BotContext, BotConversation } from "../../utils";
+import { BotContext, BotConversation } from "../../../utils";
 import { CallbackQueryContext } from "grammy";
 import { PrismaClient } from "@prisma/client";
-import { gasFee } from "..";
+import { gasFee } from "../..";
 
 const prisma = new PrismaClient();
 

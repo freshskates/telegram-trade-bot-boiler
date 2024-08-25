@@ -97,18 +97,24 @@ export const start = async (ctx: CallbackQueryContext<Context>) => {
           [
             {
               text: `Buy Slippage: ${userSettings.slippageBuy}% ✏️`,
-              callback_data: "buy_5000_cb",
+              callback_data: "buy_setting_slippage_cb",
             },
           ],
           [{ text: "-- Sell Amounts --", callback_data: "empty" }],
           [
-            { text: "0.5% ✏️", callback_data: "referrals" },
-            { text: "10% ✏️", callback_data: "settings_cb" },
+            {
+              text: `${userSettings.sellLeftPercentX}% ✏️`,
+              callback_data: "sell_percent_l_cb",
+            },
+            {
+              text: `${userSettings.sellRightPercentX}% ✏️`,
+              callback_data: "sell_percent_r_cb",
+            },
           ],
           [
             {
               text: `Sell Slippage: ${userSettings.slippageSell}% ✏️`,
-              callback_data: "buy_5000_cb",
+              callback_data: "sell_setting_slippage_cb",
             },
           ],
           [{ text: "Back", callback_data: "back_cb" }],

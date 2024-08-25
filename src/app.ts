@@ -15,6 +15,10 @@ import {
   buyAmount,
   slippageSetting,
   tokensOwned,
+  sell,
+  settingSellPercent,
+  settingSellSlippage,
+  settingBuySlippage,
 } from "./controllers";
 import { BotContext } from "./utils";
 import { UserClient } from "./clients/user";
@@ -49,12 +53,15 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     Basic Buttons
     **************************************************
     */
+    bot.callbackQuery("start", root.start);
     bot.callbackQuery("help_cb", common.help);
     bot.callbackQuery("back_cb", common.back);
     bot.callbackQuery("cancel_cb", common.cancel);
     bot.callbackQuery("settings_cb", settings.start);
 
     bot.callbackQuery("tokens_owned_cb", tokensOwned.start);
+
+    bot.callbackQuery("sell", sell.start);
 
     bot.use(createConversation(settings.buyButtonConversation, "buybutton"));
     bot.callbackQuery("buybutton", settings.buybutton);
@@ -69,6 +76,61 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
       await ctx.reply(`Buy Amount: ${ctx.session.buyamount}TRX`);
 
       await ctx.answerCallbackQuery();
+    });
+
+    /* 
+    **************************************************
+    Settings Menu - Set Sell Slippage
+    **************************************************
+    */
+
+    bot.use(
+      createConversation(
+        settingSellSlippage.settingSellSlippage,
+        "sellSlippageSettingConversation"
+      )
+    );
+
+    bot.callbackQuery("sell_setting_slippage_cb", async (ctx) => {
+      await ctx.conversation.enter("sellSlippageSettingConversation");
+    });
+
+    /* 
+    **************************************************
+    Settings Menu - Set Buy Slippage
+    **************************************************
+    */
+
+    bot.use(
+      createConversation(
+        settingBuySlippage.settingBuySlippage,
+        "buySlippageSettingConversation"
+      )
+    );
+
+    bot.callbackQuery("buy_setting_slippage_cb", async (ctx) => {
+      await ctx.conversation.enter("buySlippageSettingConversation");
+    });
+
+    /* 
+    **************************************************
+    Settings Menu - Set Sell Percents
+    **************************************************
+    */
+
+    bot.use(
+      createConversation(
+        settingSellPercent.settingSellPercent,
+        "sellPercentSettingConversation"
+      )
+    );
+
+    bot.callbackQuery("sell_percent_l_cb", async (ctx) => {
+      await ctx.conversation.enter("sellPercentSettingConversation");
+    });
+
+    bot.callbackQuery("sell_percent_r_cb", async (ctx) => {
+      await ctx.conversation.enter("sellPercentSettingConversation");
     });
 
     /* 
@@ -126,7 +188,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     /* 
     **************************************************
     Buy Button TRX Settings Conversation    
-    **************************************************
+    ************************************************** 
     */
 
     bot.use(
