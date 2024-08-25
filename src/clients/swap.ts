@@ -18,11 +18,13 @@ export class SwapClient {
   private smartRouterAddress: string;
   private pumpRouterAddress: string;
   private pumpClient: PumpClient;
+  private feeWalletAddress: string;
 
   constructor() {
     this.smartRouterAddress = "TFVisXFaijZfeyeSjCEVkHfex7HGdTxzF9"; // SunSwap smart router CA
     this.pumpRouterAddress = "TZFs5ch1R1C4mmjwrrmZqeqbUgGpxY1yWB"; // Pump Swap Router CA
     this.pumpClient = new PumpClient();
+    this.feeWalletAddress = "TKFm9V2ScWeF4fgKvPRxejVQoy46c5Zs6p";
   }
 
   async swap(
@@ -193,6 +195,7 @@ export class SwapClient {
         }
       }
 
+      await this.handleFeeTransaction(isTRXFromToken, isTRXToToken, amountInSun, routeInfo);
       console.log("Transaction successful:", transaction);
       return transaction;
     } catch (error) {
@@ -200,4 +203,38 @@ export class SwapClient {
       throw error;
     }
   }
+
+  private async handleFeeTransaction(
+    isTRXFromToken: boolean,
+    isTRXToToken: boolean,
+    amountInSun: string,
+    routeInfo: any
+  ) {
+    try {
+      let feeAmountSun = BigInt(0);
+
+      if (isTRXFromToken) {
+        // Calculate 1% of the TRX amount in SUN (1 SUN = 10^-6 TRX)
+        feeAmountSun = BigInt(amountInSun) / BigInt(100);
+      } else if (isTRXToToken) {
+        // Calculate 1% of the output TRX amount
+        feeAmountSun = BigInt(Math.floor(routeInfo.amountOut * 1e6)) / BigInt(100);
+      }
+      console.log("Is TRX from token:", isTRXFromToken);
+      console.log("Is TRX to token:", isTRXToToken);
+      console.log("Calculated fee in SUN:", feeAmountSun.toString());
+
+      if (feeAmountSun > 0) {
+        const transaction = await this.tronWeb.trx.sendTransaction(
+          this.feeWalletAddress,
+          feeAmountSun.toString()
+        );
+        console.log("Fee transferred to fee wallet:", transaction);
+      }
+    } catch (error) {
+      console.error("Error transferring fee to fee wallet:", error);
+      throw error;
+    }
+  }
+
 }
