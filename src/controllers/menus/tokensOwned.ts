@@ -2,7 +2,7 @@ import { CallbackQueryContext, Context } from "grammy";
 import { Conversation, ConversationFlavor } from "@grammyjs/conversations";
 
 import "dotenv/config";
-import { BotContext } from "../utils";
+import { BotContext } from "../../utils";
 import { PrismaClient } from "@prisma/client";
 
 export const start = async (ctx: BotContext) => {

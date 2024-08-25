@@ -44,12 +44,8 @@ To buy a token, enter the token address or a URL from [sunpump](https://sunpump.
         inline_keyboard: [
           [
             { text: "Buy", callback_data: "buy" },
-            {
-              text: "Sell",
-              callback_data: "sell",
-            },
+            { text: "Sell / Manage", callback_data: "tokens_owned_cb" },
           ],
-          [{ text: "Positions", callback_data: "positions" }],
           [
             { text: "Referrals", callback_data: "referrals" },
             { text: "Settings", callback_data: "settings_cb" },

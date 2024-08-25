@@ -4,23 +4,10 @@ import { Conversation, ConversationFlavor } from "@grammyjs/conversations";
 import base58 from "bs58";
 
 import "dotenv/config";
-import { BotContext } from "../utils";
+import { BotContext } from "../../utils";
 import { PrismaClient } from "@prisma/client";
 
 type CusConversation = Conversation<BotContext>;
-
-export const buyButtonConversation = async (
-  conversation: CusConversation,
-  ctx: BotContext
-) => {
-  const id = ctx.update.callback_query?.from.id;
-};
-
-export const buy = async (ctx: CallbackQueryContext<BotContext>) => {
-  await ctx.conversation.exit();
-  await ctx.conversation.reenter("buy");
-  await ctx.answerCallbackQuery();
-};
 
 export const start = async (ctx: BotContext) => {
   const tokenAddress = ctx.session.selectedToken;
@@ -31,8 +18,6 @@ export const start = async (ctx: BotContext) => {
   }
 
   const prisma = new PrismaClient();
-
-  // Fetch settings from the database
   const settings = await prisma.settings.findUnique({
     where: {
       userId: userId.toString(),
@@ -45,7 +30,6 @@ export const start = async (ctx: BotContext) => {
 
   const selectedBuyAmount = ctx.session.buyamount;
 
-  // Create the inline keyboard with hard-coded buttons
   const inlineKeyboard = [
     [
       {

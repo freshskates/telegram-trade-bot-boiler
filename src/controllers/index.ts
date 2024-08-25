@@ -1,8 +1,8 @@
 export * as root from "./root";
 export * as common from "./common";
 export * as settings from "./settings";
-export * as buy from "./buy";
-export * as tokensOwned from "./tokensOwned";
+export * as buy from "./menus/manage";
+export * as tokensOwned from "./menus/tokensOwned";
 
 //
 export * as gasFee from "./responses/setGasFee";

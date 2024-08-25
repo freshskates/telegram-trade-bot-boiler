@@ -23,9 +23,9 @@ import { WalletClient } from "./clients/wallet";
 
 const bot = new Bot<BotContext>(config.getTgBotToken());
 
-//TODO: refresh_cb?
-//TODO: referrals_cb?
-
+// TODO: refresh_cb?
+// TODO: referrals_cb?
+// TODO: positions_cb?
 (async function () {
   try {
     bot.use(
@@ -54,7 +54,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     bot.callbackQuery("cancel_cb", common.cancel);
     bot.callbackQuery("settings_cb", settings.start);
 
-    bot.callbackQuery("sell", tokensOwned.start);
+    bot.callbackQuery("tokens_owned_cb", tokensOwned.start);
 
     bot.use(createConversation(settings.buyButtonConversation, "buybutton"));
     bot.callbackQuery("buybutton", settings.buybutton);
@@ -73,7 +73,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     /* 
     **************************************************
-    Slippage Conversation    
+    Buy Menu - Slippage Conversation
     **************************************************
     */
     bot.use(
@@ -125,7 +125,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     /* 
     **************************************************
-    TRX Settings Conversation    
+    Buy Button TRX Settings Conversation    
     **************************************************
     */
 
@@ -159,7 +159,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     /* 
     **************************************************
-    Gas Fees Conversation    
+    Gas Fees Setting Conversation   
     **************************************************
     */
 
