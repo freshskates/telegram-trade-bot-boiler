@@ -170,4 +170,15 @@ export async function fetchPumpTokenPrice(tokenAddress: string): Promise<number>
         console.error('Error fetching token details:', error);
         throw error;
     }
+
+}
+
+export function calculateMinimumOutput(amountOut: string, slippage: number, toTokenDecimals: number): string {
+  const minOutput = parseFloat(amountOut) * (1 - slippage / 100);
+  return (BigInt(Math.floor(minOutput * (10 ** toTokenDecimals)))).toString();
+}
+
+
+export function calculateDeadline(): string {
+  return (Math.floor(Date.now() / 1000) + 60 * 10).toString();
 }

@@ -1,20 +1,28 @@
 import TronWeb from "tronweb";
-import { ROUTER_ABI } from "../abi/router_abi";
 import {
-  estimateGasFee,
-  getSwapRoute,
-  getTokenDecimals,
   approveToken,
+  calculateDeadline,
+  calculateMinimumOutput,
+  fetchPumpTokenPrice,
+  getSwapRoute,
+  getTokenDecimals, // Assuming this is available in your helpers
 } from "../lib/helpers";
+import { ROUTER_ABI } from "../abi/router_abi";
+import { PUMP_LAUNCH_ABI } from "../abi/pump_launch_abi";
+import { PumpClient } from "./pump";
+import { PUMP_ROUTER_ABI } from "../abi/pump_router";
+import { ERC20_ABI } from "../abi/erc20_abi";
 
 export class SwapClient {
   private tronWeb: any;
   private smartRouterAddress: string;
-  private routerApiUrl: string;
+  private pumpRouterAddress: string;
+  private pumpClient: PumpClient;
 
   constructor() {
     this.smartRouterAddress = "TFVisXFaijZfeyeSjCEVkHfex7HGdTxzF9"; // SunSwap smart router CA
-    this.routerApiUrl = "https://rot.endjgfsv.link/swap/router"; // SunSwap Router API URL
+    this.pumpRouterAddress = "TZFs5ch1R1C4mmjwrrmZqeqbUgGpxY1yWB"; // Pump Swap Router CA
+    this.pumpClient = new PumpClient();
   }
 
   async swap(
@@ -25,156 +33,167 @@ export class SwapClient {
     slippage: number,
   ): Promise<any> {
     try {
+      const routerApiUrl = "https://rot.endjgfsv.link/swap/router";
       this.tronWeb = new TronWeb({
         fullHost: "https://api.trongrid.io",
         privateKey: privateKey,
       });
 
       const WTRX = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb";
+      const isTRXFromToken = fromToken === "TRX";
+      const isTRXToToken = toToken === "TRX";
 
-      if (fromToken === "TRX") {
-        fromToken = WTRX;
+      if (isTRXFromToken) fromToken = WTRX;
+      if (isTRXToToken) toToken = WTRX;
+
+      // Fetch Pump Token Price depending on TRX involvement
+      let tokenPrice = null;
+      try {
+        if (isTRXToToken) {
+          tokenPrice = await fetchPumpTokenPrice(fromToken);
+        } else if (isTRXFromToken) {
+          tokenPrice = await fetchPumpTokenPrice(toToken);
+        }
+      } catch (error) {
+        console.warn("Pump token price fetch failed:", error);
       }
-      if (toToken === "TRX") {
-        toToken = WTRX;
-      }
 
-      console.log(
-        "Initialized TronWeb with address:",
-        this.tronWeb.defaultAddress.base58,
-      );
-
-      const fromTokenDecimals = await getTokenDecimals(this.tronWeb, fromToken);
-      const toTokenDecimals = await getTokenDecimals(this.tronWeb, toToken);
-
+      // Handle amountIn based on token decimals
       let amountInSun: string;
-
-      if (fromTokenDecimals > 6) {
-        amountInSun = (
-          BigInt(
-            Math.floor(parseFloat(amountIn) * 10 ** (fromTokenDecimals - 6)),
-          ) * BigInt(10 ** 6)
-        ).toString();
+      if (!isTRXFromToken) {
+        const fromTokenDecimals = await getTokenDecimals(this.tronWeb, fromToken);
+        amountInSun = (BigInt(Math.floor(parseFloat(amountIn) * (10 ** fromTokenDecimals)))).toString();
       } else {
-        amountInSun = BigInt(
-          Math.floor(parseFloat(amountIn) * 10 ** fromTokenDecimals),
-        ).toString();
+        amountInSun = (BigInt(amountIn) * BigInt(10 ** 6)).toString(); // Assuming TRX has 6 decimals
       }
 
+      // Fetch swap route
       const routeInfo = await getSwapRoute(
-        this.routerApiUrl,
+        routerApiUrl,
         fromToken,
         toToken,
-        amountInSun,
+        amountInSun
       );
-      console.log("Route Info:", routeInfo);
 
-      const paths = routeInfo.tokens;
-      const fees = routeInfo.poolFees;
-
-      const poolVersions = [];
-      const versionLen = [];
-
-      let currentVersion = routeInfo.poolVersions[0];
-      let currentLength = 1;
-
-      for (let i = 1; i < routeInfo.tokens.length; i++) {
-        const previousToken = routeInfo.tokens[i - 1];
-        const currentToken = routeInfo.tokens[i];
-
-        if (routeInfo.poolVersions[i - 1] === currentVersion) {
-          currentLength++;
+      if (tokenPrice && !routeInfo) {
+        // Use PumpClient for pump purchase or sale
+        if (isTRXFromToken) {
+          return await this.pumpClient.pumpPurchase(
+            privateKey,
+            toToken,
+            amountIn,
+            slippage
+          );
         } else {
-          poolVersions.push(currentVersion);
-          versionLen.push(currentLength);
-
-          currentVersion = routeInfo.poolVersions[i - 1];
-          currentLength = 1;
+          return await this.pumpClient.pumpSellToken(
+            privateKey,
+            amountIn,
+            fromToken,
+            slippage
+          );
         }
       }
 
-      poolVersions.push(currentVersion);
-      versionLen.push(currentLength);
+      // Determine the appropriate router and ABI
+      let routerAddress = this.smartRouterAddress;
+      let routerABI = ROUTER_ABI;
 
-      console.log("Final Pool Versions:", poolVersions);
-      console.log("Final Version Lengths:", versionLen);
-
-      let amountOutSun: string;
-      if (toTokenDecimals > 6) {
-        amountOutSun = (
-          BigInt(
-            Math.floor(
-              parseFloat(routeInfo.amountOut) * 10 ** (toTokenDecimals - 6),
-            ),
-          ) * BigInt(10 ** 6)
-        ).toString();
+      if (tokenPrice && routeInfo) {
+        console.log("Setting route info for Pump Router");
+        routerAddress = this.pumpRouterAddress;
+        routerABI = PUMP_ROUTER_ABI;
+      } else if (routeInfo) {
+        console.log("Setting route info for Smart Router");
+        routerAddress = this.smartRouterAddress;
+        routerABI = ROUTER_ABI;
       } else {
-        amountOutSun = BigInt(
-          Math.floor(parseFloat(routeInfo.amountOut) * 10 ** toTokenDecimals),
-        ).toString();
+        console.error("Failed to determine route or token price.");
+        throw new Error("Unable to perform swap.");
       }
 
-      const amountOutMinimum = Math.floor(
-        parseFloat(routeInfo.amountOut) * (1 - slippage / 100),
+      // Prepare the swap parameters
+      const paths = routeInfo.tokens;
+      const fees = routeInfo.poolFees;
+      let tokenOutDecimals = 6
+      if (toToken != WTRX) {
+        const decimals = await getTokenDecimals(this.tronWeb, toToken) 
+        tokenOutDecimals = decimals
+      }
+      console.log(tokenOutDecimals)
+      const amountOutMinimum = calculateMinimumOutput(
+        routeInfo.amountOut,
+        slippage,
+        tokenOutDecimals
       );
-      const amountOutMinimumSun = (
-        BigInt(amountOutMinimum) * BigInt(10 ** toTokenDecimals)
-      ).toString();
-
-      const deadline = (Math.floor(Date.now() / 1000) + 60 * 10).toString();
-
       const data = [
         amountInSun,
-        amountOutMinimumSun,
+        amountOutMinimum,
         this.tronWeb.defaultAddress.base58,
-        deadline,
+        calculateDeadline(),
       ];
 
-      const transactionParams = {
-        paths,
-        poolVersions,
-        versionLen,
-        fees,
-        data,
-      };
-      console.log(transactionParams);
-
-      if (fromToken !== WTRX) {
-        await approveToken(
-          this.tronWeb,
-          this.smartRouterAddress,
-          fromToken,
-          amountInSun,
-        );
+      // Approve tokens if necessary
+      if (!isTRXFromToken) {
+        await approveToken(this.tronWeb, routerAddress, fromToken, amountInSun);
       }
-      // estimated fee currently not working, unsure why.
-      // const estimatedFee = await estimateGasFee(this.tronWeb, this.smartRouterAddress, transactionParams);
-      // console.log(estimatedFee)
-      console.log("Paths:", paths);
-      console.log("Pool Versions:", poolVersions);
-      console.log("Version Lengths:", versionLen);
-      console.log("Fees:", fees);
-      console.log("Swap Data:", data);
 
-      const router = await this.tronWeb.contract(
-        ROUTER_ABI,
-        this.smartRouterAddress,
+      // Initialize and execute the swap
+      const routerContract = await this.tronWeb.contract(
+        routerABI,
+        routerAddress
       );
+      let transaction = [];
 
-      console.log(
-        "Successfully initialized Smart Router contract at:",
-        this.smartRouterAddress,
-      );
+      if (!tokenPrice && routeInfo) {
+        transaction = await routerContract.methods
+          .swapExactInput(
+            paths,
+            routeInfo.poolVersions,
+            routeInfo.versionLen,
+            fees,
+            data
+          )
+          .send({
+            callValue: isTRXFromToken ? amountInSun : 0,
+            feeLimit: 100 * 1e6,
+            shouldPollResponse: true,
+          });
+      } else if (tokenPrice && routeInfo) {
+        if (isTRXFromToken) {
+          const adjustedPaths = [paths[1], paths[paths.length - 1]];
+          console.log(adjustedPaths)
+          transaction = await routerContract.methods
+            .swapExactETHForTokens(
+              amountOutMinimum,
+              adjustedPaths,
+              this.tronWeb.defaultAddress.base58,
+              calculateDeadline()
+            )
+            .send({
+              callValue: Number(amountIn) * 1e6,
+              feeLimit: 100 * 1e6,
+              shouldPollResponse: true,
+            });
+        } else if (isTRXToToken) {
+          const adjustedPaths = [paths[0], paths[paths.length - 2]];
+          console.log(amountOutMinimum, amountInSun)
+          transaction = await routerContract.methods
+            .swapExactTokensForETH(
+              amountInSun,
+              amountOutMinimum,
+              adjustedPaths,
+              this.tronWeb.defaultAddress.base58,
+              calculateDeadline()
+            )
+            .send({
+              callValue: 0,
+              feeLimit: 100 * 1e6,
+              shouldPollResponse: true,
+            });
+        }
+      }
 
-      const transaction = await router.methods
-        .swapExactInput(paths, poolVersions, versionLen, fees, data)
-        .send({
-          callValue: fromToken === WTRX ? amountInSun : 0,
-          feeLimit: 100 * 1e6,
-          shouldPollResponse: true,
-        });
-
-      console.log("Transaction:", transaction);
+      console.log("Transaction successful:", transaction);
       return transaction;
     } catch (error) {
       console.error("Error performing swap:", error);
