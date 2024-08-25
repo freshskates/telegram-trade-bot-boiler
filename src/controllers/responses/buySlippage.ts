@@ -1,14 +1,28 @@
 import { Conversation } from "@grammyjs/conversations";
 import { BotContext, BotConversation } from "../../utils";
+import { PrismaClient } from "@prisma/client";
 
-// Mock function to simulate fetching slippage value from the database
-async function fetchSlippageByButtonId(buttonId: string): Promise<number> {
-  const mockDatabase: Record<string, any> = {
-    buy_slippagebutton_cb: 2, // 2% Slippage
-    buy_slippagebutton_x_cb: 0, // Custom slippage input
-  };
+async function fetchSlippageByButtonId(
+  userId: string,
+  buttonId: string
+): Promise<number> {
+  const prisma = new PrismaClient();
+  const settings = await prisma.settings.findUnique({
+    where: {
+      userId: userId,
+    },
+  });
 
-  return mockDatabase[buttonId];
+  if (!settings) {
+    throw new Error("Settings not found for user.");
+  }
+
+  // Return the appropriate slippage based on the button ID
+  if (buttonId === "buy_slippagebutton_cb") {
+    return settings.slippageBuy;
+  }
+
+  return 0; // Default or custom logic for other cases
 }
 
 export async function slippageConversation(
@@ -16,6 +30,13 @@ export async function slippageConversation(
   ctx: BotContext
 ) {
   const callbackData = ctx.callbackQuery?.data;
+
+  const userId = ctx.from?.id;
+
+  if (!userId) {
+    await ctx.reply("User ID not found.");
+    return;
+  }
 
   if (callbackData) {
     if (callbackData === "buy_slippagebutton_x_cb") {
@@ -39,7 +60,10 @@ export async function slippageConversation(
 
       return;
     } else {
-      const slippage = await fetchSlippageByButtonId(callbackData);
+      const slippage = await fetchSlippageByButtonId(
+        userId.toString(),
+        callbackData
+      );
 
       await ctx.reply(`You have selected to use ${slippage}% slippage.`);
 

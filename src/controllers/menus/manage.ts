@@ -7,8 +7,6 @@ import "dotenv/config";
 import { BotContext } from "../../utils";
 import { PrismaClient } from "@prisma/client";
 
-type CusConversation = Conversation<BotContext>;
-
 export const start = async (ctx: BotContext) => {
   const tokenAddress = ctx.session.selectedToken;
   const userId = ctx.from?.id;
@@ -28,7 +26,7 @@ export const start = async (ctx: BotContext) => {
     return;
   }
 
-  const selectedBuyAmount = ctx.session.buyamount;
+  const selectedBuyAmount = ctx.session.buyamount || settings.buyTopLeftX;
 
   const inlineKeyboard = [
     [
