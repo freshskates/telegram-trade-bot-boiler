@@ -1,4 +1,5 @@
 import { CallbackQueryContext, Context } from "grammy";
+import { root } from ".";
 
 export const cancel = async (ctx: CallbackQueryContext<Context>) => {
   await ctx.deleteMessage();
@@ -32,10 +33,16 @@ Join our Telegram group @electron and one of our admins can assist you.
     {
       parse_mode: "Markdown",
       reply_markup: {
-        inline_keyboard: [[{ text: "Close", callback_data: "cancel" }]],
+        inline_keyboard: [[{ text: "Close", callback_data: "cancel_cb" }]],
       },
     }
   );
 
   await ctx.answerCallbackQuery();
 };
+
+export const back = async (ctx: CallbackQueryContext<Context>) => {
+  await root.start(ctx as any);
+  await ctx.answerCallbackQuery();
+};
+``;

@@ -68,7 +68,7 @@ export const help = async (ctx: CommandContext<Context>) => {
   await ctx.reply(`lorem help`, {
     parse_mode: "HTML",
     reply_markup: {
-      inline_keyboard: [[{ text: "Close", callback_data: "cancel" }]],
+      inline_keyboard: [[{ text: "Close", callback_data: "cancel_cb" }]],
     },
   });
 };
@@ -77,7 +77,7 @@ export const chat = async (ctx: CommandContext<Context>) => {
   await ctx.reply(`CHAT`, {
     parse_mode: "HTML",
     reply_markup: {
-      inline_keyboard: [[{ text: "Close", callback_data: "cancel" }]],
+      inline_keyboard: [[{ text: "Close", callback_data: "cancel_cb" }]],
     },
   });
 };

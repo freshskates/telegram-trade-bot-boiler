@@ -12,10 +12,14 @@ import {
   buy,
   gasFee,
   buyButtonLayout,
+  buyAmount,
+  slippageSetting,
+  tokensOwned,
 } from "./controllers";
 import { BotContext } from "./utils";
 import { UserClient } from "./clients/user";
 import { userSessionMiddleware } from "./middleware/usersessionmw";
+import { WalletClient } from "./clients/wallet";
 
 const bot = new Bot<BotContext>(config.getTgBotToken());
 
@@ -33,12 +37,21 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     bot.use(conversations());
 
+    // Chat commands
     bot.command("start", root.start);
     bot.command("help", root.help);
 
+    /* 
+    **************************************************
+    Basic Buttons    
+    **************************************************
+    */
     bot.callbackQuery("help", common.help);
-    bot.callbackQuery("cancel", common.cancel);
-    bot.callbackQuery("settings", settings.start);
+    bot.callbackQuery("back_cb", common.back);
+    bot.callbackQuery("cancel_cb", common.cancel);
+    bot.callbackQuery("settings_cb", settings.start);
+
+    bot.callbackQuery("sell", tokensOwned.start);
 
     bot.use(createConversation(settings.buyButtonConversation, "buybutton"));
     bot.callbackQuery("buybutton", settings.buybutton);
@@ -46,7 +59,72 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     bot.use(createConversation(settings.buyButtonConversation, "buyprompt"));
     bot.callbackQuery("buy", buy.prompt);
 
-    // buy button X setting
+    bot.callbackQuery("swap_buy", async (ctx) => {
+      await ctx.reply("Swapping...");
+      await ctx.reply(`Selected Token: ${ctx.session.selectedToken}`);
+      await ctx.reply(`Slippage: ${ctx.session.buyslippage}%`);
+      await ctx.reply(`Buy Amount: ${ctx.session.buyamount}TRX`);
+
+      await ctx.answerCallbackQuery();
+    });
+
+    /* 
+    **************************************************
+    Slippage Conversation    
+    **************************************************
+    */
+    bot.use(
+      createConversation(
+        slippageSetting.slippageConversation,
+        "buySlippageConversation"
+      )
+    );
+    bot.callbackQuery("buy_slippagebutton_cb", async (ctx) => {
+      await ctx.conversation.enter("buySlippageConversation");
+    });
+
+    bot.callbackQuery("buy_slippagebutton_x_cb", async (ctx) => {
+      await ctx.conversation.enter("buySlippageConversation");
+    });
+
+    /* 
+    **************************************************
+    Buy Trx Conversation    
+    **************************************************
+    */
+
+    bot.use(
+      createConversation(buyAmount.buyTrxConversation, "swapAmountConversation")
+    );
+    bot.callbackQuery("swap_buybutton_tl_cb", async (ctx) => {
+      await ctx.conversation.enter("swapAmountConversation");
+    });
+
+    bot.callbackQuery("swap_buybutton_tc_cb", async (ctx) => {
+      await ctx.conversation.enter("swapAmountConversation");
+    });
+
+    bot.callbackQuery("swap_buybutton_tr_cb", async (ctx) => {
+      await ctx.conversation.enter("swapAmountConversation");
+    });
+
+    bot.callbackQuery("swap_buybutton_bl_cb", async (ctx) => {
+      await ctx.conversation.enter("swapAmountConversation");
+    });
+
+    bot.callbackQuery("swap_buybutton_br_cb", async (ctx) => {
+      await ctx.conversation.enter("swapAmountConversation");
+    });
+
+    bot.callbackQuery("swap_buybutton_x_cb", async (ctx) => {
+      await ctx.conversation.enter("swapAmountConversation");
+    });
+
+    /* 
+    **************************************************
+    TRX Settings Conversation    
+    **************************************************
+    */
 
     bot.use(
       createConversation(
@@ -55,38 +133,44 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
       )
     );
 
-    bot.callbackQuery("buy_button_tl", async (ctx) => {
+    bot.callbackQuery("buy_button_tl_cb", async (ctx) => {
       await ctx.conversation.enter("trxAmountSettingConversation");
     });
 
-    bot.callbackQuery("buy_button_tc", async (ctx) => {
+    bot.callbackQuery("buy_button_tc_cb", async (ctx) => {
       await ctx.conversation.enter("trxAmountSettingConversation");
     });
 
-    bot.callbackQuery("buy_button_tr", async (ctx) => {
+    bot.callbackQuery("buy_button_tr_cb", async (ctx) => {
       await ctx.conversation.enter("trxAmountSettingConversation");
     });
 
-    bot.callbackQuery("buy_button_bl", async (ctx) => {
+    bot.callbackQuery("buy_button_bl_cb", async (ctx) => {
       await ctx.conversation.enter("trxAmountSettingConversation");
     });
 
-    bot.callbackQuery("buy_button_br", async (ctx) => {
+    bot.callbackQuery("buy_button_br_cb", async (ctx) => {
       await ctx.conversation.enter("trxAmountSettingConversation");
     });
     // end of buy button X setting
 
+    /* 
+    **************************************************
+    Gas Fees Conversation    
+    **************************************************
+    */
+
     // gas fee setting
     bot.use(createConversation(gasFee.setGas, "gasSettingConversation"));
-    bot.callbackQuery("set_gas_1", async (ctx) => {
+    bot.callbackQuery("set_gas_1_cb", async (ctx) => {
       await ctx.conversation.enter("gasSettingConversation");
     });
 
-    bot.callbackQuery("set_gas_2", async (ctx) => {
+    bot.callbackQuery("set_gas_2_cb", async (ctx) => {
       await ctx.conversation.enter("gasSettingConversation");
     });
 
-    bot.callbackQuery("set_gas_3", async (ctx) => {
+    bot.callbackQuery("set_gas_3_cb", async (ctx) => {
       await ctx.conversation.enter("gasSettingConversation");
     });
 
@@ -94,7 +178,11 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
       await ctx.conversation.enter("gasSettingConversation");
     });
 
-    // end of gas fee setting
+    /* 
+    ****************************************************************************************************
+    Other    
+    ****************************************************************************************************
+    */
 
     bot.hears(/^T[a-zA-Z0-9]{33}$/, async (ctx: BotContext) => {
       if (!ctx?.message?.text) return;

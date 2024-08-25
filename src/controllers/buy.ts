@@ -5,6 +5,7 @@ import base58 from "bs58";
 
 import "dotenv/config";
 import { BotContext } from "../utils";
+import { PrismaClient } from "@prisma/client";
 
 type CusConversation = Conversation<BotContext>;
 
@@ -23,7 +24,94 @@ export const buy = async (ctx: CallbackQueryContext<BotContext>) => {
 
 export const start = async (ctx: BotContext) => {
   const tokenAddress = ctx.session.selectedToken;
-  // const tokeInfo = await ApiClient.getTokenInfo(tokenAddress);
+  const userId = ctx.from?.id;
+
+  if (!userId) {
+    return;
+  }
+
+  const prisma = new PrismaClient();
+
+  // Fetch settings from the database
+  const settings = await prisma.settings.findUnique({
+    where: {
+      userId: userId.toString(),
+    },
+  });
+
+  if (!settings) {
+    return;
+  }
+
+  const selectedBuyAmount = ctx.session.buyamount;
+
+  // Create the inline keyboard with hard-coded buttons
+  const inlineKeyboard = [
+    [
+      {
+        text: "Back",
+        callback_data: "back_cb",
+      },
+      {
+        text: "Refresh",
+        callback_data: "refresh_buy_page_cb",
+      },
+    ],
+    [
+      {
+        text: `${selectedBuyAmount === settings.buyTopLeftX ? "✅ " : ""}Buy ${
+          settings.buyTopLeftX
+        } TRX`,
+        callback_data: "swap_buybutton_tl_cb",
+      },
+      {
+        text: `${
+          selectedBuyAmount === settings.buyTopCenterX ? "✅ " : ""
+        }Buy ${settings.buyTopCenterX} TRX`,
+        callback_data: "swap_buybutton_tc_cb",
+      },
+      {
+        text: `${selectedBuyAmount === settings.buyTopRightX ? "✅ " : ""}Buy ${
+          settings.buyTopRightX
+        } TRX`,
+        callback_data: "swap_buybutton_tr_cb",
+      },
+    ],
+    [
+      {
+        text: `${
+          selectedBuyAmount === settings.buyBottomLeftX ? "✅ " : ""
+        }Buy ${settings.buyBottomLeftX} TRX`,
+        callback_data: "swap_buybutton_bl_cb",
+      },
+      {
+        text: `${
+          selectedBuyAmount === settings.buyBottomRightX ? "✅ " : ""
+        }Buy ${settings.buyBottomRightX} TRX`,
+        callback_data: "swap_buybutton_br_cb",
+      },
+      {
+        text: "Buy X TRX ✏️",
+        callback_data: "swap_buybutton_x_cb",
+      },
+    ],
+    [
+      {
+        text: `✅ ${settings.slippageBuy}% Slippage`,
+        callback_data: "buy_slippagebutton_cb",
+      },
+      {
+        text: "X Slippage ✏️",
+        callback_data: "buy_slippagebutton_x_cb",
+      },
+    ],
+    [
+      {
+        text: "Swap",
+        callback_data: "swap_buy",
+      },
+    ],
+  ];
 
   await ctx.reply(
     `
@@ -43,62 +131,7 @@ Liquidity SOL: *281.229* — DRAWN: *80.19M*
     {
       parse_mode: "Markdown",
       reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "Back",
-              callback_data: "test",
-            },
-            {
-              text: "Refresh",
-              callback_data: "test",
-            },
-          ],
-          [
-            {
-              text: "Buy 0.5 TRX",
-              callback_data: "buybutton_tl",
-            },
-            {
-              text: "Buy 100 TRX",
-              callback_data: "buybutton_tc",
-            },
-            {
-              text: "Buy 200 TRX",
-              callback_data: "buybutton_tr",
-            },
-          ],
-          [
-            {
-              text: "Buy 1000 TRX",
-              callback_data: "buybutton_bl",
-            },
-            {
-              text: "Buy 5000 TRX",
-              callback_data: "buybutton_br",
-            },
-            {
-              text: "Buy X TRX ✏️",
-              callback_data: "buybutton_x",
-            },
-          ],
-          [
-            {
-              text: "✅ 2% Slippage",
-              callback_data: "test",
-            },
-            {
-              text: "X Slippage ✏️",
-              callback_data: "test",
-            },
-          ],
-          [
-            {
-              text: "swap",
-              callback_data: "swap",
-            },
-          ],
-        ],
+        inline_keyboard: inlineKeyboard,
       },
     }
   );

@@ -2,6 +2,7 @@
   "dependencies": {
     "@grammyjs/conversations": "^1.2.0",
     "@prisma/client": "^5.15.0",
+    "axios": "^1.7.4",
     "bs58": "^6.0.0",
     "grammy": "^1.29.0",
     "typescript": "^5.5.4"

@@ -6,12 +6,16 @@ interface SessionData {
     walletPb: string;
     walletPk: string;
   };
-  settings?: {
+  settings: {
     gasFee: number;
     autoBuy: boolean;
     autoBuyTrx: number;
   };
   selectedToken?: string;
+  buyslippage?: number;
+  buyamount?: number;
+  sellpercent?: number;
+  sellslippage?: number;
 }
 
 export type BotContext = Context &

@@ -1,5 +1,6 @@
 import { CallbackQueryContext, Context } from "grammy";
 import { BotContext, BotConversation } from "../utils";
+import { PrismaClient } from "@prisma/client";
 
 export const buybutton = async (ctx: CallbackQueryContext<BotContext>) => {
   await ctx.conversation.exit();
@@ -17,6 +18,28 @@ export const buyButtonConversation = async (
 };
 
 export const start = async (ctx: CallbackQueryContext<Context>) => {
+  const id = ctx.update.callback_query?.from.id;
+
+  const prisma = new PrismaClient();
+
+  const userSettings = await prisma.settings.findUnique({
+    where: {
+      userId: id.toString(),
+    },
+  });
+
+  if (!userSettings) {
+    await ctx.reply("No settings found for your account.");
+    return;
+  }
+
+  // Use the settings values to populate the button labels
+  const buyTopLeftX = userSettings.buyTopLeftX;
+  const buyTopCenterX = userSettings.buyTopCenterX;
+  const buyTopRightX = userSettings.buyTopRightX;
+  const buyBottomLeftX = userSettings.buyBottomLeftX;
+  const buyBottomRightX = userSettings.buyBottomRightX;
+
   await ctx.reply(
     `
 💰Fee Discount: You are receiving a 10% discount on trading fees for being a referral of another user.
@@ -29,66 +52,66 @@ export const start = async (ctx: CallbackQueryContext<Context>) => {
           [
             {
               text: "Economy 🐴",
-              callback_data: "set_gas_1",
+              callback_data: "set_gas_1_cb",
             },
             {
               text: "Normal 🚀",
-              callback_data: "set_gas_2",
+              callback_data: "set_gas_2_cb",
             },
             {
               text: "Ultra 🦄",
-              callback_data: "set_gas_3",
+              callback_data: "set_gas_3_cb",
             },
           ],
           [
             {
-              text: "Custom:  1000TRX ✏️",
+              text: `Custom:  ${userSettings.gasFee}TRX ✏️`,
               callback_data: "set_gas_x",
             },
           ],
           [{ text: "-- Buy Amounts --", callback_data: "empty" }],
           [
             {
-              text: "1000 TRX ✏️",
-              callback_data: "buy_button_tl",
+              text: `${buyTopLeftX} TRX ✏️`,
+              callback_data: "buy_button_tl_cb",
             },
             {
-              text: "5000 TRX ✏️",
-              callback_data: "buy_button_tc",
+              text: `${buyTopCenterX} TRX ✏️`,
+              callback_data: "buy_button_tc_cb",
             },
             {
-              text: "10000 TRX ✏️",
-              callback_data: "buy_button_tr",
-            },
-          ],
-          [
-            {
-              text: "1 TRX ✏️",
-              callback_data: "buy_button_bl",
-            },
-            {
-              text: "100 TRX ✏️",
-              callback_data: "buy_button_br",
+              text: `${buyTopRightX} TRX ✏️`,
+              callback_data: "buy_button_tr_cb",
             },
           ],
           [
             {
-              text: "Buy Slippage: 2% ✏️",
-              callback_data: "buy_5000",
+              text: `${buyBottomLeftX} TRX ✏️`,
+              callback_data: "buy_button_bl_cb",
+            },
+            {
+              text: `${buyBottomRightX} TRX ✏️`,
+              callback_data: "buy_button_br_cb",
+            },
+          ],
+          [
+            {
+              text: `Buy Slippage: ${userSettings.slippageBuy}% ✏️`,
+              callback_data: "buy_5000_cb",
             },
           ],
           [{ text: "-- Sell Amounts --", callback_data: "empty" }],
           [
             { text: "0.5% ✏️", callback_data: "referrals" },
-            { text: "10% ✏️", callback_data: "settings" },
+            { text: "10% ✏️", callback_data: "settings_cb" },
           ],
           [
             {
-              text: "Sell Slippage: 15% ✏️",
-              callback_data: "buy_5000",
+              text: `Sell Slippage: ${userSettings.slippageSell}% ✏️`,
+              callback_data: "buy_5000_cb",
             },
           ],
-          [{ text: "Back", callback_data: "back" }],
+          [{ text: "Back", callback_data: "back_cb" }],
         ],
       },
     }
