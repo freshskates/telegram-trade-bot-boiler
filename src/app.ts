@@ -23,6 +23,9 @@ import { WalletClient } from "./clients/wallet";
 
 const bot = new Bot<BotContext>(config.getTgBotToken());
 
+//TODO: refresh_cb?
+//TODO: referrals_cb?
+
 (async function () {
   try {
     bot.use(
@@ -43,10 +46,10 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     /* 
     **************************************************
-    Basic Buttons    
+    Basic Buttons
     **************************************************
     */
-    bot.callbackQuery("help", common.help);
+    bot.callbackQuery("help_cb", common.help);
     bot.callbackQuery("back_cb", common.back);
     bot.callbackQuery("cancel_cb", common.cancel);
     bot.callbackQuery("settings_cb", settings.start);

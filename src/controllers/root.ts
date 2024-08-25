@@ -52,10 +52,10 @@ To buy a token, enter the token address or a URL from [sunpump](https://sunpump.
           [{ text: "Positions", callback_data: "positions" }],
           [
             { text: "Referrals", callback_data: "referrals" },
-            { text: "Settings", callback_data: "settings" },
+            { text: "Settings", callback_data: "settings_cb" },
           ],
           [
-            { text: "Help", callback_data: "help" },
+            { text: "Help", callback_data: "help_cb" },
             { text: "Refresh", callback_data: "refresh" },
           ],
         ],
