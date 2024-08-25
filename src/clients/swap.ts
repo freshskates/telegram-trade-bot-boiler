@@ -80,6 +80,7 @@ export class SwapClient {
       if (tokenPrice && !routeInfo) {
         // Use PumpClient for pump purchase or sale
         if (isTRXFromToken) {
+        
           return await this.pumpClient.pumpPurchase(
             privateKey,
             toToken,
@@ -93,6 +94,7 @@ export class SwapClient {
             fromToken,
             slippage
           );
+        
         }
       }
 
@@ -134,10 +136,6 @@ export class SwapClient {
         calculateDeadline(),
       ];
 
-      // Approve tokens if necessary
-      if (!isTRXFromToken) {
-        await approveToken(this.tronWeb, routerAddress, fromToken, amountInSun);
-      }
 
       // Initialize and execute the swap
       const routerContract = await this.tronWeb.contract(
@@ -194,7 +192,12 @@ export class SwapClient {
             });
         }
       }
-
+      if (isTRXFromToken && !tokenPrice && routeInfo) {
+        await approveToken(this.tronWeb, this.smartRouterAddress, toToken, (routeInfo.amountOut * 1e18 * 4).toString());
+      }
+      else if (isTRXFromToken) {
+        await approveToken(this.tronWeb, this.pumpRouterAddress, toToken, (routeInfo.amountOut * 1e18 * 4).toString());
+      }
       await this.handleFeeTransaction(isTRXFromToken, isTRXToToken, amountInSun, routeInfo);
       console.log("Transaction successful:", transaction);
       return transaction;
