@@ -3,12 +3,15 @@
     "@grammyjs/conversations": "^1.2.0",
     "@prisma/client": "^5.15.0",
     "axios": "^1.7.4",
+    "bignumber.js": "^9.1.2",
     "bs58": "^6.0.0",
     "grammy": "^1.29.0",
+    "tronweb": "^5.3.2",
     "typescript": "^5.5.4"
   },
   "scripts": {
     "start": "node .",
+    "build": "tsc",
     "dev": "nodemon ./src/app.ts"
   },
   "devDependencies": {
