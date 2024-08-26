@@ -53,7 +53,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     Basic Buttons
     **************************************************
     */
-    bot.callbackQuery("start", root.start);
+    bot.callbackQuery("start_cb", root.start); // TODO: "start_cb" is never called
     bot.callbackQuery("help_cb", common.help);
     bot.callbackQuery("back_cb", common.back);
     bot.callbackQuery("cancel_cb", common.cancel);
@@ -61,15 +61,25 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     bot.callbackQuery("tokens_owned_cb", tokensOwned.start);
 
-    bot.callbackQuery("sell", sell.start);
+    bot.callbackQuery("sell_cb", sell.start);
 
-    bot.use(createConversation(settings.buyButtonConversation, "buybutton"));
-    bot.callbackQuery("buybutton", settings.buybutton);
+    bot.use(
+      createConversation(
+        settings.buyButtonConversation,
+        "buybuttonConversation"
+      )
+    );
+    bot.callbackQuery("buybutton_cb", settings.buybutton); // TODO: "buybutton_cb" is never called
 
-    bot.use(createConversation(settings.buyButtonConversation, "buyprompt"));
-    bot.callbackQuery("buy", buy.prompt);
+    bot.use(
+      createConversation(
+        settings.buyButtonConversation,
+        "buypromptConversation" // TODO: "buypromptConversation" is never used
+      )
+    );
+    bot.callbackQuery("buy_cb", buy.prompt);
 
-    bot.callbackQuery("swap_buy", async (ctx) => {
+    bot.callbackQuery("swap_buy_cb", async (ctx) => {
       await ctx.reply("Swapping...");
       await ctx.reply(`Selected Token: ${ctx.session.selectedToken}`);
       await ctx.reply(`Slippage: ${ctx.session.buyslippage}%`);
@@ -239,7 +249,7 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
       await ctx.conversation.enter("gasSettingConversation");
     });
 
-    bot.callbackQuery("set_gas_x", async (ctx) => {
+    bot.callbackQuery("set_gas_x_cb", async (ctx) => {
       await ctx.conversation.enter("gasSettingConversation");
     });
 

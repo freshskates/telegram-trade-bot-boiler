@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 export const buybutton = async (ctx: CallbackQueryContext<BotContext>) => {
   await ctx.conversation.exit();
-  await ctx.conversation.reenter("buybutton");
+  await ctx.conversation.reenter("buybuttonConversation");
   await ctx.answerCallbackQuery();
 };
 
@@ -66,7 +66,7 @@ export const start = async (ctx: CallbackQueryContext<Context>) => {
           [
             {
               text: `Custom:  ${userSettings.gasFee}TRX ✏️`,
-              callback_data: "set_gas_x",
+              callback_data: "set_gas_x_cb",
             },
           ],
           [{ text: "-- Buy Amounts --", callback_data: "empty" }],

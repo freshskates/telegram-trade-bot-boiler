@@ -26,7 +26,7 @@ export const start = async (ctx: BotContext) => {
     [
       {
         text: "TSig7s...Znb",
-        callback_data: "sell",
+        callback_data: "sell_cb",
       },
     ],
   ];

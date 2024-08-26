@@ -28,7 +28,7 @@ export const setGas = async (conversation: BotConversation, ctx: any) => {
   } else if (callbackData === "set_gas_3_cb") {
     gasSetting = "Ultra 🦄";
     selectedGasFee = 200;
-  } else if (callbackData === "set_gas_x") {
+  } else if (callbackData === "set_gas_x_cb") {
     await ctx.reply("Please enter your custom gas amount (in TRX):");
 
     const {
