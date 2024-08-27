@@ -191,3 +191,19 @@ export function calculateMinimumOutput(
 export function calculateDeadline(): string {
   return (Math.floor(Date.now() / 1000) + 60 * 10).toString();
 }
+
+export function extractTokenData(arr: any[]) {
+  return arr
+    .map((item) => {
+      return {
+        tokenName: item.tokenName,
+        tokenAddress: item.tokenId,
+        tokenSymbol: item.tokenAbbr,
+        tokenBalance: Number(item.balance),
+        amountInUsd: item.amountInUsd,
+      };
+    })
+    .filter((item) => {
+      return item.tokenBalance > 0 && item.tokenName.toLowerCase() !== "trx";
+    });
+}

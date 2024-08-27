@@ -33,7 +33,7 @@ export class UserClient {
         data: {
           id: id?.toString(),
           username: username,
-          walletPb: wallet.publicKey,
+          walletPb: wallet.address.base58,
           walletPk: wallet.privateKey,
           referredBy: referral,
           settings: {

@@ -1,5 +1,7 @@
 import TronWeb from "tronweb";
 import { ERC20_ABI } from "../abi/erc20_abi";
+import axios from "axios";
+import { extractTokenData } from "../utils/helpers";
 
 export class TronClient {
   private tronWeb: any;
@@ -129,6 +131,29 @@ export class TronClient {
       console.log("Transaction Info:", decodedMessage);
     } catch (error) {
       console.error("Error fetching transaction info:", error);
+    }
+  }
+
+  static async getTokensOwned(walletAddress: string) {
+    const apiKey = "8a20c4ef-24cc-4f15-b11f-2fc3045635e3";
+
+    console.log(walletAddress);
+
+    const endpoint = `https://apilist.tronscanapi.com/api/account/tokens?address=${walletAddress}&start=0&limit=20&hidden=0&show=0&sortType=0&sortBy=0&token=`;
+
+    try {
+      const response = await axios.get(endpoint, {
+        headers: {
+          "TRON-PRO-API-KEY": apiKey,
+        },
+      });
+
+      const data = response.data.data;
+
+      return extractTokenData(data);
+    } catch (error) {
+      console.error("Error fetching tokens:", error);
+      throw error;
     }
   }
 }
