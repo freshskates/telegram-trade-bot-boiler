@@ -16,7 +16,6 @@ export class TronClient {
    */
   static async createWallet(): Promise<any> {
     try {
-      const TronWeb = (await import("tronweb")).default;
       const tronWeb = new TronWeb({
         fullHost: "https://api.trongrid.io",
       });
@@ -51,7 +50,7 @@ export class TronClient {
   async getTRXPrice(): Promise<number> {
     try {
       const response = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usd",
+        "https://api.coingecko.com/api/v3/simple/price?ids=tron&vs_currencies=usd"
       );
       const data = await response.json();
       return data.tron.usd;
@@ -71,15 +70,18 @@ export class TronClient {
   async checkTokenBalance(
     privateKey: string,
     address: string,
-    tokenContractAddress: string,
+    tokenContractAddress: string
   ): Promise<string> {
     try {
       const tronWebWithKey = new TronWeb({
         fullHost: "https://api.trongrid.io",
         privateKey: privateKey, // Initialize with provided private key
       });
-      const contract = await tronWebWithKey.contract(ERC20_ABI, tokenContractAddress);
-      console.log(address)
+      const contract = await tronWebWithKey.contract(
+        ERC20_ABI,
+        tokenContractAddress
+      );
+      console.log(address);
       const balance = await contract.balanceOf(address).call();
       const decimals = await contract.decimals().call();
       return (balance / Math.pow(10, decimals)).toString(); // Adjust for token decimals
@@ -99,7 +101,7 @@ export class TronClient {
   async withdraw(
     privateKey: string,
     toAddress: string,
-    amount: string,
+    amount: string
   ): Promise<any> {
     try {
       const tronWebWithKey = new TronWeb({
@@ -110,7 +112,7 @@ export class TronClient {
       const amountInSun = tronWebWithKey.toSun(amount); // Convert amount to SUN (smallest unit)
       const transaction = await tronWebWithKey.trx.sendTransaction(
         toAddress,
-        amountInSun,
+        amountInSun
       );
       return transaction;
     } catch (error) {

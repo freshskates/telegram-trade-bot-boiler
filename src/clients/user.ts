@@ -1,4 +1,5 @@
 import { PrismaClient, Settings, User } from "@prisma/client";
+import { TronClient } from "./tron";
 
 export class UserClient {
   static async getUser(id: string): Promise<User | null> {
@@ -26,12 +27,14 @@ export class UserClient {
     try {
       const prisma = new PrismaClient();
 
+      const wallet = await TronClient.createWallet();
+
       const user = await prisma.user.create({
         data: {
           id: id?.toString(),
           username: username,
-          walletPb: "",
-          walletPk: "",
+          walletPb: wallet.publicKey,
+          walletPk: wallet.privateKey,
           referredBy: referral,
           settings: {
             create: {},

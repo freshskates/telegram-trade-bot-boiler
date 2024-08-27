@@ -24,6 +24,7 @@ import { BotContext } from "./utils";
 import { UserClient } from "./clients/user";
 import { userSessionMiddleware } from "./middleware/usersessionmw";
 import { WalletClient } from "./clients/wallet";
+import { SwapClient } from "./clients/swap";
 
 const bot = new Bot<BotContext>(config.getTgBotToken());
 
@@ -84,6 +85,40 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
       await ctx.reply(`Selected Token: ${ctx.session.selectedToken}`);
       await ctx.reply(`Slippage: ${ctx.session.buyslippage}%`);
       await ctx.reply(`Buy Amount: ${ctx.session.buyamount}TRX`);
+
+      const fromToken = "TRX";
+      const toToken = ctx.session.selectedToken;
+
+      if (!toToken) {
+        await ctx.reply("Please select a token first");
+        return;
+      }
+
+      const amount = ctx.session.buyamount;
+
+      if (!amount) {
+        await ctx.reply("Please select an amount first");
+        return;
+      }
+
+      const slippage = ctx.session.buyslippage;
+
+      if (!slippage) {
+        await ctx.reply("Please select a slippage first");
+        return;
+      }
+
+      const pk = ctx.session.user.walletPk;
+
+      const swapClient = new SwapClient();
+
+      const swap = await swapClient.swap(
+        fromToken,
+        toToken,
+        amount.toString(),
+        slippage.toString(),
+        Number(pk)
+      );
 
       await ctx.answerCallbackQuery();
     });
