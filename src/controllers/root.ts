@@ -2,33 +2,36 @@ import { CommandContext, Context } from "grammy";
 import { ParseMode } from "grammy/types";
 import { PrismaClient } from "@prisma/client";
 import { UserClient } from "../clients/user";
+import { BotContext } from "../utils";
+import { TronClient } from "../clients/tron";
 
-export const start = async (ctx: any) => {
+export const start = async (ctx: BotContext) => {
   const id = ctx?.from?.id;
 
   if (!id) {
     throw Error("No user ID");
   }
 
-  const wallet = "TFkv5u8XTsZUqG2QDMjziCLQSGM5weSw8z";
-  const balance = 0;
+  const wallet = ctx.session.user.walletPb;
+
+  const tronClient = new TronClient();
+
+  const balance = await tronClient.checkBalance(wallet);
 
   await ctx.reply(
     `
 **Welcome to Electron**  
-Tron's fastest bot to trade any coin\\!
+Tron's fastest bot to trade any coin!
     
 ${
   // @ts-ignore
-  balance === 0 // show bal in trx ?usdt?
-    ? "You currently have no TRX in your wallet. Deposit TRX to your Tron wallet address:\n\n"
-    : ``
+  balance == 0 // show bal in trx ?usdt?
+    ? "You currently have no TRX in your wallet. Deposit TRX to your Tron wallet address:\n"
+    : `**Balance: ${balance} TRX**\n`
 } 
 \`${wallet}\` (tap to copy)
     
 Once done, tap refresh, and your balance will appear here.
-    
-To buy a token, enter the token address or a URL from [sunpump](https://sunpump.meme/) or [sun.io](https://sun.io/).
     
 💡 If you aren't already, we advise that you use any of the following bots to trade with. You will have the same wallets and settings across all bots, but it will be significantly faster due to lighter user load.
     

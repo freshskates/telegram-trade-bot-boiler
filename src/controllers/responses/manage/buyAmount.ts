@@ -1,6 +1,6 @@
 import { Conversation } from "@grammyjs/conversations";
-import { buy } from "..";
-import { BotContext, BotConversation } from "../../utils";
+import { buy } from "../..";
+import { BotContext, BotConversation } from "../../../utils";
 import { PrismaClient } from "@prisma/client";
 
 async function fetchTrxAmountByButtonId(
@@ -71,11 +71,9 @@ export async function buyTrxConversation(
           callbackData
         );
 
-        await ctx.reply(`You have selected to buy ${trxAmount} TRX.`);
-
-        ctx.session.buyamount = trxAmount;
-
         await ctx.answerCallbackQuery();
+        ctx.session.buyamount = trxAmount;
+        await buy.start(ctx, true);
       } catch (error) {
         await ctx.reply("An error occurred while fetching your settings.");
       }

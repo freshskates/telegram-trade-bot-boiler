@@ -19,12 +19,15 @@ import {
   settingSellPercent,
   settingSellSlippage,
   settingBuySlippage,
+  sellSlippage,
+  sellAmount,
 } from "./controllers";
 import { BotContext } from "./utils";
 import { UserClient } from "./clients/user";
 import { userSessionMiddleware } from "./middleware/usersessionmw";
 import { WalletClient } from "./clients/wallet";
 import { SwapClient } from "./clients/swap";
+import { TronClient } from "./clients/tron";
 
 const bot = new Bot<BotContext>(config.getTgBotToken());
 
@@ -62,7 +65,15 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     bot.callbackQuery("tokens_owned_cb", tokensOwned.start);
 
-    bot.callbackQuery("sell_cb", sell.start);
+    bot.callbackQuery(/token_(.+)_cb/, async (ctx) => {
+      const tokenAddress = ctx.match[1]; // Extract tokenAddress from the callback data
+      console.log(`Token Address: ${tokenAddress}`);
+
+      // You can then handle the logic based on the tokenAddress
+      ctx.session.selectedToken = tokenAddress;
+
+      await sell.start(ctx);
+    });
 
     bot.use(
       createConversation(
@@ -81,10 +92,9 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     bot.callbackQuery("buy_cb", buy.prompt);
 
     bot.callbackQuery("swap_buy_cb", async (ctx) => {
-      await ctx.reply("Swapping...");
-      await ctx.reply(`Selected Token: ${ctx.session.selectedToken}`);
-      await ctx.reply(`Slippage: ${ctx.session.buyslippage}%`);
-      await ctx.reply(`Buy Amount: ${ctx.session.buyamount}TRX`);
+      await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
+      await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
+      await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);
 
       const fromToken = "TRX";
       const toToken = ctx.session.selectedToken;
@@ -112,12 +122,26 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
       const swapClient = new SwapClient();
 
+      const tronClient = new TronClient();
+      const walletBalance = await tronClient.checkBalance(
+        ctx.session.user.walletPb
+      );
+
+      if (Number(walletBalance) < amount) {
+        await ctx.reply(
+          "Insufficient balance to perform this swap! You have " +
+            walletBalance +
+            " TRX in your wallet."
+        );
+        return;
+      }
+
       const swap = await swapClient.swap(
+        pk,
         fromToken,
         toToken,
         amount.toString(),
-        slippage.toString(),
-        Number(pk)
+        slippage
       );
 
       await ctx.answerCallbackQuery();
@@ -125,18 +149,39 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
     /* 
     **************************************************
-    Settings Menu - Set Sell Slippage
+    Sell Menu - Set Sell Percent
     **************************************************
     */
 
     bot.use(
       createConversation(
-        settingSellSlippage.settingSellSlippage,
+        sellAmount.sellTrxConversation,
+        "sellPercentSettingConversation"
+      )
+    );
+
+    bot.callbackQuery(/swap_sellbutton_(left|right|x)_cb/, async (ctx) => {
+      await ctx.conversation.enter("sellPercentSettingConversation");
+    });
+
+    /* 
+    **************************************************
+    Sell Menu - Set Sell Slippage
+    **************************************************
+    */
+
+    bot.use(
+      createConversation(
+        sellSlippage.sellSlippageConversation,
         "sellSlippageSettingConversation"
       )
     );
 
     bot.callbackQuery("sell_setting_slippage_cb", async (ctx) => {
+      await ctx.conversation.enter("sellSlippageSettingConversation");
+    });
+
+    bot.callbackQuery("sell_slippagebutton_x_cb", async (ctx) => {
       await ctx.conversation.enter("sellSlippageSettingConversation");
     });
 

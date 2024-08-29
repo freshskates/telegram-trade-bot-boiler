@@ -6,14 +6,24 @@ import base58 from "bs58";
 import "dotenv/config";
 import { BotContext } from "../../utils";
 import { PrismaClient } from "@prisma/client";
+import { TronClient } from "../../clients/tron";
+import { fetchTokenDetails } from "../../utils/helpers";
+import { formatNumber } from "../../utils/menu_helpers/homedata";
 
-export const start = async (ctx: BotContext) => {
+export const start = async (ctx: BotContext, edit: boolean = false) => {
   const tokenAddress = ctx.session.selectedToken;
   const userId = ctx.from?.id;
 
-  if (!userId) {
+  if (!userId || !tokenAddress) {
     return;
   }
+
+  const tronClient = new TronClient();
+
+  const tokenDetails = await fetchTokenDetails(tokenAddress);
+  const walletBalance = await tronClient.checkBalance(
+    ctx.session.user.walletPb
+  );
 
   const prisma = new PrismaClient();
   const settings = await prisma.settings.findUnique({
@@ -27,6 +37,13 @@ export const start = async (ctx: BotContext) => {
   }
 
   const selectedBuyAmount = ctx.session.buyamount || settings.buyTopLeftX;
+
+  const selectedSlippage = ctx.session.buyslippage || settings.slippageBuy;
+
+  if (!edit) {
+    ctx.session.buyamount = settings.buyTopLeftX;
+    ctx.session.buyslippage = settings.slippageBuy;
+  }
 
   const inlineKeyboard = [
     [
@@ -79,7 +96,9 @@ export const start = async (ctx: BotContext) => {
     ],
     [
       {
-        text: `✅ ${settings.slippageBuy}% Slippage`,
+        text: `${selectedSlippage === settings.slippageBuy ? "✅ " : ""} ${
+          settings.slippageBuy
+        }% Slippage`,
         callback_data: "buy_slippagebutton_cb",
       },
       {
@@ -95,28 +114,51 @@ export const start = async (ctx: BotContext) => {
     ],
   ];
 
-  await ctx.reply(
-    `
-Buy \$DRAWN — (drawn cat) 📈 [link](https://dexscreener.com/solana/9M53sMUqbZKyBhqrfPW6erZModxadJMFUtRJahJFpump?id=95977a2a) 
+  if (!edit) {
+    await ctx.reply(
+      `
+Buy \$${
+        tokenDetails.name
+      } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
+\`${tokenAddress}\`
+  
+Balance: *${walletBalance} TRX* 
+Price: *\$${formatNumber(tokenDetails.priceInUsd)}* — VOL: *\$${formatNumber(
+        tokenDetails.volume24h
+      )}* — MC: *\$${formatNumber(tokenDetails.marketCap)}*
+  
+// insert quote details here
+        `,
+      {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: inlineKeyboard,
+        },
+      }
+    );
+  } else {
+    await ctx.editMessageText(
+      `
+Buy \$${
+        tokenDetails.name
+      } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
 \`${tokenAddress}\`
 
-Balance: *2.027 TRX* [link](https://t.me/helenus_trojanbot?start=walletMenu)
-Price: *\$0.0005016* — LIQ: *\$80.53K* — MC: *\$501.55K*
-30m: *-41.59%* — 24h: *818.75%*
-Renounced ✅ | Not Rugged ✅
+Balance: *${walletBalance} TRX* 
+Price: *\$${formatNumber(tokenDetails.priceInUsd)}* — VOL: *\$${formatNumber(
+        tokenDetails.volume24h
+      )}* — MC: *\$${formatNumber(tokenDetails.marketCap)}*
 
-*8 SOL (\$1,146.62) ⇄ 2.21M DRAWN (\$1,109.80)*
-
-Price Impact: *3.21%*
-Liquidity SOL: *281.229* — DRAWN: *80.19M*
-    `,
-    {
-      parse_mode: "Markdown",
-      reply_markup: {
-        inline_keyboard: inlineKeyboard,
-      },
-    }
-  );
+// insert quote details here
+        `,
+      {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: inlineKeyboard,
+        },
+      }
+    );
+  }
 };
 
 export const prompt = async (ctx: CallbackQueryContext<BotContext>) => {

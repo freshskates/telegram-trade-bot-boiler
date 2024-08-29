@@ -1,5 +1,5 @@
 import { Conversation } from "@grammyjs/conversations";
-import { BotContext, BotConversation } from "../../utils";
+import { BotContext, BotConversation } from "../../../utils";
 import { PrismaClient } from "@prisma/client";
 
 async function fetchSlippageByButtonId(

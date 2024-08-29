@@ -1,17 +1,29 @@
 import { CallbackQueryContext, Context } from "grammy";
 import { Conversation, ConversationFlavor } from "@grammyjs/conversations";
 
+import base58 from "bs58";
+
 import "dotenv/config";
 import { BotContext } from "../../utils";
 import { PrismaClient } from "@prisma/client";
+import { TronClient } from "../../clients/tron";
+import { fetchTokenDetails } from "../../utils/helpers";
+import { formatNumber } from "../../utils/menu_helpers/homedata";
 
-export const start = async (ctx: BotContext) => {
+export const start = async (ctx: BotContext, edit: boolean = false) => {
   const tokenAddress = ctx.session.selectedToken;
   const userId = ctx.from?.id;
 
-  if (!userId) {
+  if (!userId || !tokenAddress) {
     return;
   }
+
+  const tronClient = new TronClient();
+
+  const tokenDetails = await fetchTokenDetails(tokenAddress);
+  const walletBalance = await tronClient.checkBalance(
+    ctx.session.user.walletPb
+  );
 
   const prisma = new PrismaClient();
   const settings = await prisma.settings.findUnique({
@@ -26,6 +38,12 @@ export const start = async (ctx: BotContext) => {
 
   const selectedSellPercent =
     ctx.session.sellpercent || settings.sellLeftPercentX;
+  const selectedSlippage = ctx.session.sellslippage || settings.slippageSell;
+
+  if (!edit) {
+    ctx.session.sellpercent = settings.sellLeftPercentX;
+    ctx.session.sellslippage = settings.slippageSell;
+  }
 
   const inlineKeyboard = [
     [
@@ -35,65 +53,90 @@ export const start = async (ctx: BotContext) => {
       },
       {
         text: "Refresh",
-        callback_data: "refresh_buy_page_cb",
+        callback_data: "refresh_sell_page_cb",
       },
     ],
     [
       {
         text: `${
           selectedSellPercent === settings.sellLeftPercentX ? "✅ " : ""
-        }Sell ${settings.buyTopLeftX}%`,
-        callback_data: "swap_sellbutton_tl_cb",
+        }Sell ${settings.sellLeftPercentX}%`,
+        callback_data: "swap_sellbutton_left_cb",
       },
       {
         text: `${
           selectedSellPercent === settings.sellRightPercentX ? "✅ " : ""
-        }Sell ${settings.buyTopRightX}%`,
-        callback_data: "swap_sellbutton_tr_cb",
+        }Sell ${settings.sellRightPercentX}%`,
+        callback_data: "swap_sellbutton_right_cb",
       },
       {
-        text: "Sell % ✏️",
+        text: "Sell X% ✏️",
         callback_data: "swap_sellbutton_x_cb",
       },
     ],
     [
       {
-        text: `✅ ${settings.slippageBuy}% Slippage`,
-        callback_data: "buy_slippagebutton_cb",
+        text: `${selectedSlippage === settings.slippageSell ? "✅ " : ""} ${
+          settings.slippageSell
+        }% Slippage`,
+        callback_data: "sell_slippagebutton_cb",
       },
       {
         text: "X Slippage ✏️",
-        callback_data: "buy_slippagebutton_x_cb",
+        callback_data: "sell_slippagebutton_x_cb",
       },
     ],
     [
       {
-        text: "Sell",
-        callback_data: "swap_sell",
+        text: "Swap",
+        callback_data: "swap_sell_cb",
       },
     ],
   ];
 
-  await ctx.reply(
-    `
-Sell \$DRAWN — (drawn cat) 📈 [link](https://dexscreener.com/solana/9M53sMUqbZKyBhqrfPW6erZModxadJMFUtRJahJFpump?id=95977a2a) 
+  if (!edit) {
+    await ctx.reply(
+      `
+Sell ${
+        tokenDetails.name
+      } [📉](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
+\`${tokenAddress}\`
+  
+Balance: *${walletBalance} TRX* 
+Price: *\$${formatNumber(tokenDetails.priceInUsd)}* — VOL: *\$${formatNumber(
+        tokenDetails.volume24h
+      )}* — MC: *\$${formatNumber(tokenDetails.marketCap)}*
+  
+// insert quote details here
+        `,
+      {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: inlineKeyboard,
+        },
+      }
+    );
+  } else {
+    await ctx.editMessageText(
+      `
+Sell \$${
+        tokenDetails.name
+      } [📉](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
 \`${tokenAddress}\`
 
-Balance: *2.027 TRX* [link](https://t.me/helenus_trojanbot?start=walletMenu)
-Price: *\$0.0005016* — LIQ: *\$80.53K* — MC: *\$501.55K*
-30m: *-41.59%* — 24h: *818.75%*
-Renounced ✅ | Not Rugged ✅
+Balance: *${walletBalance} TRX* 
+Price: *\$${formatNumber(tokenDetails.priceInUsd)}* — VOL: *\$${formatNumber(
+        tokenDetails.volume24h
+      )}* — MC: *\$${formatNumber(tokenDetails.marketCap)}*
 
-*8 SOL (\$1,146.62) ⇄ 2.21M DRAWN (\$1,109.80)*
-
-Price Impact: *3.21%*
-Liquidity SOL: *281.229* — DRAWN: *80.19M*
-    `,
-    {
-      parse_mode: "Markdown",
-      reply_markup: {
-        inline_keyboard: inlineKeyboard,
-      },
-    }
-  );
+// insert quote details here
+        `,
+      {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: inlineKeyboard,
+        },
+      }
+    );
+  }
 };
