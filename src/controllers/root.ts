@@ -20,14 +20,14 @@ export const start = async (ctx: BotContext) => {
 
   await ctx.reply(
     `
-**Welcome to Electron**  
+*Welcome to Electron*  
 Tron's fastest bot to trade any coin!
     
 ${
   // @ts-ignore
   balance == 0 // show bal in trx ?usdt?
     ? "You currently have no TRX in your wallet. Deposit TRX to your Tron wallet address:\n"
-    : `**Balance: ${balance} TRX**\n`
+    : `*Balance: ${balance} TRX*\n`
 } 
 \`${wallet}\` (tap to copy)
     
@@ -45,10 +45,7 @@ Once done, tap refresh, and your balance will appear here.
             { text: "Buy", callback_data: "buy_cb" },
             { text: "Sell / Manage", callback_data: "tokens_owned_cb" },
           ],
-          [
-            { text: "Referrals", callback_data: "referrals" },
-            { text: "Settings", callback_data: "settings_cb" },
-          ],
+          [{ text: "Settings", callback_data: "settings_cb" }],
           [
             { text: "Help", callback_data: "help_cb" },
             { text: "Refresh", callback_data: "refresh" },

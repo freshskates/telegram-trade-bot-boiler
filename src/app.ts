@@ -156,12 +156,12 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     bot.use(
       createConversation(
         sellAmount.sellTrxConversation,
-        "sellPercentSettingConversation"
+        "sellPercentMenuConversation"
       )
     );
 
     bot.callbackQuery(/swap_sellbutton_(left|right|x)_cb/, async (ctx) => {
-      await ctx.conversation.enter("sellPercentSettingConversation");
+      await ctx.conversation.enter("sellPercentMenuConversation");
     });
 
     /* 
