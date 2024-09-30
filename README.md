@@ -25,3 +25,16 @@ refresh
 back
 
 - go back to home page
+
+
+# Running this shit
+
+#### Before Running
+
+    Get the .env
+
+#### Dev Run
+
+    npm install
+    npx prisma generate
+    npm run dev

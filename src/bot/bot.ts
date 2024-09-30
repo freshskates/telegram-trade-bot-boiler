@@ -4,7 +4,7 @@ import {
   conversations,
   createConversation,
 } from "@grammyjs/conversations";
-import config from "./config/config";
+import config from "../config/config";
 import {
   root,
   common,
@@ -21,13 +21,13 @@ import {
   settingBuySlippage,
   sellSlippage,
   sellAmount,
-} from "./controllers";
-import { BotContext } from "./utils";
-import { UserClient } from "./clients/user";
-import { userSessionMiddleware } from "./middleware/usersessionmw";
-import { WalletClient } from "./clients/wallet";
-import { SwapClient } from "./clients/swap";
-import { TronClient } from "./clients/tron";
+} from "../controllers";
+import { BotContext } from "../utils";
+import { UserClient } from "../clients/user";
+import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataToCTX";
+import { WalletClient } from "../clients/wallet";
+import { SwapClient } from "../clients/swap";
+import { TronClient } from "../clients/tron";
 
 const bot = new Bot<BotContext>(config.getTgBotToken());
 
@@ -36,20 +36,37 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 // TODO: positions_cb?
 (async function () {
   try {
+
+
+    /* 
+    **************************************************
+    Middleware
+    **************************************************
+    */
+
+    // Session Middleware
     bot.use(
+
+      // Session middleware provides a persistent data storage for your bot. 
       session({
+
+        // initial option in the configuration object, which correctly initializes session objects for new chats.
         initial() {
-          return {};
+          return {};  // return empty object for now
         },
+
       })
     );
 
-    bot.use(userSessionMiddleware()); //custom mw, grabs user info from db and adds to ctx
+    // Append user to CTX (Context) Middleware
+    bot.use(middlewareAddUserDataToCTX());
 
-    bot.use(conversations());
+    // https://grammy.dev/plugins/conversations#installing-and-entering-a-conversation
+    // Install the conversations plugin.
+    bot.use(conversations());  // Note: External library stuff
 
     // Chat commands
-    bot.command("start", root.start);
+    bot.command("start", root.start);  // Note: Initial message
     bot.command("help", root.help);
 
     /* 
@@ -57,13 +74,15 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     Basic Buttons
     **************************************************
     */
+    // Note: Tying the callback_name to it's actual funtion 
     bot.callbackQuery("start_cb", root.start); // TODO: "start_cb" is never called
-    bot.callbackQuery("help_cb", common.help);
+    bot.callbackQuery("callback_help", common.help);
     bot.callbackQuery("back_cb", common.back);
     bot.callbackQuery("cancel_cb", common.cancel);
-    bot.callbackQuery("settings_cb", settings.start);
+    bot.callbackQuery("callback_settings", settings.start);
+    bot.callbackQuery("callback_buy", buy.prompt);
 
-    bot.callbackQuery("tokens_owned_cb", tokensOwned.start);
+    bot.callbackQuery("callback_tokens_owned", tokensOwned.start);
 
     bot.callbackQuery(/token_(.+)_cb/, async (ctx) => {
       const tokenAddress = ctx.match[1]; // Extract tokenAddress from the callback data
@@ -74,8 +93,10 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
 
       await sell.start(ctx);
     });
-
-    bot.use(
+    
+    // Note: Conversation (Part of conversation)
+    // WARNING: NOT FUCKING USED
+    bot.use( 
       createConversation(
         settings.buyButtonConversation,
         "buybuttonConversation"
@@ -83,15 +104,15 @@ const bot = new Bot<BotContext>(config.getTgBotToken());
     );
     bot.callbackQuery("buybutton_cb", settings.buybutton); // TODO: "buybutton_cb" is never called
 
+    // WARNING: NOT FUCKING USED
     bot.use(
-      createConversation(
+      createConversation(  
         settings.buyButtonConversation,
         "buypromptConversation" // TODO: "buypromptConversation" is never used
       )
     );
-    bot.callbackQuery("buy_cb", buy.prompt);
 
-    bot.callbackQuery("swap_buy_cb", async (ctx) => {
+    bot.callbackQuery("swap_callback_buy", async (ctx) => {
       await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
       await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
       await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);

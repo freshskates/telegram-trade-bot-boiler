@@ -42,13 +42,13 @@ Once done, tap refresh, and your balance will appear here.
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "Buy", callback_data: "buy_cb" },
-            { text: "Sell / Manage", callback_data: "tokens_owned_cb" },
+            { text: "Buy", callback_data: "callback_buy" },
+            { text: "Sell / Manage", callback_data: "callback_tokens_owned" },
           ],
-          [{ text: "Settings", callback_data: "settings_cb" }],
+          [{ text: "Settings", callback_data: "callback_settings" }],
           [
-            { text: "Help", callback_data: "help_cb" },
-            { text: "Refresh", callback_data: "refresh" },
+            { text: "Help", callback_data: "callback_help" },
+            { text: "Refresh", callback_data: "callback_refresh" },
           ],
         ],
       },

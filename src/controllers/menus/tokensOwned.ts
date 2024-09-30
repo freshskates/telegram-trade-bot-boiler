@@ -70,7 +70,7 @@ export const start = async (ctx: BotContext) => {
       },
       {
         text: "Refresh",
-        callback_data: "refresh_tokens_owned_cb",
+        callback_data: "refresh_callback_tokens_owned",
       },
     ],
     ...createTokenInlineKeyboard(tokensOwned),

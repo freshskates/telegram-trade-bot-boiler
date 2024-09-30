@@ -1,0 +1,57 @@
+Joseph's Notes
+
+09/29/2024
+    Notes:
+        Grammy Docs
+            Date Today:
+                09/29/2024
+            Tags:
+                
+            Rank:
+                
+            Joseph Notes:
+                
+            Notes:
+                https://grammy.dev/guide/introduction
+                    Easier to use Deno over Node.js
+
+
+            Reference:
+                https://grammy.dev/guide
+    YouTube:
+        Building a Telegram Bot with Edge Functions 
+            Date Today:
+                09/29/2024
+            Tags:
+                
+            Rank:
+                
+            Joseph Notes:
+                
+            Notes:
+                Supabase
+
+                Standard Example Tutorial with 
+                    Supabase
+
+            Reference:
+                https://www.youtube.com/watch?v=AWfE3a9J_uo 
+
+        Creating a telegram bot using Node JS 
+            Date Today:
+                09/29/2024
+            Tags:
+                
+            Rank:
+                
+            Joseph Notes:
+                
+            Notes:
+                Lets build together 
+
+                Standard Example Tutorial with 
+                    axios, 
+                    express, 
+                    ngrok to brigde between https and http
+            Reference:
+                https://www.youtube.com/watch?v=COLDiMlmcoI

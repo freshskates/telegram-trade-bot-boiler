@@ -1,7 +1,7 @@
 import { PrismaClient, Settings, User } from "@prisma/client";
 import { TronClient } from "./tron";
 
-export class UserClient {
+export class UserClient {  // FIXME: THIS NEEDS TO BE GERNALIZED, STRATEGY PATTERN THIS
   static async getUser(id: string): Promise<User | null> {
     try {
       const prisma = new PrismaClient();

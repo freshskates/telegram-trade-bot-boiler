@@ -109,7 +109,7 @@ export const start = async (ctx: BotContext, edit: boolean = false) => {
     [
       {
         text: "Swap",
-        callback_data: "swap_buy_cb",
+        callback_data: "swap_callback_buy",
       },
     ],
   ];

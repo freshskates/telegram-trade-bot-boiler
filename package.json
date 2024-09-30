@@ -13,10 +13,10 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "start": "node ./dist/app.js",
+    "start": "node ./dist/bot.js",
     "build": "tsc",
-    "dev": "tsx ./src/app.ts",
-    "test": "node --loader ts-node/esm src/app.ts"
+    "dev": "tsx watch ./src/bot/bot.ts",
+    "test": "node --loader ts-node/esm src/bot/bot.ts"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",

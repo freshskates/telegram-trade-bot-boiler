@@ -15,6 +15,7 @@ export const buyButtonConversation = async (
   const id = ctx.update.callback_query?.from.id;
 
   // const user =
+  console.log("FUCK")
 };
 
 export const start = async (ctx: CallbackQueryContext<Context>) => {
