@@ -1,6 +1,7 @@
 import { settingSellPercent } from "./responses/settings/settingSellPercent";
 
-export * as root from "./root";
+// export * as root from "../bot/structure/root";
+
 export * as common from "./common";
 export * as settings from "./settings";
 export * as buy from "./menus/buy";

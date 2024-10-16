@@ -16,6 +16,9 @@ interface SessionData {
   buyamount?: number;
   sellpercent?: number;
   sellslippage?: number;
+
+  favoriteIds: string[]
+
 }
 
 export type BotContext = Context &

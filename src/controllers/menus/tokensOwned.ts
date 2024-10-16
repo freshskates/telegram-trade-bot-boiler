@@ -66,7 +66,7 @@ export const start = async (ctx: BotContext) => {
     [
       {
         text: "Back",
-        callback_data: "back_cb",
+        callback_data: "callback__main__back",
       },
       {
         text: "Refresh",

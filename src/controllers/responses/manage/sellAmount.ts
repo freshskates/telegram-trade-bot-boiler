@@ -2,13 +2,14 @@ import { Conversation } from "@grammyjs/conversations";
 import { sell } from "../.."; // Assuming you have a sell equivalent function like buy
 import { BotContext, BotConversation } from "../../../utils";
 import { PrismaClient } from "@prisma/client";
+import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 
 // Function to fetch sell percent by button ID
 async function fetchSellPercentByButtonId(
   userId: string,
   buttonId: string
 ): Promise<number> {
-  const prisma = new PrismaClient();
+  const prisma = getPrismaClientSingleton()
 
   const settings = await prisma.settings.findUnique({
     where: {

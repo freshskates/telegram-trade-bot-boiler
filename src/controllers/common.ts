@@ -1,5 +1,6 @@
 import { CallbackQueryContext, Context } from "grammy";
-import { root } from ".";
+import { RootLogic } from "../bot/structure/root_logic";
+// import { root } from ".";
 
 export const cancel = async (ctx: CallbackQueryContext<Context>) => {
   await ctx.deleteMessage();
@@ -33,7 +34,7 @@ Join our Telegram group @electron and one of our admins can assist you.
     {
       parse_mode: "Markdown",
       reply_markup: {
-        inline_keyboard: [[{ text: "Close", callback_data: "cancel_cb" }]],
+        inline_keyboard: [[{ text: "Close", callback_data: "callback__main__cancel" }]],
       },
     }
   );
@@ -43,6 +44,6 @@ Join our Telegram group @electron and one of our admins can assist you.
 
 export const back = async (ctx: CallbackQueryContext<Context>) => {
   await ctx.deleteMessage();
-  await root.start(ctx as any);
+  await RootLogic.start(ctx as any);
   await ctx.answerCallbackQuery();
 };

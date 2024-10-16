@@ -1,61 +1,63 @@
-import { BotContext, BotConversation } from "../../../utils";
 import { CallbackQueryContext } from "grammy";
-import { PrismaClient } from "@prisma/client";
+import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
+import { BotContext, BotConversation } from "../../../utils";
 
-const prisma = new PrismaClient();
+const prisma = getPrismaClientSingleton();
 
 export const settingBuySlippage = async (
-  conversation: BotConversation,
-  ctx: BotContext
+    conversation: BotConversation,
+    ctx: BotContext
 ) => {
-  const callbackData = ctx.callbackQuery?.data;
-  const userId = ctx.from?.id;
+    const callbackData = ctx.callbackQuery?.data;
+    const userId = ctx.from?.id;
 
-  if (!userId) {
-    await ctx.reply("User ID not found.");
-    return;
-  }
+    if (!userId) {
+        await ctx.reply("User ID not found.");
+        return;
+    }
 
-  if (callbackData !== "buy_setting_slippage_cb") {
-    await ctx.reply("Invalid selection.");
-    return;
-  }
+    if (callbackData !== "buy_setting_slippage_cb") {
+        await ctx.reply("Invalid selection.");
+        return;
+    }
 
-  await ctx.reply("Please enter the new slippage percentage for Buy:");
+    await ctx.reply("Please enter the new slippage percentage for Buy:");
 
-  const { message } = await conversation.waitFor("message");
+    const { message } = await conversation.waitFor("message");
 
-  const newSlippageAmount = parseFloat(message?.text || "0");
+    const newSlippageAmount = parseFloat(message?.text || "0");
 
-  if (isNaN(newSlippageAmount) || newSlippageAmount <= 0) {
-    await ctx.reply("Invalid input. Please enter a valid numeric percentage.");
-    return;
-  }
+    if (isNaN(newSlippageAmount) || newSlippageAmount <= 0) {
+        await ctx.reply(
+            "Invalid input. Please enter a valid numeric percentage."
+        );
+        return;
+    }
 
-  // Save to the database
-  try {
-    const updatedSettings = await prisma.settings.update({
-      where: { userId: userId.toString() },
-      data: {
-        slippageBuy: newSlippageAmount,
-      },
-    });
+    // Save to the database
+    try {
+        const updatedSettings = await prisma.settings.update({
+            where: { userId: userId.toString() },
+            data: {
+                slippageBuy: newSlippageAmount,
+            },
+        });
 
-    await ctx.reply(
-      `The buy slippage has been updated to ${newSlippageAmount}%.`
-    );
-  } catch (error) {
-    console.error("Error updating settings:", error);
-    await ctx.reply(
-      "There was an error saving your settings. Please try again."
-    );
-  }
+        await ctx.reply(
+            `The buy slippage has been updated to ${newSlippageAmount}%.`
+        );
+    } catch (error) {
+        console.error("Error updating settings:", error);
+        await ctx.reply(
+            "There was an error saving your settings. Please try again."
+        );
+    }
 
-  await ctx.answerCallbackQuery();
+    await ctx.answerCallbackQuery();
 };
 
 export const start = async (ctx: CallbackQueryContext<BotContext>) => {
-  await ctx.conversation.exit();
-  await ctx.conversation.reenter("set_buy_slippage");
-  await ctx.answerCallbackQuery();
+    await ctx.conversation.exit();
+    await ctx.conversation.reenter("set_buy_slippage");
+    await ctx.answerCallbackQuery();
 };
