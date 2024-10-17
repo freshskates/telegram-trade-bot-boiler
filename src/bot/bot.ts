@@ -7,10 +7,6 @@ Middleware
 import { GrammyError, HttpError } from "grammy";
 import path from "path";
 import { fileURLToPath } from "url";
-import {
-    buy
-} from "../controllers";
-import { BotContext } from "../utils";
 import mainMenu from "./_test";
 import auto_load_modules_from from "./auto_load_module";
 import bot from "./bot_init";
@@ -380,4 +376,14 @@ bot.catch((err) => {
     }
 });
 
-bot.start();
+async function start_bot() {
+    Promise.all([
+        await bot.start({
+            onStart(botInfo) {
+                console.log(new Date(), "Bot starts as", botInfo.username);
+            },
+        }),
+    ]);
+}
+
+export default start_bot;
