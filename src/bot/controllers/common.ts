@@ -1,6 +1,6 @@
 import { CallbackQueryContext, Context } from "grammy";
-import { RootLogic } from "../bot/structure/root_logic";
-import bot from "../bot/bot_init";
+import { RootLogic } from "../structure/root_logic";
+import bot from "../bot_init";
 // import { root } from ".";
 
 async function callback__root__cancel (ctx: CallbackQueryContext<Context>) {
