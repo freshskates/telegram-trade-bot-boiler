@@ -1,6 +1,8 @@
 import { CallbackQueryContext } from "grammy";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
+import { createConversation } from "@grammyjs/conversations";
+import bot from "../../bot_init";
 
 const prisma = getPrismaClientSingleton();
 
@@ -19,10 +21,10 @@ export const settingSellPercent = async (
     let selectedPercentField: string;
     let percentSetting: string;
 
-    if (callbackData === "sell_percent_l_cb") {
+    if (callbackData === "cb_sell_percent_l") {
         percentSetting = "Sell Left Percent";
         selectedPercentField = "sellLeftPercentX";
-    } else if (callbackData === "sell_percent_r_cb") {
+    } else if (callbackData === "cb_sell_percent_r") {
         percentSetting = "Sell Right Percent";
         selectedPercentField = "sellRightPercentX";
     } else {
@@ -72,3 +74,24 @@ export const start = async (ctx: CallbackQueryContext<BotContext>) => {
     await ctx.conversation.reenter("set_sell_percent");
     await ctx.answerCallbackQuery();
 };
+
+/* 
+**************************************************
+Settings Menu - Set Sell Percents
+**************************************************
+*/
+
+bot.use(
+    createConversation(
+        settingSellPercent,
+        "conversation_sellPercentSetting"
+    )
+);
+
+bot.callbackQuery("cb_sell_percent_l", async (ctx) => {
+    await ctx.conversation.enter("conversation_sellPercentSetting");
+});
+
+bot.callbackQuery("cb_sell_percent_r", async (ctx) => {
+    await ctx.conversation.enter("conversation_sellPercentSetting");
+});

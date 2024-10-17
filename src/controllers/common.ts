@@ -1,13 +1,17 @@
 import { CallbackQueryContext, Context } from "grammy";
 import { RootLogic } from "../bot/structure/root_logic";
+import bot from "../bot/bot_init";
 // import { root } from ".";
 
-export const cancel = async (ctx: CallbackQueryContext<Context>) => {
+async function callback__root__cancel (ctx: CallbackQueryContext<Context>) {
   await ctx.deleteMessage();
   await ctx.answerCallbackQuery();
 };
 
-export const help = async (ctx: CallbackQueryContext<Context>) => {
+
+bot.callbackQuery("callback__root__cancel", callback__root__cancel);
+
+async function callback__root_help (ctx: CallbackQueryContext<Context>) {
   await ctx.reply(
     `
 *How do I use Electron?*
@@ -34,7 +38,7 @@ Join our Telegram group @electron and one of our admins can assist you.
     {
       parse_mode: "Markdown",
       reply_markup: {
-        inline_keyboard: [[{ text: "Close", callback_data: "callback__main__cancel" }]],
+        inline_keyboard: [[{ text: "Close", callback_data: "callback__root__cancel" }]],
       },
     }
   );
@@ -42,8 +46,22 @@ Join our Telegram group @electron and one of our admins can assist you.
   await ctx.answerCallbackQuery();
 };
 
-export const back = async (ctx: CallbackQueryContext<Context>) => {
+bot.callbackQuery("callback__root__help", callback__root_help);
+
+async function callback__root_back (ctx: CallbackQueryContext<Context>) {
   await ctx.deleteMessage();
   await RootLogic.start(ctx as any);
   await ctx.answerCallbackQuery();
 };
+bot.callbackQuery("callback__root__back", callback__root_back);
+
+
+// const common = {
+//   callback__root__cancel: callback__root__cancel,
+//   callback__root_back: callback__root_back,
+//   callback__root_help: callback__root_help,
+
+// }
+
+// export {common}
+

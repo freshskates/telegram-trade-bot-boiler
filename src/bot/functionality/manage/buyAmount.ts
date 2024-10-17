@@ -1,6 +1,8 @@
-import { buy } from "../..";
+import { createConversation } from "@grammyjs/conversations";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
+import bot from "../../bot_init";
+import { buy } from "../buy";
 
 async function fetchTrxAmountByButtonId(
     userId: string,
@@ -19,15 +21,15 @@ async function fetchTrxAmountByButtonId(
     }
 
     switch (buttonId) {
-        case "swap_buybutton_tl_cb":
+        case "cb_swap_buybutton_tl":
             return settings.buyTopLeftX;
-        case "swap_buybutton_tc_cb":
+        case "cb_swap_buybutton_tc":
             return settings.buyTopCenterX;
-        case "swap_buybutton_tr_cb":
+        case "cb_swap_buybutton_tr":
             return settings.buyTopRightX;
-        case "swap_buybutton_bl_cb":
+        case "cb_swap_buybutton_bl":
             return settings.buyBottomLeftX;
-        case "swap_buybutton_br_cb":
+        case "cb_swap_buybutton_br":
             return settings.buyBottomRightX;
         default:
             throw new Error("Invalid button ID");
@@ -47,7 +49,7 @@ export async function buyTrxConversation(
     }
 
     if (callbackData) {
-        if (callbackData === "swap_buybutton_x_cb") {
+        if (callbackData === "cb_swap_buybutton_x") {
             await ctx.reply("Please enter the amount of TRX you wish to buy:");
 
             const { message } = await conversation.wait();
@@ -84,3 +86,38 @@ export async function buyTrxConversation(
         }
     }
 }
+
+
+
+/* 
+**************************************************
+Buy Trx Conversation    
+**************************************************
+*/
+
+bot.use(
+    createConversation(buyTrxConversation, "conversation_swapAmount")
+);
+bot.callbackQuery("cb_swap_buybutton_tl", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapAmount");
+});
+
+bot.callbackQuery("cb_swap_buybutton_tc", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapAmount");
+});
+
+bot.callbackQuery("cb_swap_buybutton_tr", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapAmount");
+});
+
+bot.callbackQuery("cb_swap_buybutton_bl", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapAmount");
+});
+
+bot.callbackQuery("cb_swap_buybutton_br", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapAmount");
+});
+
+bot.callbackQuery("cb_swap_buybutton_x", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapAmount");
+});

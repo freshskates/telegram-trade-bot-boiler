@@ -1,29 +1,41 @@
+import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext, Context } from "grammy";
-import getPrismaClientSingleton from "../services/prisma_client_singleton";
-import { BotContext, BotConversation } from "../utils";
+import bot from "../bot_init";
+import getPrismaClientSingleton from "../../services/prisma_client_singleton";
+import { BotContext, BotConversation } from "../../utils";
 
-export const buybutton = async (ctx: CallbackQueryContext<BotContext>) => {
+const PRISMA_CLIENT = getPrismaClientSingleton();
+
+async function cb_buybutton(ctx: CallbackQueryContext<BotContext>) {
     await ctx.conversation.exit();
-    await ctx.conversation.reenter("buybuttonConversation");
+    await ctx.conversation.reenter("conversation_buyButton");
     await ctx.answerCallbackQuery();
-};
+}
+// WARNING: NOT FUCKING USED
+bot.callbackQuery("cb_buybutton", cb_buybutton); // TODO: "cb_buybutton" is never called
 
-export const buyButtonConversation = async (
+async function conversation_buyButton(
     conversation: BotConversation,
     ctx: BotContext
-) => {
+) {
     const id = ctx.update.callback_query?.from.id;
 
     // const user =
     console.log("FUCK");
-};
+}
+// WARNING: NOT FUCKING USED
+bot.use(
+    createConversation(
+        conversation_buyButton,
+        "conversation_buyprompt" // TODO: "conversation_buyprompt" is never used
+    )
+);
+bot.use(createConversation(conversation_buyButton, "conversation_buyButton"));
 
-export const start = async (ctx: CallbackQueryContext<Context>) => {
+async function cb_settings(ctx: CallbackQueryContext<Context>) {
     const id = ctx.update.callback_query?.from.id;
 
-    const prisma = getPrismaClientSingleton();
-
-    const userSettings = await prisma.settings.findUnique({
+    const userSettings = await PRISMA_CLIENT.settings.findUnique({
         where: {
             userId: id.toString(),
         },
@@ -53,76 +65,80 @@ export const start = async (ctx: CallbackQueryContext<Context>) => {
                     [
                         {
                             text: "Economy 🐴",
-                            callback_data: "set_gas_1_cb",
+                            callback_data: "cb_set_gas_1",
                         },
                         {
                             text: "Normal 🚀",
-                            callback_data: "set_gas_2_cb",
+                            callback_data: "cb_set_gas_2",
                         },
                         {
                             text: "Ultra 🦄",
-                            callback_data: "set_gas_3_cb",
+                            callback_data: "cb_set_gas_3",
                         },
                     ],
                     [
                         {
                             text: `Custom:  ${userSettings.gasFee}TRX ✏️`,
-                            callback_data: "set_gas_x_cb",
+                            callback_data: "cb_set_gas_x",
                         },
                     ],
                     [{ text: "-- Buy Amounts --", callback_data: "empty" }],
                     [
                         {
                             text: `${buyTopLeftX} TRX ✏️`,
-                            callback_data: "buy_button_tl_cb",
+                            callback_data: "cb_buy_button_tl",
                         },
                         {
                             text: `${buyTopCenterX} TRX ✏️`,
-                            callback_data: "buy_button_tc_cb",
+                            callback_data: "cb_buy_button_tc",
                         },
                         {
                             text: `${buyTopRightX} TRX ✏️`,
-                            callback_data: "buy_button_tr_cb",
+                            callback_data: "cb_buy_button_tr",
                         },
                     ],
                     [
                         {
                             text: `${buyBottomLeftX} TRX ✏️`,
-                            callback_data: "buy_button_bl_cb",
+                            callback_data: "cb_buy_button_bl",
                         },
                         {
                             text: `${buyBottomRightX} TRX ✏️`,
-                            callback_data: "buy_button_br_cb",
+                            callback_data: "cb_buy_button_br",
                         },
                     ],
                     [
                         {
                             text: `Buy Slippage: ${userSettings.slippageBuy}% ✏️`,
-                            callback_data: "buy_setting_slippage_cb",
+                            callback_data: "cb_buy_setting_slippage",
                         },
                     ],
                     [{ text: "-- Sell Amounts --", callback_data: "empty" }],
                     [
                         {
                             text: `${userSettings.sellLeftPercentX}% ✏️`,
-                            callback_data: "sell_percent_l_cb",
+                            callback_data: "cb_sell_percent_l",
                         },
                         {
                             text: `${userSettings.sellRightPercentX}% ✏️`,
-                            callback_data: "sell_percent_r_cb",
+                            callback_data: "cb_sell_percent_r",
                         },
                     ],
                     [
                         {
                             text: `Sell Slippage: ${userSettings.slippageSell}% ✏️`,
-                            callback_data: "sell_setting_slippage_cb",
+                            callback_data: "cb_sell_setting_slippage",
                         },
                     ],
-                    [{ text: "Back", callback_data: "callback__main__back" }],
+                    [{ text: "Back", callback_data: "callback__root__back" }],
                 ],
             },
         }
     );
 
     await ctx.answerCallbackQuery();
-};
+}
+bot.callbackQuery("cb_settings", cb_settings);
+
+// @ts-ignore
+// console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded

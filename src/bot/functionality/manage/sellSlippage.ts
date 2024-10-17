@@ -1,7 +1,9 @@
+import { createConversation } from "@grammyjs/conversations";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
+import bot from "../../bot_init";
 
-async function fetchSlippageByButtonId(
+async function fetchSellSlippageByButtonId(
     userId: string,
     buttonId: string
 ): Promise<number> {
@@ -16,19 +18,18 @@ async function fetchSlippageByButtonId(
         throw new Error("Settings not found for user.");
     }
 
-    if (buttonId === "buy_slippagebutton_cb") {
-        return settings.slippageBuy;
+    if (buttonId === "sell_slippagebutton_cb") {
+        return settings.slippageSell;
     }
 
     return 0;
 }
 
-export async function slippageConversation(
+export async function sellSlippageConversation(
     conversation: BotConversation,
     ctx: BotContext
 ) {
     const callbackData = ctx.callbackQuery?.data;
-
     const userId = ctx.from?.id;
 
     if (!userId) {
@@ -37,7 +38,7 @@ export async function slippageConversation(
     }
 
     if (callbackData) {
-        if (callbackData === "buy_slippagebutton_x_cb") {
+        if (callbackData === "cb_sell_slippagebutton_x") {
             await ctx.reply(
                 "Please enter the custom slippage percentage you wish to use:"
             );
@@ -52,7 +53,7 @@ export async function slippageConversation(
                 );
             }
 
-            ctx.session.buyslippage = customSlippage;
+            ctx.session.sellslippage = customSlippage;
 
             await ctx.reply(
                 `You have selected to use ${customSlippage}% slippage.`
@@ -60,17 +61,38 @@ export async function slippageConversation(
 
             return;
         } else {
-            const slippage = await fetchSlippageByButtonId(
+            const slippage = await fetchSellSlippageByButtonId(
                 userId.toString(),
                 callbackData
             );
 
             await ctx.reply(`You have selected to use ${slippage}% slippage.`);
 
-            ctx.session.buyslippage = slippage;
+            ctx.session.sellslippage = slippage;
 
             await ctx.answerCallbackQuery();
             return;
         }
     }
 }
+
+/* 
+**************************************************
+Sell Menu - Set Sell Slippage
+**************************************************
+*/
+
+bot.use(
+    createConversation(
+        sellSlippageConversation,
+        "conversation_sellSlippageSetting"
+    )
+);
+
+bot.callbackQuery("cb_sell_setting_slippage", async (ctx) => {
+    await ctx.conversation.enter("conversation_sellSlippageSetting");
+});
+
+bot.callbackQuery("cb_sell_slippagebutton_x", async (ctx) => {
+    await ctx.conversation.enter("conversation_sellSlippageSetting");
+});

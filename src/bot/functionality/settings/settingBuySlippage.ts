@@ -1,10 +1,12 @@
+import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext } from "grammy";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
+import bot from "../../bot_init";
 
 const prisma = getPrismaClientSingleton();
 
-export const settingBuySlippage = async (
+export const conversation_settingBuySlippage = async (
     conversation: BotConversation,
     ctx: BotContext
 ) => {
@@ -16,7 +18,7 @@ export const settingBuySlippage = async (
         return;
     }
 
-    if (callbackData !== "buy_setting_slippage_cb") {
+    if (callbackData !== "cb_buy_setting_slippage") {
         await ctx.reply("Invalid selection.");
         return;
     }
@@ -58,6 +60,22 @@ export const settingBuySlippage = async (
 
 export const start = async (ctx: CallbackQueryContext<BotContext>) => {
     await ctx.conversation.exit();
-    await ctx.conversation.reenter("set_buy_slippage");
+    // WARNING: IDK
+    // FIXME: IDK WHAT THE FUCK IS set_buy_slippage
+    await ctx.conversation.reenter("set_buy_slippage"); // TODO: WTF IS THIS 
     await ctx.answerCallbackQuery();
 };
+
+
+/* 
+**************************************************
+Settings Menu - Set Buy Slippage
+**************************************************
+*/
+bot.use(
+    createConversation(conversation_settingBuySlippage, "conversation_buySlippageSetting")
+);
+
+bot.callbackQuery("cb_buy_setting_slippage", async (ctx) => {
+    await ctx.conversation.enter("conversation_buySlippageSetting");
+});

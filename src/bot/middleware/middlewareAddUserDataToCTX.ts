@@ -65,7 +65,7 @@ export const middlewareAddUserDataToCTX = () => {
       autoBuyTrx: settings.autoBuyTrx,
     };
 
-    console.log("ctx.session");
+    console.log("Printing ctx.session");
     console.log(ctx.session);
 
     return next();

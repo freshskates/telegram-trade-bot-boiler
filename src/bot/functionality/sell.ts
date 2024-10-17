@@ -7,7 +7,7 @@ import { BotContext } from "../../utils";
 import { fetchTokenDetails } from "../../utils/helpers";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
 
-export const start = async (ctx: BotContext, edit: boolean = false) => {
+async function start (ctx: BotContext, edit: boolean = false) {
     const tokenAddress = ctx.session.selectedToken;
     const userId = ctx.from?.id;
 
@@ -22,6 +22,7 @@ export const start = async (ctx: BotContext, edit: boolean = false) => {
         ctx.session.user.walletPb
     );
 
+    
     const prisma = getPrismaClientSingleton();
     const settings = await prisma.settings.findUnique({
         where: {
@@ -46,7 +47,7 @@ export const start = async (ctx: BotContext, edit: boolean = false) => {
         [
             {
                 text: "Back",
-                callback_data: "callback__main__back",
+                callback_data: "callback__root__back",
             },
             {
                 text: "Refresh",
@@ -84,7 +85,7 @@ export const start = async (ctx: BotContext, edit: boolean = false) => {
             },
             {
                 text: "X Slippage ✏️",
-                callback_data: "sell_slippagebutton_x_cb",
+                callback_data: "cb_sell_slippagebutton_x",
             },
         ],
         [
@@ -141,3 +142,8 @@ Price: *\$${formatNumber(tokenDetails.priceInUsd)}* — VOL: *\$${formatNumber(
         );
     }
 };
+
+const sell = {
+    start:start  
+}
+export {sell}

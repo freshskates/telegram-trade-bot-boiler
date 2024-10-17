@@ -1,6 +1,7 @@
 import { CommandContext, Context, NextFunction } from "grammy";
 import { TronClient } from "../../clients/tron";
 import { BotContext } from "../../utils";
+import bot from "../bot_init";
 
 
 
@@ -43,23 +44,23 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Buy",
-                            callback_data: "callback__main__buy",
+                            callback_data: "cb__root__buy",
                         },
                         {
                             text: "Sell / Manage",
-                            callback_data: "callback_tokens_owned",
+                            callback_data: "cb_tokens_owned",
                         },
                     ],
                     [
                         {
                             text: "Settings",
-                            callback_data: "callback__main__settings",
+                            callback_data: "cb_settings",
                         },
                     ],
                     [
                         {
                             text: "Help",
-                            callback_data: "callback__main__help",
+                            callback_data: "callback__root__help",
                         },
                         {
                             text: "Refresh",
@@ -72,7 +73,8 @@ Once done, tap refresh, and your balance will appear here.
     );
 };
 
-const help = async (ctx: CommandContext<Context>) => {
+
+async function help (ctx: BotContext, next: NextFunction | null = null){
     await ctx.reply(`lorem help`, {
         parse_mode: "HTML",
         reply_markup: {
@@ -80,7 +82,7 @@ const help = async (ctx: CommandContext<Context>) => {
                 [
                     {
                         text: "Close",
-                        callback_data: "callback__main__cancel",
+                        callback_data: "callback__root__cancel",
                     },
                 ],
             ],
@@ -88,7 +90,7 @@ const help = async (ctx: CommandContext<Context>) => {
     });
 };
 
-const chat = async (ctx: CommandContext<Context>) => {
+const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
     await ctx.reply(`CHAT`, {
         parse_mode: "HTML",
         reply_markup: {
@@ -96,7 +98,7 @@ const chat = async (ctx: CommandContext<Context>) => {
                 [
                     {
                         text: "Close",
-                        callback_data: "callback__main__cancel",
+                        callback_data: "callback__root__cancel",
                     },
                 ],
             ],

@@ -2,6 +2,8 @@ import { CallbackQueryContext } from "grammy";
 import { BotContext, BotConversation } from "../../../utils";
 // import { gasFee } from "../..";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
+import { createConversation } from "@grammyjs/conversations";
+import bot from "../../bot_init";
 
 const prisma = getPrismaClientSingleton();
 
@@ -19,16 +21,16 @@ export const setGas = async (conversation: BotConversation, ctx: any) => {
 
     let gasSetting;
 
-    if (callbackData === "set_gas_1_cb") {
+    if (callbackData === "cb_set_gas_1") {
         gasSetting = "Economy 🐴";
         selectedGasFee = 50;
-    } else if (callbackData === "set_gas_2_cb") {
+    } else if (callbackData === "cb_set_gas_2") {
         gasSetting = "Normal 🚀";
         selectedGasFee = 100;
-    } else if (callbackData === "set_gas_3_cb") {
+    } else if (callbackData === "cb_set_gas_3") {
         gasSetting = "Ultra 🦄";
         selectedGasFee = 200;
-    } else if (callbackData === "set_gas_x_cb") {
+    } else if (callbackData === "cb_set_gas_x") {
         await ctx.reply("Please enter your custom gas amount (in TRX):");
 
         const {
@@ -79,3 +81,26 @@ export const start = async (ctx: CallbackQueryContext<BotContext>) => {
     await ctx.conversation.reenter("set_gas");
     await ctx.answerCallbackQuery();
 };
+
+/* 
+**************************************************
+Gas Fees Setting Conversation   
+**************************************************
+*/
+
+bot.use(createConversation(setGas, "conversation_gasSetting"));
+bot.callbackQuery("cb_set_gas_1", async (ctx) => {
+    await ctx.conversation.enter("conversation_gasSetting");
+});
+
+bot.callbackQuery("cb_set_gas_2", async (ctx) => {
+    await ctx.conversation.enter("conversation_gasSetting");
+});
+
+bot.callbackQuery("cb_set_gas_3", async (ctx) => {
+    await ctx.conversation.enter("conversation_gasSetting");
+});
+
+bot.callbackQuery("cb_set_gas_x", async (ctx) => {
+    await ctx.conversation.enter("conversation_gasSetting");
+});

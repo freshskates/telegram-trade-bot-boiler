@@ -1,5 +1,7 @@
+import { createConversation } from "@grammyjs/conversations";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotConversation } from "../../../utils";
+import bot from "../../bot_init";
 
 const prisma = getPrismaClientSingleton();
 
@@ -19,19 +21,19 @@ export const buyButtonLayout = async (
     let settingField: string;
     let settingLabel: string;
 
-    if (callbackData === "buy_button_tl_cb") {
+    if (callbackData === "cb_buy_button_tl") {
         settingField = "buyTopLeftX";
         settingLabel = "Top Left";
-    } else if (callbackData === "buy_button_tc_cb") {
+    } else if (callbackData === "cb_buy_button_tc") {
         settingField = "buyTopCenterX";
         settingLabel = "Top Center";
-    } else if (callbackData === "buy_button_tr_cb") {
+    } else if (callbackData === "cb_buy_button_tr") {
         settingField = "buyTopRightX";
         settingLabel = "Top Right";
-    } else if (callbackData === "buy_button_bl_cb") {
+    } else if (callbackData === "cb_buy_button_bl") {
         settingField = "buyBottomLeftX";
         settingLabel = "Bottom Left";
-    } else if (callbackData === "buy_button_br_cb") {
+    } else if (callbackData === "cb_buy_button_br") {
         settingField = "buyBottomRightX";
         settingLabel = "Bottom Right";
     } else {
@@ -82,3 +84,37 @@ export const buyButtonLayout = async (
 
     await ctx.answerCallbackQuery();
 };
+
+/* 
+**************************************************
+Buy Button TRX Settings Conversation    
+************************************************** 
+*/
+
+
+bot.use(
+    createConversation(
+        buyButtonLayout,
+        "conversation_trxAmountSetting"
+    )
+);
+
+bot.callbackQuery("cb_buy_button_tl", async (ctx) => {
+    await ctx.conversation.enter("conversation_trxAmountSetting");
+});
+
+bot.callbackQuery("cb_buy_button_tc", async (ctx) => {
+    await ctx.conversation.enter("conversation_trxAmountSetting");
+});
+
+bot.callbackQuery("cb_buy_button_tr", async (ctx) => {
+    await ctx.conversation.enter("conversation_trxAmountSetting");
+});
+
+bot.callbackQuery("cb_buy_button_bl", async (ctx) => {
+    await ctx.conversation.enter("conversation_trxAmountSetting");
+});
+
+bot.callbackQuery("cb_buy_button_br", async (ctx) => {
+    await ctx.conversation.enter("conversation_trxAmountSetting");
+});

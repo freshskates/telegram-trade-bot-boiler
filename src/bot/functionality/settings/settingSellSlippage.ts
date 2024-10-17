@@ -16,7 +16,7 @@ export const settingSellSlippage = async (
         return;
     }
 
-    if (callbackData !== "sell_setting_slippage_cb") {
+    if (callbackData !== "cb_sell_setting_slippage") {
         await ctx.reply("Invalid selection.");
         return;
     }

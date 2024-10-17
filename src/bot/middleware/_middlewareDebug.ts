@@ -7,17 +7,17 @@ async function middlewareDebugger(
     ctx: BotContext,
     next: NextFunction){
         
-        const formattedDate_1 = new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '');
+        const date_formatted_1 = new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '');
 
-        console.log(`----- START OF DEBUGGING ${formattedDate_1} -----`);
-
+        console.log(`----- START OF DEBUGGING ${date_formatted_1} -----`);
+        
+        console.log("Printing ctx");
         console.log(ctx);
         console.log(ctx?.message?.text);
         
-
-        const formattedDate_2 = new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '');
+        const date_formatted_2 = new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '');
         
-        console.log(`----- END OF DEBUGGING ${formattedDate_2} -----`);
+        console.log(`----- END OF DEBUGGING ${date_formatted_2} -----`);
 
         await next();
         
