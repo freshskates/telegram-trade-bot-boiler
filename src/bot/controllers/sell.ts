@@ -47,7 +47,7 @@ async function start (ctx: BotContext, edit: boolean = false) {
         [
             {
                 text: "Back",
-                callback_data: "callback__root__back",
+                callback_data: "cb_restart",
             },
             {
                 text: "Refresh",

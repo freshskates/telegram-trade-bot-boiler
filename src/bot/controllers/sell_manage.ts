@@ -65,7 +65,7 @@ async function cb_tokens_owned(ctx: BotContext) {
         [
             {
                 text: "Back",
-                callback_data: "callback__root__back",
+                callback_data: "cb_restart",
             },
             {
                 text: "Refresh",
@@ -76,7 +76,7 @@ async function cb_tokens_owned(ctx: BotContext) {
         [
             {
                 text: "Prev Page",
-                callback_data: "prev_page_cb",
+                callback_data: "cb_prev_page",
             },
             {
                 text: "Next Page",

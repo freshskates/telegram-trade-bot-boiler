@@ -2,12 +2,11 @@ import { CallbackQueryContext } from "grammy";
 
 import "dotenv/config";
 import { TronClient } from "../../clients/tron";
+import getPrismaClientSingleton from "../../services/prisma_client_singleton";
 import { BotContext } from "../../utils";
 import { fetchTokenDetails } from "../../utils/helpers";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
-import getPrismaClientSingleton from "../../services/prisma_client_singleton";
 import bot from "../bot_init";
-
 
 export const start = async (ctx: BotContext, edit: boolean = false) => {
     const tokenAddress = ctx.session.selectedToken;
@@ -48,7 +47,7 @@ export const start = async (ctx: BotContext, edit: boolean = false) => {
         [
             {
                 text: "Back",
-                callback_data: "callback__root__back",
+                callback_data: "cb_restart",
             },
             {
                 text: "Refresh",
@@ -160,13 +159,11 @@ Price: *\$${formatNumber(tokenDetails.priceInUsd)}* — VOL: *\$${formatNumber(
     }
 };
 
-
 const buy = {
-    start: start
-}
+    start: start,
+};
 
-export {buy}
-
+export { buy };
 
 /* 
 **************************************************
@@ -174,20 +171,23 @@ Something about buying idk
 **************************************************
 */
 
-bot.hears(/^T[a-zA-Z0-9]{33}$/, async (ctx: BotContext) => {
+// TODO: DON"T KNOW WHAT THIS IS
+async function load_token(ctx: BotContext) {
     if (!ctx?.message?.text) return;
 
     const token = ctx?.message.text?.trim();
     ctx.session.selectedToken = token;
 
     return await start(ctx);
-});
+}
 
+bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);
 
-export const cb__root__buy = async (ctx: CallbackQueryContext<BotContext>) => {
-    return await ctx.reply("Enter a valid   TRX-20 token address: ");
-};
-bot.callbackQuery("cb__root__buy", cb__root__buy);
+// TODO: CallbackQueryContext<BotContext> IS THAT CORRECT? IDK
+async function cb_buy(ctx: CallbackQueryContext<BotContext>) {
+    return await ctx.reply("Enter a valid   TRX-20 token address: ",);
+}
+bot.callbackQuery("cb_buy", cb_buy);
 
 // @ts-ignore
 // console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded

@@ -1,9 +1,3 @@
-/* 
-**************************************************
-Middleware
-**************************************************
-*/
-
 import { GrammyError, HttpError } from "grammy";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -70,9 +64,9 @@ Basic Buttons
 
 // bot.callbackQuery("callback__main__start", RootLogic.start); // TODO: "callback__main__start" is never called
 
-// bot.callbackQuery("callback__root__help", common.help);
-// bot.callbackQuery("callback__root__back", common.back);
-// bot.callbackQuery("callback__root__cancel", common.cancel);
+// bot.callbackQuery("cb_help", common.help);
+// bot.callbackQuery("cb_restart", common.back);
+// bot.callbackQuery("cb_cancel", common.cancel);
 
 // bot.callbackQuery("cb_settings", settings.start);
 

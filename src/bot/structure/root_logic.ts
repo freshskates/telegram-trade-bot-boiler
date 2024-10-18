@@ -44,7 +44,7 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Buy",
-                            callback_data: "cb__root__buy",
+                            callback_data: "cb_buy",
                         },
                         {
                             text: "Sell / Manage",
@@ -60,11 +60,11 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Help",
-                            callback_data: "callback__root__help",
+                            callback_data: "cb_help",
                         },
                         {
                             text: "Refresh",
-                            callback_data: "callback_refresh",
+                            callback_data: "cb_refresh",
                         },
                     ],
                 ],
@@ -82,7 +82,7 @@ async function help (ctx: BotContext, next: NextFunction | null = null){
                 [
                     {
                         text: "Close",
-                        callback_data: "callback__root__cancel",
+                        callback_data: "cb_cancel",
                     },
                 ],
             ],
@@ -98,7 +98,7 @@ const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
                 [
                     {
                         text: "Close",
-                        callback_data: "callback__root__cancel",
+                        callback_data: "cb_cancel",
                     },
                 ],
             ],

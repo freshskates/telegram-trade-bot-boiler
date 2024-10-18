@@ -44,11 +44,20 @@ Joseph's Notes
                     10/15/2024
                 Notes:
                     Export a custom start to be executed somewhere else
-                    
+
                     Uses bot.api
                     
                 Reference:
                     https://github.com/callsmusic/remix/blob/main/src/bot/index.ts
+
+            List of Examples of how to use grammyjs
+                Date Today:
+                    10/18/2024
+                Notes:
+                    grammyjs / examples
+
+                Reference:
+                    https://github.com/grammyjs/examples
 
         Reference:
             Documentation:

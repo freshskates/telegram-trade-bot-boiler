@@ -130,7 +130,7 @@ async function cb_settings(ctx: CallbackQueryContext<Context>) {
                             callback_data: "cb_sell_setting_slippage",
                         },
                     ],
-                    [{ text: "Back", callback_data: "callback__root__back" }],
+                    [{ text: "Back", callback_data: "cb_restart" }],
                 ],
             },
         }

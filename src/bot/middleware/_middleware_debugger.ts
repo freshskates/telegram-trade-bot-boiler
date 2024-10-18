@@ -1,7 +1,7 @@
 import { NextFunction } from "grammy";
 import { BotContext } from "../../utils";
 
-async function middlewareDebugger(ctx: BotContext, next: NextFunction) {
+async function middleware_debugger(ctx: BotContext, next: NextFunction) {
     const date_formatted_1 = new Date()
         .toLocaleString("en-US", {
             year: "numeric",
@@ -35,4 +35,4 @@ async function middlewareDebugger(ctx: BotContext, next: NextFunction) {
     await next();
 }
 
-export default middlewareDebugger;
+export default middleware_debugger;

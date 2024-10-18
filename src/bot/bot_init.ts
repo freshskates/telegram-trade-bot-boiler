@@ -1,15 +1,10 @@
 import { conversations } from "@grammyjs/conversations";
-import {
-    Bot,
-    CallbackQueryMiddleware,
-    Composer,
-    session
-} from "grammy";
+import { Bot, CallbackQueryMiddleware, Composer, session } from "grammy";
 import config from "../config/config";
 
 import { CallbackQueryContext, MaybeArray } from "grammy/out/context";
 import { BotContext } from "../utils";
-import middlewareDebugger from "./middleware/_middlewareDebug";
+import middleware_debugger from "./middleware/_middleware_debugger";
 
 const bot = new Bot<BotContext>(config.getTgBotToken());
 
@@ -20,7 +15,7 @@ Important Middleware
 */
 
 // Debugging Middleware
-bot.use(middlewareDebugger);
+bot.use(middleware_debugger);
 
 // Session Middleware
 bot.use(

@@ -1,17 +1,20 @@
 import { CallbackQueryContext, Context } from "grammy";
 import { RootLogic } from "../structure/root_logic";
 import bot from "../bot_init";
+import { BotContext } from "../utils/utils";
 // import { root } from ".";
 
-async function callback__root__cancel (ctx: CallbackQueryContext<Context>) {
+// Former was ctx: CallbackQueryContext<Context>
+async function cb_cancel (ctx: BotContext) {
   await ctx.deleteMessage();
   await ctx.answerCallbackQuery();
 };
 
 
-bot.callbackQuery("callback__root__cancel", callback__root__cancel);
+bot.callbackQuery("cb_cancel", cb_cancel);
 
-async function callback__root_help (ctx: CallbackQueryContext<Context>) {
+// Former was ctx: CallbackQueryContext<Context>
+async function cb_help (ctx: BotContext) {
   await ctx.reply(
     `
 *How do I use Electron?*
@@ -38,7 +41,7 @@ Join our Telegram group @electron and one of our admins can assist you.
     {
       parse_mode: "Markdown",
       reply_markup: {
-        inline_keyboard: [[{ text: "Close", callback_data: "callback__root__cancel" }]],
+        inline_keyboard: [[{ text: "Close", callback_data: "cb_cancel" }]],
       },
     }
   );
@@ -46,18 +49,18 @@ Join our Telegram group @electron and one of our admins can assist you.
   await ctx.answerCallbackQuery();
 };
 
-bot.callbackQuery("callback__root__help", callback__root_help);
+bot.callbackQuery("cb_help", cb_help);
 
-async function callback__root_back (ctx: CallbackQueryContext<Context>) {
+async function cb_restart (ctx: BotContext) {
   await ctx.deleteMessage();
-  await RootLogic.start(ctx as any);
+  await RootLogic.start(ctx);
   await ctx.answerCallbackQuery();
 };
-bot.callbackQuery("callback__root__back", callback__root_back);
+bot.callbackQuery("cb_restart", cb_restart);
 
 
 // const common = {
-//   callback__root__cancel: callback__root__cancel,
+//   cb_cancel: cb_cancel,
 //   callback__root_back: callback__root_back,
 //   callback__root_help: callback__root_help,
 
