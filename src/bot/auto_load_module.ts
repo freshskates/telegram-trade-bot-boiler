@@ -138,15 +138,15 @@ async function auto_load_modules_from(
     for (const path of array_file_filtered) {
         try {
             
+            // Skip already loaded modules
             if (await check_if_module_is_loaded(path)){
                 console.log(`Module already loaded: ${path} `);
-                
                 continue
             }
 
             const full_file_path = resolve(path);
 
-            // Skip importing this file as in this actual file to prevent recursive importing
+            // Skip importing this file (as in this actual file) to prevent recursive importing
             if (PATH_FILE_THIS_FILE.localeCompare(full_file_path) == 0) {
                 continue;
             }

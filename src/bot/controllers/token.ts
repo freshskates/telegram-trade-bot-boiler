@@ -4,6 +4,12 @@ import { sell } from "./sell";
 
 
 async function cb_token (ctx: BotContext) {
+
+
+    if(ctx.match == null){
+        return 
+    }
+
     const tokenAddress = ctx.match[1]; // Extract tokenAddress from the callback data
     console.log(`Token Address: ${tokenAddress}`);
 

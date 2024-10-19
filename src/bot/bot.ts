@@ -374,8 +374,9 @@ async function start_bot() {
     Promise.all([
         await bot.start({
             onStart(botInfo) {
-                console.log(new Date(), "Bot starts as", botInfo.username);
-            },
+                console.table(botInfo),
+                console.log(new Date(), "Bot is running.")
+            }
         }),
     ]);
 }
