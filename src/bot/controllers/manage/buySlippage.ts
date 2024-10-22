@@ -71,7 +71,7 @@ export async function slippageConversation(
 
             ctx.session.buyslippage = slippage;
 
-            await ctx.answerCallbackQuery();
+            // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
             return;
         }
     }
@@ -91,8 +91,10 @@ bot.use(
 );
 bot.callbackQuery("cb_buy_slippagebutton", async (ctx) => {
     await ctx.conversation.enter("conversation_buySlippage");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_buy_slippagebutton_x", async (ctx) => {
     await ctx.conversation.enter("conversation_buySlippage");
+    await ctx.answerCallbackQuery();
 });

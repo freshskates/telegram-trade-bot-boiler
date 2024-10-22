@@ -77,7 +77,7 @@ export async function conversation_sellTrx(
                     callbackData
                 );
 
-                await ctx.answerCallbackQuery();
+                // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
                 ctx.session.sellpercent = sellPercent;
                 await sell.start(ctx, true); // Assuming a sell.start method exists similar to buy
             } catch (error) {
@@ -100,4 +100,5 @@ bot.use(createConversation(conversation_sellTrx, "conversation_sellPercentMenu")
 
 bot.callbackQuery(/swap_sellbutton_(left|right|x)_cb/, async (ctx) => {
     await ctx.conversation.enter("conversation_sellPercentMenu");
+    await ctx.answerCallbackQuery(); 
 });

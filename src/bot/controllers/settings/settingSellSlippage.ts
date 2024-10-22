@@ -53,7 +53,7 @@ export const settingSellSlippage = async (
         );
     }
 
-    await ctx.answerCallbackQuery();
+    // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
 };
 
 export const start = async (ctx: CallbackQueryContext<BotContext>) => {

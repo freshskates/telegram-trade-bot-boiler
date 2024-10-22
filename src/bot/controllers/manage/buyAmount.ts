@@ -36,7 +36,7 @@ async function fetchTrxAmountByButtonId(
     }
 }
 
-export async function buyTrxConversation(
+export async function conversation_buyTrx(
     conversation: BotConversation,
     ctx: BotContext
 ) {
@@ -74,9 +74,9 @@ export async function buyTrxConversation(
                     callbackData
                 );
 
-                await ctx.answerCallbackQuery();
+                // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
                 ctx.session.buyamount = trxAmount;
-                await buy.start(ctx, true);
+                await buy.buyTrx(ctx, true);
             } catch (error) {
                 await ctx.reply(
                     "An error occurred while fetching your settings."
@@ -96,28 +96,34 @@ Buy Trx Conversation
 */
 
 bot.use(
-    createConversation(buyTrxConversation, "conversation_swapAmount")
+    createConversation(conversation_buyTrx, "conversation_swapAmount")
 );
 bot.callbackQuery("cb_swap_buybutton_tl", async (ctx) => {
     await ctx.conversation.enter("conversation_swapAmount");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_swap_buybutton_tc", async (ctx) => {
     await ctx.conversation.enter("conversation_swapAmount");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_swap_buybutton_tr", async (ctx) => {
     await ctx.conversation.enter("conversation_swapAmount");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_swap_buybutton_bl", async (ctx) => {
     await ctx.conversation.enter("conversation_swapAmount");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_swap_buybutton_br", async (ctx) => {
     await ctx.conversation.enter("conversation_swapAmount");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_swap_buybutton_x", async (ctx) => {
     await ctx.conversation.enter("conversation_swapAmount");
+    await ctx.answerCallbackQuery();
 });

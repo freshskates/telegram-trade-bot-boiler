@@ -8,7 +8,7 @@ import { fetchTokenDetails } from "../../utils/helpers";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
 import bot from "../bot_init";
 
-export const start = async (ctx: BotContext, edit: boolean = false) => {
+export const buyTrx = async (ctx: BotContext, edit: boolean = false) => {
     const tokenAddress = ctx.session.selectedToken;
     const userId = ctx.from?.id;
 
@@ -107,7 +107,7 @@ export const start = async (ctx: BotContext, edit: boolean = false) => {
         [
             {
                 text: "Swap",
-                callback_data: "swap_callback_buy",
+                callback_data: "cb_swap_buy",
             },
         ],
     ];
@@ -160,7 +160,7 @@ Price: *\$${formatNumber(tokenDetails.priceInUsd)}* — VOL: *\$${formatNumber(
 };
 
 const buy = {
-    start: start,
+    buyTrx: buyTrx,
 };
 
 export { buy };
@@ -178,7 +178,7 @@ async function load_token(ctx: BotContext) {
     const token = ctx?.message.text?.trim();
     ctx.session.selectedToken = token;
 
-    return await start(ctx);
+    return await buyTrx(ctx);
 }
 
 bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);

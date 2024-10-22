@@ -73,7 +73,7 @@ export const setGas = async (conversation: BotConversation, ctx: any) => {
     await ctx.reply(`You have selected ${gasSetting} gas setting.`);
     //   conversation.session.gasSetting = gasSetting;
 
-    await ctx.answerCallbackQuery();
+    // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
 };
 
 export const start = async (ctx: CallbackQueryContext<BotContext>) => {
@@ -91,16 +91,20 @@ Gas Fees Setting Conversation
 bot.use(createConversation(setGas, "conversation_gasSetting"));
 bot.callbackQuery("cb_set_gas_1", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_set_gas_2", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_set_gas_3", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_set_gas_x", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
+    await ctx.answerCallbackQuery();
 });

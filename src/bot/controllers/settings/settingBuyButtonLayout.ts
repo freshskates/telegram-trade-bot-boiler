@@ -5,7 +5,7 @@ import bot from "../../bot_init";
 
 const prisma = getPrismaClientSingleton();
 
-export const buyButtonLayout = async (
+export const conversation_buyButtonLayout = async (
     conversation: BotConversation,
     ctx: any
 ) => {
@@ -82,7 +82,8 @@ export const buyButtonLayout = async (
         );
     }
 
-    await ctx.answerCallbackQuery();
+    // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
+
 };
 
 /* 
@@ -94,27 +95,32 @@ Buy Button TRX Settings Conversation
 
 bot.use(
     createConversation(
-        buyButtonLayout,
+        conversation_buyButtonLayout,
         "conversation_trxAmountSetting"
     )
 );
 
 bot.callbackQuery("cb_buy_button_tl", async (ctx) => {
     await ctx.conversation.enter("conversation_trxAmountSetting");
+    await ctx.answerCallbackQuery(); 
 });
 
 bot.callbackQuery("cb_buy_button_tc", async (ctx) => {
     await ctx.conversation.enter("conversation_trxAmountSetting");
+    await ctx.answerCallbackQuery(); 
 });
 
 bot.callbackQuery("cb_buy_button_tr", async (ctx) => {
     await ctx.conversation.enter("conversation_trxAmountSetting");
+    await ctx.answerCallbackQuery(); 
 });
 
 bot.callbackQuery("cb_buy_button_bl", async (ctx) => {
     await ctx.conversation.enter("conversation_trxAmountSetting");
+    await ctx.answerCallbackQuery(); 
 });
 
 bot.callbackQuery("cb_buy_button_br", async (ctx) => {
     await ctx.conversation.enter("conversation_trxAmountSetting");
+    await ctx.answerCallbackQuery(); 
 });

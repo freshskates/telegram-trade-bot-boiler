@@ -3,7 +3,7 @@ import { TronClient } from "../../clients/tron";
 import bot from "../bot_init";
 import { BotContext } from "../utils/utils";
 
-async function swap_callback_buy(ctx: BotContext) {
+async function cb_swap_buy(ctx: BotContext) {
     await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
     await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
     await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);
@@ -58,4 +58,4 @@ async function swap_callback_buy(ctx: BotContext) {
 
     await ctx.answerCallbackQuery();
 }
-bot.callbackQuery("swap_callback_buy", swap_callback_buy);
+bot.callbackQuery("cb_swap_buy", cb_swap_buy);

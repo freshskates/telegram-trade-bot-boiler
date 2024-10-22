@@ -55,7 +55,7 @@ export const conversation_settingBuySlippage = async (
         );
     }
 
-    await ctx.answerCallbackQuery();
+    // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
 };
 
 // FIXME: IS CallbackQueryContext<BotContext> Necessary instead of BotContext only
@@ -79,6 +79,7 @@ bot.use(
 
 async function cb_buy_setting_slippage(ctx: CallbackQueryContext<BotContext>){
     await ctx.conversation.enter("conversation_buySlippageSetting");
+    await ctx.answerCallbackQuery();
 }
 
 bot.callbackQuery("cb_buy_setting_slippage", cb_buy_setting_slippage);

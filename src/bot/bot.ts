@@ -101,7 +101,7 @@ Basic Buttons
 //     )
 // );
 
-// bot.callbackQuery("swap_callback_buy", async (ctx) => {
+// bot.callbackQuery("cb_swap_buy", async (ctx) => {
 //     await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
 //     await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
 //     await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);

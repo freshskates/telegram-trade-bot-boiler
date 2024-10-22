@@ -66,7 +66,7 @@ export const settingSellPercent = async (
         );
     }
 
-    await ctx.answerCallbackQuery();
+    // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
 };
 
 export const start = async (ctx: CallbackQueryContext<BotContext>) => {
@@ -90,8 +90,10 @@ bot.use(
 
 bot.callbackQuery("cb_sell_percent_l", async (ctx) => {
     await ctx.conversation.enter("conversation_sellPercentSetting");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_sell_percent_r", async (ctx) => {
     await ctx.conversation.enter("conversation_sellPercentSetting");
+    await ctx.answerCallbackQuery();
 });

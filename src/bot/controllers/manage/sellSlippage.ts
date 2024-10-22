@@ -70,7 +70,7 @@ export async function sellSlippageConversation(
 
             ctx.session.sellslippage = slippage;
 
-            await ctx.answerCallbackQuery();
+            // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
             return;
         }
     }
@@ -91,8 +91,10 @@ bot.use(
 
 bot.callbackQuery("cb_sell_setting_slippage", async (ctx) => {
     await ctx.conversation.enter("conversation_sellSlippageSetting");
+    await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_sell_slippagebutton_x", async (ctx) => {
     await ctx.conversation.enter("conversation_sellSlippageSetting");
+    await ctx.answerCallbackQuery();
 });
