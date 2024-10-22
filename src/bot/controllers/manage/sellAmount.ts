@@ -51,7 +51,7 @@ export async function conversation_sellTrx(
 
       const customPercent = parseFloat(message?.text || "0");
 
-      if (isNaN(customPercent) || customPercent <= 0 || customPercent > 100) {
+      if (isNaN(customPercent) || customPercent < 0 || customPercent > 100) {
         return await ctx.reply(
           "Invalid percent. Please enter a valid number between 1 and 100."
         );

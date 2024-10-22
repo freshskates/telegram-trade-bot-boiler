@@ -26,7 +26,7 @@ async function fetchSellSlippageByButtonId(
   return 0;
 }
 
-export async function sellSlippageConversation(
+export async function conversation_sellSlippage(
   conversation: BotConversation,
   ctx: BotContext
 ) {
@@ -48,7 +48,7 @@ export async function sellSlippageConversation(
 
       const customSlippage = parseFloat(message?.text || "0");
 
-      if (isNaN(customSlippage) || customSlippage <= 0) {
+      if (isNaN(customSlippage) || customSlippage < 0) {
         return await ctx.reply(
           "Invalid slippage value. Please enter a valid percentage."
         );
@@ -103,7 +103,7 @@ Sell Menu - Set Sell Slippage
 
 bot.use(
   createConversation(
-    sellSlippageConversation,
+    conversation_sellSlippage,
     "conversation_sellSlippageSetting"
   )
 );

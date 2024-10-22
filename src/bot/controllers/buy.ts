@@ -9,7 +9,7 @@ import { formatNumber } from "../../utils/menu_helpers/homedata";
 import bot from "../bot_init";
 import { UserClient } from "../../clients/user";
 
-export const buyTrx = async (ctx: BotContext, edit: boolean = false) => {
+async function buyTrx (ctx: BotContext, edit: boolean = false) {
   const tokenAddress = ctx.session.selectedToken;
   const userId = ctx.from?.id;
 
@@ -28,13 +28,17 @@ export const buyTrx = async (ctx: BotContext, edit: boolean = false) => {
     return;
   }
 
-  const selectedBuyAmount =
+  ctx.session.buyamount =
     settings.selectedBuy <= 0 ? settings.buyTopLeftX : settings.selectedBuy;
 
-  const selectedSlippage =
+  ctx.session.buyslippage =
     settings.selectedBuySlippage <= 0
       ? settings.slippageBuy
       : settings.selectedBuySlippage;
+
+
+  console.log(settings)
+  console.log("ctx.session.buyamount ctx.session.buyslippage:",ctx.session.buyamount, ctx.session.buyslippage)
 
   const inlineKeyboard = [
     [
@@ -49,19 +53,19 @@ export const buyTrx = async (ctx: BotContext, edit: boolean = false) => {
     ],
     [
       {
-        text: `${selectedBuyAmount === settings.buyTopLeftX ? "✅ " : ""}Buy ${
+        text: `${ctx.session.buyamount === settings.buyTopLeftX ? "✅ " : ""}Buy ${
           settings.buyTopLeftX
         } MON`,
         callback_data: "cb_swap_buybutton_tl",
       },
       {
         text: `${
-          selectedBuyAmount === settings.buyTopCenterX ? "✅ " : ""
+          ctx.session.buyamount === settings.buyTopCenterX ? "✅ " : ""
         }Buy ${settings.buyTopCenterX} MON`,
         callback_data: "cb_swap_buybutton_tc",
       },
       {
-        text: `${selectedBuyAmount === settings.buyTopRightX ? "✅ " : ""}Buy ${
+        text: `${ctx.session.buyamount === settings.buyTopRightX ? "✅ " : ""}Buy ${
           settings.buyTopRightX
         } MON`,
         callback_data: "cb_swap_buybutton_tr",
@@ -70,18 +74,18 @@ export const buyTrx = async (ctx: BotContext, edit: boolean = false) => {
     [
       {
         text: `${
-          selectedBuyAmount === settings.buyBottomLeftX ? "✅ " : ""
+          ctx.session.buyamount === settings.buyBottomLeftX ? "✅ " : ""
         }Buy ${settings.buyBottomLeftX} MON`,
         callback_data: "cb_swap_buybutton_bl",
       },
       {
         text: `${
-          selectedBuyAmount === settings.buyBottomRightX ? "✅ " : ""
+          ctx.session.buyamount === settings.buyBottomRightX ? "✅ " : ""
         }Buy ${settings.buyBottomRightX} MON`,
         callback_data: "cb_swap_buybutton_br",
       },
       {
-        text: `${selectedBuyAmount === settings.buyCustomX ? "✅ " : ""}Buy ${
+        text: `${ctx.session.buyamount === settings.buyCustomX ? "✅ " : ""}Buy ${
           settings.buyCustomX <= 0 ? "X" : settings.buyCustomX
         } MON ✏️`,
         callback_data: "cb_swap_buybutton_x",
@@ -89,13 +93,13 @@ export const buyTrx = async (ctx: BotContext, edit: boolean = false) => {
     ],
     [
       {
-        text: `${selectedSlippage === settings.slippageBuy ? "✅ " : ""}${
+        text: `${ctx.session.buyslippage === settings.slippageBuy ? "✅ " : ""}${
           settings.slippageBuy
         }% Slippage`,
         callback_data: "cb_buy_slippagebutton",
       },
       {
-        text: `${selectedSlippage === settings.slippageBuyCustom ? "✅ " : ""}${
+        text: `${ctx.session.buyslippage === settings.slippageBuyCustom ? "✅ " : ""}${
           settings.slippageBuyCustom <= 0 ? "X%" : settings.slippageBuyCustom
         }% Slippage ✏️`,
         callback_data: "cb_buy_slippagebutton_x",
@@ -154,20 +158,9 @@ Something about buying idk
 **************************************************
 */
 
-// TODO: DON"T KNOW WHAT THIS IS
-async function load_token(ctx: BotContext) {
-  if (!ctx?.message?.text) return;
-
-  const token = ctx?.message.text?.trim();
-  ctx.session.selectedToken = token;
-
-  return await buyTrx(ctx);
-}
-
-bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);
 
 // TODO: CallbackQueryContext<BotContext> IS THAT CORRECT? IDK
-async function cb_buy(ctx: CallbackQueryContext<BotContext>) {
+async function cb_buy(ctx: BotContext) {
   return await ctx.reply(
     "Enter a valid Monad token address:\n(temp example: TUFonyWZ4Tza5MzgDj6g2u5rfdGoRVYG7g)"
   );
@@ -175,5 +168,18 @@ async function cb_buy(ctx: CallbackQueryContext<BotContext>) {
 
 bot.callbackQuery("cb_buy", cb_buy);
 
+
+// TODO: DON"T KNOW WHAT THIS IS
+async function load_token(ctx: BotContext) {
+    if (!ctx?.message?.text) return;
+  
+    const token = ctx?.message.text?.trim();
+    ctx.session.selectedToken = token;
+  
+    return await buyTrx(ctx);
+  }
+  
+bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);
+  
 // @ts-ignore
 // console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded

@@ -26,7 +26,7 @@ async function fetchSlippageByButtonId(
   return 0;
 }
 
-export async function slippageConversation(
+export async function conversation_buySlippage(
   conversation: BotConversation,
   ctx: BotContext
 ) {
@@ -49,13 +49,14 @@ export async function slippageConversation(
 
       const customSlippage = parseFloat(message?.text || "0");
 
-      if (isNaN(customSlippage) || customSlippage <= 0) {
+      if (isNaN(customSlippage) || customSlippage < 0) {
         return await ctx.reply(
           "Invalid slippage value. Please enter a valid percentage."
         );
       }
 
       ctx.session.buyslippage = customSlippage;
+
       const prisma = getPrismaClientSingleton();
       const updatedSettings = await prisma.settings.update({
         where: { userId: userId.toString() },
@@ -100,7 +101,7 @@ Buy Menu - Slippage Conversation
 **************************************************
 */
 
-bot.use(createConversation(slippageConversation, "conversation_buySlippage"));
+bot.use(createConversation(conversation_buySlippage, "conversation_buySlippage"));
 bot.callbackQuery("cb_buy_slippagebutton", async (ctx) => {
   await ctx.conversation.enter("conversation_buySlippage");
   await ctx.answerCallbackQuery();

@@ -56,7 +56,7 @@ export async function conversation_buyTrx(
 
       const customAmount = parseFloat(message?.text || "0");
 
-      if (isNaN(customAmount) || customAmount <= 0) {
+      if (isNaN(customAmount) || customAmount < 0) {
         return await ctx.reply("Invalid amount. Please enter a valid number.");
       }
 
