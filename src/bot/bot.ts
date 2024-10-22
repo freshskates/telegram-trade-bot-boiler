@@ -52,7 +52,7 @@ bot.use(routerRoot);
 
 bot.use(mainMenu);
 bot.command("_test", (ctx) =>
-    ctx.reply("Testing menu", { reply_markup: mainMenu })
+  ctx.reply("Testing menu", { reply_markup: mainMenu })
 );
 
 /* 
@@ -358,27 +358,26 @@ Other
 // });
 
 bot.catch((err) => {
-    const ctx = err.ctx;
-    console.error(`Error while handling update ${ctx.update.update_id}:`);
-    const e = err.error;
-    if (e instanceof GrammyError) {
-        console.error("Error in request:", e.description);
-    } else if (e instanceof HttpError) {
-        console.error("Could not contact Telegram:", e);
-    } else {
-        console.error("Unknown error:", e);
-    }
+  const ctx = err.ctx;
+  console.error(`Error while handling update ${ctx.update.update_id}:`);
+  const e = err.error;
+  if (e instanceof GrammyError) {
+    console.error("Error in request:", e.description);
+  } else if (e instanceof HttpError) {
+    console.error("Could not contact Telegram:", e);
+  } else {
+    console.error("Unknown error:", e);
+  }
 });
 
 async function start_bot() {
-    Promise.all([
-        await bot.start({
-            onStart(botInfo) {
-                console.table(botInfo),
-                console.log(new Date(), "Bot is running.")
-            }
-        }),
-    ]);
+  Promise.all([
+    await bot.start({
+      onStart(botInfo) {
+        console.table(botInfo), console.log(new Date(), "Bot is running.");
+      },
+    }),
+  ]);
 }
 
 export default start_bot;

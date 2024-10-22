@@ -35,19 +35,28 @@ model Settings {
   autoBuyTrx Float   @default(100)
 
   // slippage
+  selectedBuySlippage Float @default(0)
+  slippageBuyCustom Float @default(0)
   slippageBuy Float    @default(10)
+
+  selectedSellSlippage Float @default(0)
   slippageSell Float   @default(10)
+  slippageSellCustom Float @default(0)
 
   // button layout [buy]
+  selectedBuy Float   @default(0)
   buyTopLeftX Float    @default(100)
   buyTopCenterX Float  @default(500)
   buyTopRightX Float   @default(1000)
   buyBottomLeftX Float @default(1000)
   buyBottomRightX Float @default(5000)
+  buyCustomX Float      @default(0)
 
   // button layout [sell]
+  selectedSellPercent      Float   @default(0)
   sellLeftPercentX  Float   @default(100)
   sellRightPercentX Float   @default(100)
+  sellCustomX       Float   @default(0)
 
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

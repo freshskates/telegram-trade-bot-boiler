@@ -28,5 +28,3 @@ export function formatNumber(num: number) {
 
   return formattedNumber;
 }
-
-// Example usage:
