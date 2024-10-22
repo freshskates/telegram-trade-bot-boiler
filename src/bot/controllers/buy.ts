@@ -109,54 +109,36 @@ export const buyTrx = async (ctx: BotContext, edit: boolean = false) => {
     ],
   ];
 
+  const headerText = `
+Buy \$${
+    tokenDetails.token.name
+  } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
+\`${tokenAddress}\`
+  
+Balance: *${walletBalance.monadBalance} MONAD* 
+Price: *\$${formatNumber(
+    tokenDetails.token.priceInUsd
+  )}* — VOL: *\$${formatNumber(
+    tokenDetails.token.volume24h
+  )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
+  
+// insert quote details here
+        `;
+
   if (!edit) {
-    await ctx.reply(
-      `
-Buy \$${
-        tokenDetails.token.name
-      } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
-\`${tokenAddress}\`
-  
-Balance: *${walletBalance.monadBalance} MONAD* 
-Price: *\$${formatNumber(
-        tokenDetails.token.priceInUsd
-      )}* — VOL: *\$${formatNumber(
-        tokenDetails.token.volume24h
-      )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
-  
-// insert quote details here
-        `,
-      {
-        parse_mode: "Markdown",
-        reply_markup: {
-          inline_keyboard: inlineKeyboard,
-        },
-      }
-    );
+    await ctx.reply(headerText, {
+      parse_mode: "Markdown",
+      reply_markup: {
+        inline_keyboard: inlineKeyboard,
+      },
+    });
   } else {
-    await ctx.editMessageText(
-      `
-Buy \$${
-        tokenDetails.token.name
-      } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
-\`${tokenAddress}\`
-
-Balance: *${walletBalance.monadBalance} MONAD* 
-Price: *\$${formatNumber(
-        tokenDetails.token.priceInUsd
-      )}* — VOL: *\$${formatNumber(
-        tokenDetails.token.volume24h
-      )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
-
-// insert quote details here
-        `,
-      {
-        parse_mode: "Markdown",
-        reply_markup: {
-          inline_keyboard: inlineKeyboard,
-        },
-      }
-    );
+    await ctx.editMessageText(headerText, {
+      parse_mode: "Markdown",
+      reply_markup: {
+        inline_keyboard: inlineKeyboard,
+      },
+    });
   }
 };
 

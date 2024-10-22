@@ -11,10 +11,10 @@
     "bs58": "^6.0.0",
     "grammy": "^1.29.0",
     "jsdom": "^25.0.0",
-    "tronweb": "^5.3.2",
     "typescript": "^5.5.4"
   },
   "scripts": {
+    "buildandstart": "npm run build && npm start",
     "start": "node ./dist/main.js",
     "build": "tsc",
     "dev": "tsx watch ./src/main.ts",

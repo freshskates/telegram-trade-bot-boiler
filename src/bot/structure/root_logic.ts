@@ -10,6 +10,7 @@ async function start(ctx: BotContext, next: NextFunction | null = null) {
     throw Error("No user ID"); // TODO: DO PROPER LOGGING
   }
 
+  console.log(ctx.session.user, "uiser");
   const wallet = ctx.session.user.walletPb;
 
   const balance = await MonadClient.checkMonadBalance(wallet);
@@ -95,6 +96,11 @@ const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
     },
   });
 };
+
+bot.callbackQuery("cb_refresh", async (ctx) => {
+  await start(ctx);
+  await ctx.answerCallbackQuery();
+});
 
 const RootLogic = {
   start: start,
