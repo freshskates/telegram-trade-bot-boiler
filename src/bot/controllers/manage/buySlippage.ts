@@ -67,7 +67,7 @@ export async function conversation_buySlippage(
       });
 
       await ctx.reply(`You have selected to use ${customSlippage}% slippage.`);
-      await buy.buyTrx(ctx, true);
+      await buy.displayBuyToken(ctx, true);
 
       return;
     } else {
@@ -88,7 +88,7 @@ export async function conversation_buySlippage(
 
       // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
       ctx.session.buyslippage = slippage;
-      await buy.buyTrx(ctx, true);
+      await buy.displayBuyToken(ctx, true);
 
       return;
     }

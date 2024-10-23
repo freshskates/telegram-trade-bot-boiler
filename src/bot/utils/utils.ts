@@ -18,6 +18,7 @@ interface SessionData {
     sellslippage?: number;
 
     favoriteIds: string[];
+    _TEST: string,
 }
 
 export type BotContext = (

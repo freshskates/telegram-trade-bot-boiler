@@ -101,7 +101,7 @@ Basic Buttons
 //     )
 // );
 
-// bot.callbackQuery("cb_swap_buy", async (ctx) => {
+// bot.callbackQuery("cb_buy_buy", async (ctx) => {
 //     await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
 //     await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
 //     await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);
@@ -259,30 +259,30 @@ Buy Trx Conversation
 */
 
 // bot.use(
-//     createConversation(buyAmount.buyTrxConversation, "conversation_swapAmount")
+//     createConversation(buyAmount.buyTrxConversation, "conversation_buyToken")
 // );
-// bot.callbackQuery("cb_swap_buybutton_tl", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapAmount");
+// bot.callbackQuery("cb_buyToken_tl", async (ctx) => {
+//     await ctx.conversation.enter("conversation_buyToken");
 // });
 
-// bot.callbackQuery("cb_swap_buybutton_tc", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapAmount");
+// bot.callbackQuery("cb_buyToken_tc", async (ctx) => {
+//     await ctx.conversation.enter("conversation_buyToken");
 // });
 
-// bot.callbackQuery("cb_swap_buybutton_tr", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapAmount");
+// bot.callbackQuery("cb_buyToken_tr", async (ctx) => {
+//     await ctx.conversation.enter("conversation_buyToken");
 // });
 
-// bot.callbackQuery("cb_swap_buybutton_bl", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapAmount");
+// bot.callbackQuery("cb_buyToken_bl", async (ctx) => {
+//     await ctx.conversation.enter("conversation_buyToken");
 // });
 
-// bot.callbackQuery("cb_swap_buybutton_br", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapAmount");
+// bot.callbackQuery("cb_buyToken_br", async (ctx) => {
+//     await ctx.conversation.enter("conversation_buyToken");
 // });
 
-// bot.callbackQuery("cb_swap_buybutton_x", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapAmount");
+// bot.callbackQuery("cb_buyToken_x", async (ctx) => {
+//     await ctx.conversation.enter("conversation_buyToken");
 // });
 
 /* 

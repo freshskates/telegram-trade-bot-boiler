@@ -16,7 +16,7 @@ Joseph's Notes
                     Ties Name of the 
                         Callback identifer
                         Callback function
-            
+        
             Router
                 Notes:
                     Unlike express's Router, it requires a function that deals with ctx and returns a MaybePromise<string | undefined>
@@ -29,6 +29,100 @@ Joseph's Notes
                 reference:
                     https://www.npmjs.com/package/@grammyjs/router
 
+
+            Inline Keyboard (It's actual buttons)
+            
+                Date Today:
+                    10/22/2024
+
+                Joseph Notes:
+                    The style is what matters, but what it can do is not really useful.
+                Notes:
+                    
+                    inline keyboard data
+                    
+                        Date Today:
+                            10/22/2024
+                        Notes:
+                            If you want this style
+                                const inlineKeyboard = [
+                                    [
+                                        {
+                                            text: "Text 1",
+                                            callback_data: "callback_whatever_1",
+                                            url:"...",
+                                            web_app:"...",
+                                            login_url:"...",
+                                            switch_inline_query:"...",
+                                            switch_inline_query_current_chat:"...",
+                                            switch_inline_query_chosen_chat:"...",
+                                            callback_game:"...",
+                                            pay:"...",
+
+
+                                        },
+                                        {
+                                            text: "Text 2",
+                                            callback_data: "callback_whatever_2",
+                                            url:"..."
+                                            web_app:"...",
+                                            ...
+                                        },
+                                    ],
+                                    [...]
+                                ]
+
+                            If you want to communicate data when the button is clicked like the above, look at the source code of
+                                InlineKeyboardButton[][]
+                                InlineKeyboardButton
+
+                            You can't import the above, and the documentation is shit (https://grammy.dev/ref/types/inlinekeyboardbutton), 
+                            so you have to copy the below example and use your IDE to jump to "reply_markup" then find "InlineKeyboardButton" 
+                            and then IDE jump to it to find the source code
+                            
+
+                                // Send inline keyboard with message.
+                                await ctx.reply(text, {
+                                    reply_markup: inlineKeyboard,
+                                });
+
+                            The code came from https://grammy.dev/plugins/keyboard#sending-an-inline-keyboard
+                            
+                        Reference:
+                            
+
+                    Adding additional data along side callback_data to then be received by bot.callbackQuery
+                    
+                        Date Today:
+                            10/22/2024
+                        Notes:
+                            There is no way to add additional data along side callback_data that would then be received by bot.callbackQuery without
+                            making typescript complain.
+
+                            Ways tried
+                                1.  Adding additional data to inlineKeyboard = [[{text:"...", callback_data:"...", new_data_wont_be_recorded:"..."}],[...]]
+
+                                2.  "class StringContainer extends String". grammyjs's "interface CallbackButton extends AbstractInlineKeyboardButton" does not like String Objects only
+                                    String literals (primitive strings). This means you cannot use pseudo-strings that contain more information about the call.
+
+                                3.  Using the other properties such as "web_app" and "callback_game" to send additional data. This does not work.
+                            Ways not tried
+                                1.  Python style Descriptors, I don't think JS descriptors are as powerful.
+
+                        Reference:
+                            
+                Reference:
+                    https://grammy.dev/plugins/keyboard#inline-keyboards
+
+            Custom Keyboard (It's buttons within the message)
+            
+                Date Today:
+                    10/22/2024
+                Notes:
+                    
+                Reference:
+                    
+                    https://grammy.dev/plugins/keyboard#custom-keyboards
 
             Example of a good initialization file for bot (1)
                 Date Today:
