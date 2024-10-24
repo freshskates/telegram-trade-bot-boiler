@@ -101,7 +101,7 @@ Basic Buttons
 //     )
 // );
 
-// bot.callbackQuery("cb_buy_buy", async (ctx) => {
+// bot.callbackQuery("cb_swapBuyToken_swap", async (ctx) => {
 //     await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
 //     await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
 //     await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);
@@ -244,11 +244,11 @@ Buy Menu - Slippage Conversation
 //         "conversation_buySlippage"
 //     )
 // );
-// bot.callbackQuery("cb_buy_slippagebutton", async (ctx) => {
+// bot.callbackQuery("cb_swapBuyToken_slippage", async (ctx) => {
 //     await ctx.conversation.enter("conversation_buySlippage");
 // });
 
-// bot.callbackQuery("cb_buy_slippagebutton_x", async (ctx) => {
+// bot.callbackQuery("cb_swapBuyToken_slippage_x", async (ctx) => {
 //     await ctx.conversation.enter("conversation_buySlippage");
 // });
 
@@ -259,30 +259,30 @@ Buy Trx Conversation
 */
 
 // bot.use(
-//     createConversation(buyAmount.buyTrxConversation, "conversation_buyToken")
+//     createConversation(buyAmount.buyTrxConversation, "conversation_swapBuyToken")
 // );
-// bot.callbackQuery("cb_buyToken_tl", async (ctx) => {
-//     await ctx.conversation.enter("conversation_buyToken");
+// bot.callbackQuery("cb_swapBuyToken_tl", async (ctx) => {
+//     await ctx.conversation.enter("conversation_swapBuyToken");
 // });
 
-// bot.callbackQuery("cb_buyToken_tc", async (ctx) => {
-//     await ctx.conversation.enter("conversation_buyToken");
+// bot.callbackQuery("cb_swapBuyToken_tc", async (ctx) => {
+//     await ctx.conversation.enter("conversation_swapBuyToken");
 // });
 
-// bot.callbackQuery("cb_buyToken_tr", async (ctx) => {
-//     await ctx.conversation.enter("conversation_buyToken");
+// bot.callbackQuery("cb_swapBuyToken_tr", async (ctx) => {
+//     await ctx.conversation.enter("conversation_swapBuyToken");
 // });
 
-// bot.callbackQuery("cb_buyToken_bl", async (ctx) => {
-//     await ctx.conversation.enter("conversation_buyToken");
+// bot.callbackQuery("cb_swapBuyToken_bl", async (ctx) => {
+//     await ctx.conversation.enter("conversation_swapBuyToken");
 // });
 
-// bot.callbackQuery("cb_buyToken_br", async (ctx) => {
-//     await ctx.conversation.enter("conversation_buyToken");
+// bot.callbackQuery("cb_swapBuyToken_br", async (ctx) => {
+//     await ctx.conversation.enter("conversation_swapBuyToken");
 // });
 
-// bot.callbackQuery("cb_buyToken_x", async (ctx) => {
-//     await ctx.conversation.enter("conversation_buyToken");
+// bot.callbackQuery("cb_swapBuyToken_x", async (ctx) => {
+//     await ctx.conversation.enter("conversation_swapBuyToken");
 // });
 
 /* 

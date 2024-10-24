@@ -3,7 +3,7 @@ import { MonadClient } from "../../clients/monad";
 import bot from "../bot_init";
 import { BotContext } from "../utils/utils";
 
-async function cb_buy_buy(ctx: BotContext) {
+async function cb_swapBuyToken_swap(ctx: BotContext) {
   await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
   await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
   await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);
@@ -55,4 +55,4 @@ async function cb_buy_buy(ctx: BotContext) {
 
   await ctx.answerCallbackQuery();
 }
-bot.callbackQuery("cb_buy_buy", cb_buy_buy);
+bot.callbackQuery("cb_swapBuyToken_swap", cb_swapBuyToken_swap);

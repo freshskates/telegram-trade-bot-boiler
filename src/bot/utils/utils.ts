@@ -17,8 +17,11 @@ interface SessionData {
     sellpercent?: number;
     sellslippage?: number;
 
+    swapBuyTokenUpdated: boolean;
+
+    ////////////////// IGNORE THE BELOW 
     favoriteIds: string[];
-    _TEST: string,
+    
 }
 
 export type BotContext = (

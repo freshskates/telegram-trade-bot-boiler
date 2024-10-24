@@ -2,7 +2,7 @@ import { createConversation } from "@grammyjs/conversations";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
 import bot from "../../bot_init";
-import { buy } from "../buy";
+import { displaySwapBuyToken } from "../displaySwapBuyToken";
 
 async function getTokenAmountFromCallbackData(
     userId: string,
@@ -21,22 +21,22 @@ async function getTokenAmountFromCallbackData(
     }
 
     switch (CallbackData) {
-        case "cb_buyToken_tl":
+        case "cb_swapBuyToken_tl":
             return userSettings.buyTopLeftX;
-        case "cb_buyToken_tc":
+        case "cb_swapBuyToken_tc":
             return userSettings.buyTopCenterX;
-        case "cb_buyToken_tr":
+        case "cb_swapBuyToken_tr":
             return userSettings.buyTopRightX;
-        case "cb_buyToken_bl":
+        case "cb_swapBuyToken_bl":
             return userSettings.buyBottomLeftX;
-        case "cb_buyToken_br":
+        case "cb_swapBuyToken_br":
             return userSettings.buyBottomRightX;
         default:
             throw new Error("Invalid button ID");
     }
 }
 
-export async function conversation_buyToken(
+export async function conversation_swapBuyToken(
     conversation: BotConversation,
     ctx: BotContext
 ) {
@@ -49,7 +49,10 @@ export async function conversation_buyToken(
     }
 
     if (callbackData) {
-        if (callbackData === "cb_buyToken_x") {
+
+        const PRISMA_CLIENT = getPrismaClientSingleton();
+
+        if (callbackData === "cb_swapBuyToken_x") {
             await ctx.reply("Please enter the amount of TRX you wish to buy:");
 
             const { message } = await conversation.wait();
@@ -66,16 +69,16 @@ export async function conversation_buyToken(
 
             ctx.session.buyamount = customAmount;
 
-            const prisma = getPrismaClientSingleton();
-            const updatedSettings = await prisma.settings.update({
+            const updatedSettings = await PRISMA_CLIENT.settings.update({
                 where: { userId: userId.toString() },
                 data: {
                     buyCustomX: customAmount,
                     selectedBuy: customAmount,
                 },
             });
-
-            await buy.displayBuyToken(ctx, true);
+            
+            ctx.session.swapBuyTokenUpdated = true;
+            await displaySwapBuyToken.displaySwapBuyToken(ctx);
 
             return;
         } else {
@@ -87,15 +90,15 @@ export async function conversation_buyToken(
 
                 ctx.session.buyamount = tokenBuyAmount;
 
-                const prisma = getPrismaClientSingleton();
-                const updatedSettings = await prisma.settings.update({
+                const updatedSettings = await PRISMA_CLIENT.settings.update({
                     where: { userId: userId.toString() },
                     data: {
                         selectedBuy: tokenBuyAmount,
                     },
                 });
-
-                await buy.displayBuyToken(ctx, true);
+                
+                ctx.session.swapBuyTokenUpdated = true;
+                await displaySwapBuyToken.displaySwapBuyToken(ctx);
             } catch (error) {
                 await ctx.reply(
                     "An error occurred while fetching your settings."
@@ -112,34 +115,34 @@ Buy Trx Conversation
 **************************************************
 */
 
-bot.use(createConversation(conversation_buyToken, "conversation_buyToken"));
+bot.use(createConversation(conversation_swapBuyToken, "conversation_swapBuyToken"));
 
-bot.callbackQuery("cb_buyToken_tl", async (ctx) => {
-    await ctx.conversation.enter("conversation_buyToken");
+bot.callbackQuery("cb_swapBuyToken_tl", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapBuyToken");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_buyToken_tc", async (ctx) => {
-    await ctx.conversation.enter("conversation_buyToken");
+bot.callbackQuery("cb_swapBuyToken_tc", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapBuyToken");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_buyToken_tr", async (ctx) => {
-    await ctx.conversation.enter("conversation_buyToken");
+bot.callbackQuery("cb_swapBuyToken_tr", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapBuyToken");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_buyToken_bl", async (ctx) => {
-    await ctx.conversation.enter("conversation_buyToken");
+bot.callbackQuery("cb_swapBuyToken_bl", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapBuyToken");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_buyToken_br", async (ctx) => {
-    await ctx.conversation.enter("conversation_buyToken");
+bot.callbackQuery("cb_swapBuyToken_br", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapBuyToken");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_buyToken_x", async (ctx) => {
-    await ctx.conversation.enter("conversation_buyToken");
+bot.callbackQuery("cb_swapBuyToken_x", async (ctx) => {
+    await ctx.conversation.enter("conversation_swapBuyToken");
     await ctx.answerCallbackQuery();
 });

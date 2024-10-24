@@ -8,7 +8,7 @@ import bot from "../bot_init";
 
 
 
-async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
+async function _displaySwapBuyToken(ctx: BotContext, edit: boolean = false) {
     const tokenAddress = ctx.session.selectedToken;
     const userId = ctx.from?.id;
 
@@ -45,7 +45,7 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
             },
             {
                 text: "Refresh",
-                callback_data: "cb_swap_refresh",
+                callback_data: "cb_swapBuyToken_refresh",
 
             },
         ],
@@ -54,7 +54,7 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
                 text: `${
                     ctx.session.buyamount === userSettings.buyTopLeftX ? "✅ " : ""
                 }Buy ${userSettings.buyTopLeftX} MON`,
-                callback_data: "cb_buyToken_tl",
+                callback_data: "cb_swapBuyToken_tl",
             },
             {
                 text: `${
@@ -62,13 +62,13 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
                         ? "✅ "
                         : ""
                 }Buy ${userSettings.buyTopCenterX} MON`,
-                callback_data: "cb_buyToken_tc",
+                callback_data: "cb_swapBuyToken_tc",
             },
             {
                 text: `${
                     ctx.session.buyamount === userSettings.buyTopRightX ? "✅ " : ""
                 }Buy ${userSettings.buyTopRightX} MON`,
-                callback_data: "cb_buyToken_tr",
+                callback_data: "cb_swapBuyToken_tr",
             },
         ],
         [
@@ -78,7 +78,7 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
                         ? "✅ "
                         : ""
                 }Buy ${userSettings.buyBottomLeftX} MON`,
-                callback_data: "cb_buyToken_bl",
+                callback_data: "cb_swapBuyToken_bl",
             },
             {
                 text: `${
@@ -86,7 +86,7 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
                         ? "✅ "
                         : ""
                 }Buy ${userSettings.buyBottomRightX} MON`,
-                callback_data: "cb_buyToken_br",
+                callback_data: "cb_swapBuyToken_br",
             },
             {
                 text: `${
@@ -94,7 +94,7 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
                 }Buy ${
                     userSettings.buyCustomX <= 0 ? "X" : userSettings.buyCustomX
                 } MON ✏️`,
-                callback_data: "cb_buyToken_x",
+                callback_data: "cb_swapBuyToken_x",
             },
         ],
         [
@@ -104,7 +104,7 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
                         ? "✅ "
                         : ""
                 }${userSettings.slippageBuy}% Slippage`,
-                callback_data: "cb_buy_slippagebutton",
+                callback_data: "cb_swapBuyToken_slippage",
             },
             {
                 text: `${
@@ -116,13 +116,13 @@ async function displayBuyToken(ctx: BotContext, edit: boolean = false) {
                         ? "X%"
                         : userSettings.slippageBuyCustom
                 }% Slippage ✏️`,
-                callback_data: "cb_buy_slippagebutton_x",
+                callback_data: "cb_swapBuyToken_slippage_x",
             },
         ],
         [
             {
-                text: "Buy",
-                callback_data: "cb_buy_buy",
+                text: "Swap",
+                callback_data: "cb_swapBuyToken_swap",
             },
         ],
     ];
@@ -160,11 +160,11 @@ Price: *\$${formatNumber(
     }
 }
 
-const buy = {
-    displayBuyToken: displayBuyToken,
+const displaySwapBuyToken = {
+    displaySwapBuyToken: _displaySwapBuyToken,
 };
 
-export { buy };
+export { displaySwapBuyToken };
 
 /* 
 **************************************************
@@ -181,14 +181,14 @@ async function cb_buy(ctx: BotContext) {
 
 bot.callbackQuery("cb_buy", cb_buy);
 
-// TODO: DON"T KNOW WHAT THIS IS
+// TODO: CHANGE THIS FROM REGEX TO A CONVERSATION
 async function load_token(ctx: BotContext) {
     if (!ctx?.message?.text) return;
 
     const token = ctx?.message.text?.trim();
     ctx.session.selectedToken = token;
 
-    return await displayBuyToken(ctx);
+    return await _displaySwapBuyToken(ctx);
 }
 
 bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);
