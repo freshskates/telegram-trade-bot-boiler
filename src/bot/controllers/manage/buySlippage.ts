@@ -2,7 +2,7 @@ import { createConversation } from "@grammyjs/conversations";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
 import bot from "../../bot_init";
-import { displaySwapBuyToken } from "../displaySwapBuyToken";
+import { displaySwapBuyToken } from "../../display/displaySwapBuyToken";
 
 async function fetchSlippageByButtonId(
   userId: string,

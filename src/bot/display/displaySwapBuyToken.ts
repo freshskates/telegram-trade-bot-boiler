@@ -8,7 +8,7 @@ import bot from "../bot_init";
 
 
 
-async function _displaySwapBuyToken(ctx: BotContext, edit: boolean = false) {
+async function _displaySwapBuyToken(ctx: BotContext) {
     const tokenAddress = ctx.session.selectedToken;
     const userId = ctx.from?.id;
 
@@ -143,7 +143,7 @@ Price: *\$${formatNumber(
 // insert quote details here
         `;
 
-    if (!edit) {
+    if (ctx.session.swapBuyTokenUpdated) {
         await ctx.reply(headerText, {
             parse_mode: "Markdown",
             reply_markup: {
@@ -158,6 +158,7 @@ Price: *\$${formatNumber(
             },
         });
     }
+    ctx.session.swapBuyTokenUpdated = false
 }
 
 const displaySwapBuyToken = {
