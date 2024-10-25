@@ -28,13 +28,25 @@ async function main(){
     ****************************************************************************************************
     */
 
-    // Session Middleware
+    /*
+    Session Middleware
+
+    Reference:
+        Initial Session Data 
+        
+            Date Today:
+                10/25/2024
+            Notes:
+                Proper way of adding sessiosn
+            Reference:
+                https://grammy.dev/plugins/session#initial-session-data
+    */
     bot.use(
         // Session middleware provides a persistent data storage for your bot.
         session({
             // initial option in the configuration object, which correctly initializes session objects for new chats.
             initial() {
-                return {}; // return empty object for now
+                return {}; // return empty object (The object created here must always be a new object and not referenced outsied this function otherwise you might share data ) 
             },
         })
     );
