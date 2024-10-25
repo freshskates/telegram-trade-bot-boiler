@@ -17,8 +17,7 @@ Important Notes:
 Notes:
 
 */
-import { log } from 'console';
-import * as fs from 'fs/promises';
+import * as fs from "fs/promises";
 
 import path, { resolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -71,53 +70,96 @@ async function get_files_from_dir_all(directory: string): Promise<string[]> {
     return array_path_file;
 }
 
-
 /**
- * Description placeholder
+ * Check if a module is loaded...
  *
  * Refernece:
- *      Module API to check if a module has been loaded #1381 
+ *      Module API to check if a module has been loaded #1381
  *          Date Today:
  *              10/18/2024
  *          Notes:
- *             
+ *
  *          Reference:
  *              https://github.com/nodejs/node/issues/1381
- * 
+ *
  * @async
  * @param {string} path_module
  * @returns {Promise<boolean>}
  */
-async function check_if_module_is_loaded(path_module: string): Promise<boolean>{
-
+async function check_if_module_is_loaded(
+    path_module: string
+): Promise<boolean> {
     try {
         // Check if the module is in the cache
         return !!require.cache[require.resolve(path_module)];
     } catch (error) {
-        
         // If require.resolve throws an error, the module is not loaded
         return false;
-    } 
+    }
 }
-
 
 //@ts-ignore
 const PATH_FILE_THIS_FILE = fileURLToPath(import.meta.url);
 const PATH_DIRECTORY_THIS_FILE = path.dirname(PATH_FILE_THIS_FILE);
 const ARRAY_FILE_EXTENSION = [".ts", ".js"];
 
+interface ModuleContainer {
+    message: string;
+    module: string | null;
+    path: string;
+}
+
+async function _load_module(
+    path_: string,
+    array_path_file_to_ignore: string[]
+): Promise<ModuleContainer> {
+    // Skip files that should be ignored (Should be used to prevent recursively importing)
+
+    await new Promise(r => setTimeout(r, 4000));
+    if (array_path_file_to_ignore.includes(path_)) {
+        return { message: "Module ingorned", module: null, path: path_ };
+    }
+
+    // Skip already loaded modules
+    if (await check_if_module_is_loaded(path_)) {
+        return { message: "Module already loaded", module: null, path: path_ };
+    }
+    
+    const full_file_path = resolve(path_);
+
+    // Skip importing this file (as in this actual file) to prevent recursively importing files
+    if (PATH_FILE_THIS_FILE.localeCompare(full_file_path) == 0) {
+        return { message: "Module is this file", module: null, path: path_ };
+    }
+
+    const path_file = pathToFileURL(full_file_path).href;
+
+    // Import module
+    const module = await import(path_file);
+
+    return { message: "Module loaded", module: module, path: path_ };
+}
 
 /**
  * Load modules without explicitly importing given a directory path
+ * Notes:
+ *      This function will properly load the modules in parallel.
+ *      Use the code below to test it
+ *          await new Promise(r => setTimeout(r, 2000));
  * 
- * Notes:  
- *
+ * Reference:
+ *      What is the JavaScript version of sleep()?
+ *          Reference:
+ *              https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+ * 
  * @async
  * @param {string} [path_directory_file=PATH_DIRECTORY_THIS_FILE]
+ * @param {string[]} [array_path_file_to_ignore=[]]
  * @returns {*}
  */
 async function auto_load_modules_from(
-    path_directory_file: string = PATH_DIRECTORY_THIS_FILE
+    path_directory_file: string = PATH_DIRECTORY_THIS_FILE,
+    array_path_file_to_ignore: string[] = []
 ) {
     let array_file: any[] = [];
 
@@ -135,36 +177,22 @@ async function auto_load_modules_from(
         return ARRAY_FILE_EXTENSION.includes(extention_of_file);
     });
 
-    for (const path of array_file_filtered) {
-        try {
-            
-            // Skip already loaded modules
-            if (await check_if_module_is_loaded(path)){
-                console.log(`Module already loaded: ${path} `);
-                continue
-            }
+    const array_promise_module_container: Promise<ModuleContainer>[] =
+        array_file_filtered.map((path_) => {
+            return _load_module(path_, array_path_file_to_ignore);
+        });
 
-            const full_file_path = resolve(path);
+    try {
+        const array_module_container: ModuleContainer[] = await Promise.all(
+            array_promise_module_container
+        );
 
-            // Skip importing this file (as in this actual file) to prevent recursive importing
-            if (PATH_FILE_THIS_FILE.localeCompare(full_file_path) == 0) {
-                continue;
-            }
-
-            const path_file = pathToFileURL(full_file_path).href;
-            
-            // Import module
-            const module = await import(path_file);
-
-            console.log(
-                "Module loaded:",
-                path_file
-                // module
-            );
-        } catch (error) {
-            // console.error('Error:', error);
-            throw error;
-        }
+        array_module_container.forEach((module_container: ModuleContainer) => {
+            console.log(`${module_container.message}:`, module_container.path);
+        });
+    } catch (error) {
+        // console.error('Error:', error);
+        throw error;
     }
 }
 

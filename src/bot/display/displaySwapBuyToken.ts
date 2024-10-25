@@ -5,9 +5,6 @@ import { BotContext } from "../../utils";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
 import bot from "../bot_init";
 
-
-
-
 async function _displaySwapBuyToken(ctx: BotContext) {
     const tokenAddress = ctx.session.selectedToken;
     const userId = ctx.from?.id;
@@ -143,7 +140,7 @@ Price: *\$${formatNumber(
 // insert quote details here
         `;
 
-    if (ctx.session.swapBuyTokenUpdated) {
+    if (!ctx.tempData.swapBuyTokenUpdated) {
         await ctx.reply(headerText, {
             parse_mode: "Markdown",
             reply_markup: {
@@ -158,7 +155,7 @@ Price: *\$${formatNumber(
             },
         });
     }
-    ctx.session.swapBuyTokenUpdated = false
+    ctx.tempData.swapBuyTokenUpdated = false
 }
 
 const displaySwapBuyToken = {
@@ -180,7 +177,7 @@ async function cb_buy(ctx: BotContext) {
     );
 }
 
-bot.callbackQuery("cb_buy", cb_buy);
+bot.callbackQuery("cb_root_swapBuyToken", cb_buy);
 
 // TODO: CHANGE THIS FROM REGEX TO A CONVERSATION
 async function load_token(ctx: BotContext) {

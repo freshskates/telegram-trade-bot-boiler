@@ -1,2 +1,2 @@
-export * from "../bot/utils/utils";
+export * from "../bot/utils/bot_utils";
 export * from "./types";

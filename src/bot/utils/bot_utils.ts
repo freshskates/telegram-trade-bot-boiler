@@ -17,16 +17,21 @@ interface SessionData {
     sellpercent?: number;
     sellslippage?: number;
 
-    swapBuyTokenUpdated: boolean;
+    
 
     ////////////////// IGNORE THE BELOW 
     favoriteIds: string[];
     
 }
 
+interface TempData {
+    swapBuyTokenUpdated: boolean;
+}
+
 export type BotContext = (
     Context &
     ConversationFlavor &
-    SessionFlavor<SessionData>
+    SessionFlavor<SessionData> &
+    {tempData: TempData}
 );
 export type BotConversation = Conversation<BotContext>;

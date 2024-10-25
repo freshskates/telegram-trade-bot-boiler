@@ -77,7 +77,7 @@ export async function conversation_swapBuyToken(
                 },
             });
             
-            ctx.session.swapBuyTokenUpdated = true;
+            ctx.tempData.swapBuyTokenUpdated = true;
             await displaySwapBuyToken.displaySwapBuyToken(ctx);
 
             return;
@@ -97,7 +97,7 @@ export async function conversation_swapBuyToken(
                     },
                 });
                 
-                ctx.session.swapBuyTokenUpdated = true;
+                ctx.tempData.swapBuyTokenUpdated = true;
                 await displaySwapBuyToken.displaySwapBuyToken(ctx);
             } catch (error) {
                 await ctx.reply(

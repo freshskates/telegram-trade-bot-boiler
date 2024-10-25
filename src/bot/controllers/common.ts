@@ -1,7 +1,7 @@
 import { CallbackQueryContext, Context } from "grammy";
 import { RootLogic } from "../structure/root_logic";
 import bot from "../bot_init";
-import { BotContext } from "../utils/utils";
+import { BotContext } from "../utils/bot_utils";
 // import { root } from ".";
 
 // Former was ctx: CallbackQueryContext<Context>
@@ -49,7 +49,7 @@ Join our Telegram group @electron and one of our admins can assist you.
   await ctx.answerCallbackQuery();
 };
 
-bot.callbackQuery("cb_help", cb_help);
+bot.callbackQuery("cb_root_help", cb_help);
 
 async function cb_restart (ctx: BotContext) {
   await ctx.deleteMessage();

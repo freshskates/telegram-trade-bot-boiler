@@ -144,7 +144,7 @@ export async function cb_settings(ctx: BotContext) {
   await ctx.answerCallbackQuery();
 }
 
-bot.callbackQuery("cb_settings", cb_settings);
 
+bot.callbackQuery("cb_root_settings", cb_settings);
 // @ts-ignore
 // console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded

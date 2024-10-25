@@ -36,27 +36,27 @@ Once done, tap refresh, and your balance will appear here.
           [
             {
               text: "Buy",
-              callback_data: "cb_buy",
+              callback_data: "cb_root_swapBuyToken",
             },
             {
               text: "Sell / Manage",
-              callback_data: "cb_tokens_owned",
+              callback_data: "cb_root_swapSellToken",
             },
           ],
           [
             {
               text: "Settings",
-              callback_data: "cb_settings",
+              callback_data: "cb_root_settings",
             },
           ],
           [
             {
               text: "Help",
-              callback_data: "cb_help",
+              callback_data: "cb_root_help",
             },
             {
               text: "Refresh",
-              callback_data: "cb_refresh",
+              callback_data: "cb_root_refresh",
             },
           ],
         ],
@@ -97,7 +97,12 @@ const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
   });
 };
 
-bot.callbackQuery("cb_refresh", async (ctx) => {
+// bot.callbackQuery("cb_root_settings", async (ctx: BotContext) =>{
+//   console.log("SDFSDFSDFSDF")
+//   ctx.answerCallbackQuery()
+// });
+
+bot.callbackQuery("cb_root_refresh", async (ctx) => {
   await start(ctx);
   await ctx.answerCallbackQuery();
 });

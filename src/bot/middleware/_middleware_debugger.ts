@@ -17,7 +17,7 @@ async function middleware_debugger(ctx: BotContext, next: NextFunction) {
 
     console.log("Printing ctx");
     console.log(ctx);
-    console.log("ctx?.message?.text", ctx?.message?.text);
+
 
     const date_formatted_2 = new Date()
         .toLocaleString("en-US", {
