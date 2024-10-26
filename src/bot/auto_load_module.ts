@@ -1,18 +1,24 @@
 /* 
 
-This file allows for the automatic importing of modules 
-
+This file allows for the automatic importing of modules.
 
 Purpose:
     In order for the "bot" variable to register callback functions, conversations, etc..
-    without importing them within the bot.ts file, this file was created to
-    import all files given a target directory. 
+    without importing them within the bot.ts file (which is the main file where everything bot related is usually put in) 
+    or any associated bot file such as bot router files, 
+    this file was created to import all files within a given target directory.
+    You can also exclude files by using their full path. 
 
-    Basically, because we don't want bot.ts to be populated with a bunch
-    of imports and bot registration of functionality, we 
+    Basically, because we don't want the bot.ts file, and any bot associated files like routers, to be populated with a bunch
+    of imports and registration of bot functionality, such as conversations and callbackQueries, 
+    we move the registration of the functionality to the files containing the actual functionality 
+    which should remove a lot of bloat within the bot.ts file and any bot.ts associated file.
+    Then this file should import those files containing the code registering the bot functionality and
+    the functionality itself.
 
 Important Notes:
     THIS FILE ASSUMES YOU ARE RUNNING USING Node.JS OTHERWISE THE CODE BELOW MIGHT NOT WORK.
+    If you're going to use Deno, modify this code to support it.
 
 Notes:
 
@@ -109,14 +115,13 @@ interface ModuleContainer {
     path: string;
 }
 
-
 /**
- * This function will properly load the modules in parallel
- * 
+ * This function will properly load the modules asynchronously
+ *
  * Notes:
  *      Use the code below to test it
  *          await new Promise(r => setTimeout(r, 2000));
- * 
+ *
  * Reference:
  *      What is the JavaScript version of sleep()?
  *          Reference:
@@ -129,13 +134,12 @@ async function _load_module(
     path_: string,
     array_path_file_to_ignore: string[]
 ): Promise<ModuleContainer> {
-    
-    /* TESTING IF THIS IS ACTUAL IN PARALLEL */  // YES IT'S IN PARALLEL
+    /* TESTING IF ASYNCHRONOUS */
     // console.log(`Start ${path_}`)
     // const time = Math.random() * 5000
     // await new Promise(r => setTimeout(r, time));
     // console.log(`End ${path_}: ${time} `)
-    
+
     // Skip files that should be ignored (Should be used to prevent recursively importing)
     if (array_path_file_to_ignore.includes(path_)) {
         return { message: "Module ingorned", module: null, path: path_ };
@@ -145,7 +149,7 @@ async function _load_module(
     if (await check_if_module_is_loaded(path_)) {
         return { message: "Module already loaded", module: null, path: path_ };
     }
-    
+
     const full_file_path = resolve(path_);
 
     // Skip importing this file (as in this actual file) to prevent recursively importing files
@@ -163,7 +167,7 @@ async function _load_module(
 
 /**
  * Load modules without explicitly importing given a directory path
- * 
+ *
  * @async
  * @param {string} [path_directory_file=PATH_DIRECTORY_THIS_FILE]
  * @param {string[]} [array_path_file_to_ignore=[]]
