@@ -8,76 +8,81 @@ datasource db {
 }
 
 model User {
-  id          String     @id
-  username    String     @default("anon")
-  walletPk    String     
-  walletPb    String     // ease of use? optional tbh
-  referredBy  String?
+  id         String  @id
+  username   String  @default("anon")
+  walletPk   String
+  walletPb   String // ease of use? optional tbh
+  referredBy String?
 
   // foreign keys
-  referrer    User?      @relation("UserReferrals", fields: [referredBy], references: [id])
-  referrals   User[]     @relation("UserReferrals")
-  settings    Settings?
-  positions   Position[] @relation("UserPositions")
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  referrer  User?      @relation("UserReferrals", fields: [referredBy], references: [id])
+  referrals User[]     @relation("UserReferrals")
+  settings  Settings?
+  positions Position[] @relation("UserPositions")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Settings {
-  id        String   @id @default(cuid())
-  userId    String   @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
   // gas fees in TRX
-  gasFee    Float    @default(70)
+  gasFee Float @default(70)
 
   // auto buy
-  autoBuy   Boolean  @default(false)
+  autoBuy    Boolean @default(false)
   autoBuyTrx Float   @default(100)
 
   // slippage
   selectedBuySlippage Float @default(0)
-  slippageBuyCustom Float @default(0)
-  slippageBuy Float    @default(10)
+  slippageBuyCustom   Float @default(0)
+  slippageBuy         Float @default(10)
 
   selectedSellSlippage Float @default(0)
-  slippageSell Float   @default(10)
-  slippageSellCustom Float @default(0)
+  slippageSell         Float @default(10)
+  slippageSellCustom   Float @default(0)
 
   // button layout [buy]
-  selectedBuy Float   @default(0)
-  buyTopLeftX Float    @default(100)
-  buyTopCenterX Float  @default(500)
-  buyTopRightX Float   @default(1000)
-  buyBottomLeftX Float @default(1000)
+  selectedBuy     Float @default(0)
+  buyTopLeftX     Float @default(100)
+  buyTopCenterX   Float @default(500)
+  buyTopRightX    Float @default(1000)
+  buyBottomLeftX  Float @default(1000)
   buyBottomRightX Float @default(5000)
-  buyCustomX Float      @default(0)
+  buyCustomX      Float @default(0)
 
   // button layout [sell]
-  selectedSellPercent      Float   @default(0)
-  sellLeftPercentX  Float   @default(100)
-  sellRightPercentX Float   @default(100)
-  sellCustomX       Float   @default(0)
+  selectedSellPercent Float @default(0)
+  sellLeftPercentX    Float @default(100)
+  sellRightPercentX   Float @default(100)
+  sellCustomX         Float @default(0)
 
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
 model Position {
-  id               String   @id @default(cuid())
-  tokenSymbol      String   // e.g., DOGE, SHIB, etc.
-  tokenAddress     String
-  initialTrx       Float    // TRX amount initially spent
-  initialToken     Float    // Tokens initially received
-  currentTrx       Float    // Current value in TRX (after partial or full sell)
-  currentToken     Float    // Current number of tokens held
+  id                   String  @id @default(cuid())
+  tokenSymbol          String // e.g., DOGE, SHIB, etc.
+  tokenAddress         String
+  initialTrx           Float // TRX amount initially spent
+  initialToken         Float // Tokens initially received
+  currentTrx           Float // Current value in TRX (after partial or full sell)
+  currentToken         Float // Current number of tokens held
   currentPricePerToken Float // The current price of the token in TRX (to calculate current value)
-  currentProfitLoss Float?  // Dynamic calculation of current profit or loss
-  closed           Boolean  @default(false)  // Indicates if the position is closed
-  userId           String
+  currentProfitLoss    Float? // Dynamic calculation of current profit or loss
+  closed               Boolean @default(false) // Indicates if the position is closed
+  userId               String
 
-  user             User     @relation("UserPositions", fields: [userId], references: [id])
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  user      User     @relation("UserPositions", fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
 }

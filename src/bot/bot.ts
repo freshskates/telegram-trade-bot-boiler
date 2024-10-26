@@ -9,6 +9,8 @@ import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataTo
 import routerRoot from "./structure/root_router";
 import middleware_debugger from "./middleware/_middleware_debugger";
 import { conversations } from "@grammyjs/conversations";
+import getPrismaClientSingleton from "../services/prisma_client_singleton";
+import { PrismaAdapter } from "@grammyjs/storage-prisma";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
@@ -40,6 +42,16 @@ async function main(){
                 Proper way of adding sessiosn
             Reference:
                 https://grammy.dev/plugins/session#initial-session-data
+
+        grammyjs Prisma example
+        
+            Date Today:
+                10/26/2024
+            Notes:
+                
+            Reference:
+                https://github.com/grammyjs/storages/tree/main/packages/prisma
+                https://www.npmjs.com/package/@grammyjs/storage-prisma
     */
     bot.use(
         // Session middleware provides a persistent data storage for your bot.
@@ -48,6 +60,7 @@ async function main(){
             initial() {
                 return {}; // return empty object (The object created here must always be a new object and not referenced outsied this function otherwise you might share data ) 
             },
+            storage: new PrismaAdapter(getPrismaClientSingleton().session)
         })
     );
 
@@ -115,7 +128,9 @@ async function main(){
     Catching callbackQuery callback_query that is not handled
 
     Notes:
-        Look at "Answering All Callback Queries"
+        Basically, you didn't handle the callbackQuery registered name (trigger name) 
+
+        Look at "Answering All Callback Queries" as it's the refernece for the below code
 
     Refernece:
         https://grammy.dev/plugins/keyboard#responding-to-inline-keyboard-clicks
@@ -132,9 +147,6 @@ async function main(){
                 "Warning: callback_query not handled:",
                 ctx.callbackQuery.data
             );
-            // console.log("FUCK");
-            // console.log(ctx.callbackQuery);
-            // console.log("YOU");
         }
         console.log(ctx);
 

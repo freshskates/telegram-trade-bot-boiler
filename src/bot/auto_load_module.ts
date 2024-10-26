@@ -109,13 +109,34 @@ interface ModuleContainer {
     path: string;
 }
 
+
+/**
+ * This function will properly load the modules in parallel
+ * 
+ * Notes:
+ *      Use the code below to test it
+ *          await new Promise(r => setTimeout(r, 2000));
+ * 
+ * Reference:
+ *      What is the JavaScript version of sleep()?
+ *          Reference:
+ *              https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep * @async
+ * @param {string} path_
+ * @param {string[]} array_path_file_to_ignore
+ * @returns {Promise<ModuleContainer>}
+ */
 async function _load_module(
     path_: string,
     array_path_file_to_ignore: string[]
 ): Promise<ModuleContainer> {
+    
+    /* TESTING IF THIS IS ACTUAL IN PARALLEL */  // YES IT'S IN PARALLEL
+    // console.log(`Start ${path_}`)
+    // const time = Math.random() * 5000
+    // await new Promise(r => setTimeout(r, time));
+    // console.log(`End ${path_}: ${time} `)
+    
     // Skip files that should be ignored (Should be used to prevent recursively importing)
-
-    await new Promise(r => setTimeout(r, 4000));
     if (array_path_file_to_ignore.includes(path_)) {
         return { message: "Module ingorned", module: null, path: path_ };
     }
@@ -142,15 +163,6 @@ async function _load_module(
 
 /**
  * Load modules without explicitly importing given a directory path
- * Notes:
- *      This function will properly load the modules in parallel.
- *      Use the code below to test it
- *          await new Promise(r => setTimeout(r, 2000));
- * 
- * Reference:
- *      What is the JavaScript version of sleep()?
- *          Reference:
- *              https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
  * 
  * @async
  * @param {string} [path_directory_file=PATH_DIRECTORY_THIS_FILE]

@@ -10,7 +10,7 @@ async function start(ctx: BotContext, next: NextFunction | null = null) {
     throw Error("No user ID"); // TODO: DO PROPER LOGGING
   }
 
-  console.log(ctx.session.user, "uiser");
+  console.log("Printing User",ctx.session.user);
   const wallet = ctx.session.user.walletPb;
 
   const balance = await MonadClient.checkMonadBalance(wallet);

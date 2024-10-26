@@ -29,6 +29,11 @@ back
 
 # Running this shit
 
+#### First run
+    npx prisma init
+    npx prisma db pull  # Will modify schema
+    npx prisma db introspect  # Will modify schema
+
 #### Before Running
 
     Get the .env
@@ -37,4 +42,5 @@ back
 
     npm install
     npx prisma generate
+    npx prisma migrate dev # Use if you updated tehe schema
     npm run dev

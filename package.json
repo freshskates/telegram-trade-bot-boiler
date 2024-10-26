@@ -4,6 +4,7 @@
     "@grammyjs/conversations": "^1.2.0",
     "@grammyjs/menu": "^1.2.2",
     "@grammyjs/router": "^2.0.0",
+    "@grammyjs/storage-prisma": "^2.4.2",
     "@noble/secp256k1": "^2.1.0",
     "@prisma/client": "^5.15.0",
     "axios": "^1.7.4",

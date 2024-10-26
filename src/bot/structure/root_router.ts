@@ -1,5 +1,5 @@
 import { Router } from "@grammyjs/router";
-import { BotContext } from "../utils/bot_utils";
+import { BotContext } from "../utils/utils";
 import { RootLogic } from "./root_logic";
 
 const routerRoot = new Router<BotContext>((ctx: BotContext)  => {

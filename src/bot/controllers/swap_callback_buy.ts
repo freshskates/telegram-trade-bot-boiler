@@ -1,7 +1,7 @@
 import { SwapClient } from "../../clients/swap";
 import { MonadClient } from "../../clients/monad";
 import bot from "../bot_init";
-import { BotContext } from "../utils/bot_utils";
+import { BotContext } from "../utils/utils";
 
 async function cb_swapBuyToken_swap(ctx: BotContext) {
   await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);

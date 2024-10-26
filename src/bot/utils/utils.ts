@@ -18,7 +18,6 @@ interface SessionData {
     sellslippage?: number;
 
     
-
     ////////////////// IGNORE THE BELOW 
     favoriteIds: string[];
     
