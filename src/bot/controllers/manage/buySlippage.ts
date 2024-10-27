@@ -67,6 +67,9 @@ export async function conversation_buySlippage(
       });
 
       await ctx.reply(`You have selected to use ${customSlippage}% slippage.`);
+      
+
+      
 
       ctx.tempData.swapBuyTokenUpdated = true;
       await displaySwapBuyToken.displaySwapBuyToken(ctx);

@@ -42,5 +42,8 @@ back
 
     npm install
     npx prisma generate
-    npx prisma migrate dev # Use if you updated tehe schema
+    npx prisma migrate dev  # Use if you updated the schema
+    npx prisma studio  # Use this to see the database
     npm run dev
+
+

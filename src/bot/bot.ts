@@ -1,21 +1,21 @@
+import { conversations } from "@grammyjs/conversations";
+import { PrismaAdapter } from "@grammyjs/storage-prisma";
+import ansiColors from "ansi-colors";
 import { GrammyError, HttpError, session } from "grammy";
 import path from "path";
 import { fileURLToPath } from "url";
+import getPrismaClientSingleton from "../services/prisma_client_singleton";
 import { BotContext } from "../utils";
 import mainMenu from "./_test";
 import auto_load_modules_from from "./auto_load_module";
 import bot from "./bot_init";
+import middleware_debugger from "./middleware/_middleware_debugger";
 import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataToCTX";
 import routerRoot from "./structure/root_router";
-import middleware_debugger from "./middleware/_middleware_debugger";
-import { conversations } from "@grammyjs/conversations";
-import getPrismaClientSingleton from "../services/prisma_client_singleton";
-import { PrismaAdapter } from "@grammyjs/storage-prisma";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
 // TODO: positions_cb?
-
 
 /**
  * This function was made to prevent typescirpt from complaining about Top-level 'await' expressions
@@ -23,7 +23,7 @@ import { PrismaAdapter } from "@grammyjs/storage-prisma";
  * @async
  * @returns {*}
  */
-async function main(){
+async function main() {
     /* 
     ****************************************************************************************************
     Middleware
@@ -58,9 +58,9 @@ async function main(){
         session({
             // initial option in the configuration object, which correctly initializes session objects for new chats.
             initial() {
-                return {}; // return empty object (The object created here must always be a new object and not referenced outsied this function otherwise you might share data ) 
+                return { good_one: 0 }; // return empty object (The object created here must always be a new object and not referenced outsied this function otherwise you might share data )
             },
-            storage: new PrismaAdapter(getPrismaClientSingleton().session)
+            storage: new PrismaAdapter(getPrismaClientSingleton().session),
         })
     );
 
@@ -75,7 +75,7 @@ async function main(){
 
     */
     bot.use(conversations()); // Note: External library stuff
-    
+
     // Append user to CTX (Context) Middleware
     bot.use(middlewareAddUserDataToCTX());
 
@@ -120,9 +120,9 @@ async function main(){
     );
 
     /*
-    ****************************************************************************************************
-    ****************************************************************************************************
-    */
+     ****************************************************************************************************
+     ****************************************************************************************************
+     */
 
     /* 
     Catching callbackQuery callback_query that is not handled
@@ -138,19 +138,19 @@ async function main(){
     bot.on("callback_query:data", async (ctx: BotContext) => {
         if (!ctx.callbackQuery) {
             console.log(
-                "\x1b[31m%s\x1b[0m",
-                "Warning: Something went wrong with callback_query"
+                ansiColors.bgRed(
+                    "Warning: Something went wrong with callback_query"
+                )
             );
         } else {
             console.log(
-                "\x1b[31m%s\x1b[0m",
-                "Warning: callback_query not handled:",
-                ctx.callbackQuery.data
+                ansiColors.bgRed("Warning: callback_query not handled:")
             );
+            console.log(ctx.callbackQuery.data);
         }
         console.log(ctx);
 
-        console.log("\x1b[31m%s\x1b[0m", "End of Warning");
+        console.log(ansiColors.bgRed("End of Warning"));
 
         await ctx.answerCallbackQuery(); // remove loading animation
     });
@@ -169,7 +169,6 @@ async function main(){
     });
 }
 async function start_bot() {
-
     await main();
 
     Promise.all([

@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { MonadClient } from "../../clients/monad";
-import { UserClient } from "../../clients/user";
+import { UserClient } from "../../clients/userClient";
 import { BotContext } from "../../utils";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
 import bot from "../bot_init";
@@ -140,7 +140,8 @@ Price: *\$${formatNumber(
 // insert quote details here
         `;
 
-    if (!ctx.tempData.swapBuyTokenUpdated) {
+    // This condition will catch false, null, and undefined
+    if (!ctx.tempData?.swapBuyTokenUpdated) {
         await ctx.reply(headerText, {
             parse_mode: "Markdown",
             reply_markup: {
@@ -156,6 +157,8 @@ Price: *\$${formatNumber(
         });
     }
     ctx.tempData.swapBuyTokenUpdated = false
+
+
 }
 
 const displaySwapBuyToken = {
@@ -185,6 +188,11 @@ async function load_token(ctx: BotContext) {
 
     const token = ctx?.message.text?.trim();
     ctx.session.selectedToken = token;
+
+    console.log("Printing ctx.tempData");
+    console.log(ctx.tempData);
+    console.log("Printing ctx.");
+    console.log(ctx);
 
     return await _displaySwapBuyToken(ctx);
 }

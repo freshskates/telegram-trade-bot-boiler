@@ -1,3 +1,4 @@
+import ansiColors from "ansi-colors";
 import { NextFunction } from "grammy";
 import { BotContext } from "../../utils";
 
@@ -13,11 +14,17 @@ async function middleware_debugger(ctx: BotContext, next: NextFunction) {
         })
         .replace(",", "");
 
-    console.log(`----- START OF DEBUGGING ${date_formatted_1} -----`);
+    console.log(
+        ansiColors.bgMagenta(
+            `----- START OF DEBUGGING ${date_formatted_1} -----`
+        )
+    );
 
-    console.log("Printing ctx");
+    console.log(ansiColors.blue("Printing ctx"));
     console.log(ctx);
 
+    console.log(ansiColors.blue("Printing ctx.session"));
+    console.log(ctx.session);
 
     const date_formatted_2 = new Date()
         .toLocaleString("en-US", {
@@ -30,7 +37,9 @@ async function middleware_debugger(ctx: BotContext, next: NextFunction) {
         })
         .replace(",", "");
 
-    console.log(`----- END OF DEBUGGING ${date_formatted_2} -----`);
+    console.log(
+        ansiColors.bgMagenta(`----- END OF DEBUGGING ${date_formatted_2} -----`)
+    );
 
     await next();
 }

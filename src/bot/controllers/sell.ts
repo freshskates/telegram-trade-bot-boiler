@@ -3,7 +3,7 @@ import { MonadClient } from "../../clients/monad";
 import getPrismaClientSingleton from "../../services/prisma_client_singleton";
 import { BotContext } from "../../utils";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
-import { UserClient } from "../../clients/user";
+import { UserClient } from "../../clients/userClient";
 
 async function start(ctx: BotContext, edit: boolean = false) {
   const tokenAddress = ctx.session.selectedToken;

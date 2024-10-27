@@ -81,8 +81,9 @@ model Position {
   updatedAt DateTime @updatedAt
 }
 
+// Reference: https://github.com/grammyjs/storages/tree/main/packages/prisma#usage
 model Session {
   id    String @id @default(cuid())
-  key   String @unique
-  value String
+  key   String @unique // This must be a string
+  value String // This must be a string  // Note that everything will be a JSON stored as a string
 }
