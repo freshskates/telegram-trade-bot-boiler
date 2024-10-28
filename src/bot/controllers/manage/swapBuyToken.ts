@@ -3,6 +3,7 @@ import getPrismaClientSingleton from "../../../services/prisma_client_singleton"
 import { BotContext, BotConversation } from "../../../utils";
 import bot from "../../bot_init";
 import { displaySwapBuyToken } from "../../display/displaySwapBuyToken";
+import { log } from "console";
 
 async function getTokenAmountFromCallbackData(
     userId: string,
@@ -67,7 +68,7 @@ export async function conversation_swapBuyToken(
 
             //   await ctx.reply(`You have selected to buy ${customAmount} TRX.`);
 
-            ctx.session.buyamount = customAmount;
+            ctx.session.selectedBuySwapAmount = customAmount;
 
             const updatedSettings = await PRISMA_CLIENT.settings.update({
                 where: { userId: userId.toString() },
@@ -77,7 +78,7 @@ export async function conversation_swapBuyToken(
                 },
             });
             
-            ctx.tempData.swapBuyTokenUpdated = true;
+            ctx.temp.swapBuyTokenUpdated = true;
             await displaySwapBuyToken.displaySwapBuyToken(ctx);
 
             return;
@@ -88,7 +89,7 @@ export async function conversation_swapBuyToken(
                     callbackData
                 );
 
-                ctx.session.buyamount = tokenBuyAmount;
+                ctx.session.selectedBuySwapAmount = tokenBuyAmount;
 
                 const updatedSettings = await PRISMA_CLIENT.settings.update({
                     where: { userId: userId.toString() },
@@ -96,14 +97,22 @@ export async function conversation_swapBuyToken(
                         selectedBuy: tokenBuyAmount,
                     },
                 });
+
+                console.log("updatedSettings", updatedSettings);
+                console.log("updatedSettings.selectedBuy", updatedSettings.selectedBuy);
                 
-                ctx.tempData.swapBuyTokenUpdated = true;
+                
+                ctx.temp.swapBuyTokenUpdated = true;
+
+                
                 await displaySwapBuyToken.displaySwapBuyToken(ctx);
+                
             } catch (error) {
                 await ctx.reply(
                     "An error occurred while fetching your settings."
                 );
             }
+
             return;
         }
     }

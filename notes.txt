@@ -205,3 +205,47 @@ Joseph's Notes
                 Reference:
                     https://stackoverflow.com/questions/57157864/what-is-globalthis-in-javascript-what-will-be-the-ideal-use-case-for-this
 
+            YouTube:
+                Master Prisma Migrations Basics 
+                
+                    Date Today:
+                        10/28/2024
+                    Tags:
+                        
+                    Rank:
+                        
+                    Joseph Notes:
+                        
+                    Notes:
+                        Alex Rusin
+
+                        Prisma basics
+
+                        Prisma has no rollbacks, you only can migrate
+
+                        Since you don't have rollbacks and when you rename stuff in the db it will drop and then create
+                        what you need to do is call "npx prisma migrate dev --create-only" and then modify the migration file
+                        then call "npx primsa migrate dev" 
+
+
+                    Reference:
+                        https://www.youtube.com/watch?v=_-YCDwm9M7M
+
+                How to model relationships (1-1, 1-m, m-m)
+                
+                    Date Today:
+                        10/28/2024
+                    Tags:
+                        
+                    Rank:
+                        
+                    Joseph Notes:
+                        
+                    Notes:
+                        Prisma
+                        Prisma basics
+
+                        Writing db relationships, it's more dumb than just writing sql
+                    Reference:
+                        https://www.youtube.com/watch?v=fpBYj55-zd8
+                

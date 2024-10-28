@@ -58,10 +58,10 @@ export async function conversation_sellTrx(
       }
 
       await ctx.reply(
-        `You have selected to sell ${customPercent}% of your TRX.`
+        `You have selected to sell ${customPercent}% of your TRX.` // FIXME: Should be Coin Name not TRX
       );
 
-      ctx.session.sellpercent = customPercent;
+      ctx.session.selectedSellSwapPercent = customPercent;
 
       const prisma = getPrismaClientSingleton();
       const updatedSettings = await prisma.settings.update({
@@ -83,7 +83,7 @@ export async function conversation_sellTrx(
         );
 
         // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
-        ctx.session.sellpercent = sellPercent;
+        ctx.session.selectedSellSwapPercent = sellPercent;
         const prisma = getPrismaClientSingleton();
         const updatedSettings = await prisma.settings.update({
           where: { userId: userId.toString() },

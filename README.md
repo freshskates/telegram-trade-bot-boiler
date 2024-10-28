@@ -42,7 +42,16 @@ back
 
     npm install
     npx prisma generate
+
     npx prisma migrate dev  # Use if you updated the schema
+    # OR
+    npx prisma migrate dev --create-only  # Create migration file but not run it
+    # Read migration file and make changes
+    npx primsa migrate dev
+
+    # If you want the modity the actual db with your migrations then call
+    npx primsa migrate deploy
+
     npx prisma studio  # Use this to see the database
     npm run dev
 

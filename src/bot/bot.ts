@@ -12,6 +12,7 @@ import bot from "./bot_init";
 import middleware_debugger from "./middleware/_middleware_debugger";
 import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataToCTX";
 import routerRoot from "./structure/root_router";
+import { middlewareAddTempDataToCTX } from "./middleware/middlewareAddTempDataToCTX";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
@@ -58,7 +59,7 @@ async function main() {
         session({
             // initial option in the configuration object, which correctly initializes session objects for new chats.
             initial() {
-                return { good_one: 0 }; // return empty object (The object created here must always be a new object and not referenced outsied this function otherwise you might share data )
+                return {}; // return empty object (The object created here must always be a new object and not referenced outside this function otherwise you might share data )
             },
             storage: new PrismaAdapter(getPrismaClientSingleton().session),
         })
@@ -78,6 +79,8 @@ async function main() {
 
     // Append user to CTX (Context) Middleware
     bot.use(middlewareAddUserDataToCTX());
+    
+    bot.use(middlewareAddTempDataToCTX());
 
     // Debugging Middleware
     bot.use(middleware_debugger);

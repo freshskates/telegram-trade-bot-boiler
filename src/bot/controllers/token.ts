@@ -10,7 +10,7 @@ async function cb_token(ctx: BotContext) {
   const tokenAddress = ctx.match[1];
   console.log(`Token Address: ${tokenAddress}`);
 
-  ctx.session.selectedToken = tokenAddress;
+  ctx.session.tokenAddressSelected = tokenAddress;
 
   await sell.start(ctx);
 }

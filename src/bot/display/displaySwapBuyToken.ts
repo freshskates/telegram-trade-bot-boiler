@@ -5,11 +5,11 @@ import { BotContext } from "../../utils";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
 import bot from "../bot_init";
 
-async function _displaySwapBuyToken(ctx: BotContext) {
-    const tokenAddress = ctx.session.selectedToken;
-    const userId = ctx.from?.id;
-
-    if (!userId || !tokenAddress) {
+async function displaySwapBuyToken_(ctx: BotContext) {
+    const tokenAddress = ctx.session.tokenAddressSelected;
+    const userId = ctx.from?.id;  // Gets the author of the message, callback query, or other things
+    
+    if (!userId || !tokenAddress) {        
         return;
     }
 
@@ -17,19 +17,19 @@ async function _displaySwapBuyToken(ctx: BotContext) {
         tokenAddress
     );
     const walletBalance = await MonadClient.checkMonadBalance(
-        ctx.session.user.walletPb
+        ctx.user.user.walletPb
     );
 
     const userSettings = await UserClient.getUserSettings(userId.toString());
-
+    
     if (!userSettings) {
         return;
     }
 
-    ctx.session.buyamount =
+    ctx.session.selectedBuySwapAmount =
         userSettings.selectedBuy <= 0 ? userSettings.buyTopLeftX : userSettings.selectedBuy;
 
-    ctx.session.buyslippage =
+    ctx.session.selectedBuySwapSlippage =
         userSettings.selectedBuySlippage <= 0
             ? userSettings.slippageBuy
             : userSettings.selectedBuySlippage;
@@ -49,13 +49,13 @@ async function _displaySwapBuyToken(ctx: BotContext) {
         [
             {
                 text: `${
-                    ctx.session.buyamount === userSettings.buyTopLeftX ? "✅ " : ""
+                    ctx.session.selectedBuySwapAmount === userSettings.buyTopLeftX ? "✅ " : ""
                 }Buy ${userSettings.buyTopLeftX} MON`,
                 callback_data: "cb_swapBuyToken_tl",
             },
             {
                 text: `${
-                    ctx.session.buyamount === userSettings.buyTopCenterX
+                    ctx.session.selectedBuySwapAmount === userSettings.buyTopCenterX
                         ? "✅ "
                         : ""
                 }Buy ${userSettings.buyTopCenterX} MON`,
@@ -63,7 +63,7 @@ async function _displaySwapBuyToken(ctx: BotContext) {
             },
             {
                 text: `${
-                    ctx.session.buyamount === userSettings.buyTopRightX ? "✅ " : ""
+                    ctx.session.selectedBuySwapAmount === userSettings.buyTopRightX ? "✅ " : ""
                 }Buy ${userSettings.buyTopRightX} MON`,
                 callback_data: "cb_swapBuyToken_tr",
             },
@@ -71,7 +71,7 @@ async function _displaySwapBuyToken(ctx: BotContext) {
         [
             {
                 text: `${
-                    ctx.session.buyamount === userSettings.buyBottomLeftX
+                    ctx.session.selectedBuySwapAmount === userSettings.buyBottomLeftX
                         ? "✅ "
                         : ""
                 }Buy ${userSettings.buyBottomLeftX} MON`,
@@ -79,7 +79,7 @@ async function _displaySwapBuyToken(ctx: BotContext) {
             },
             {
                 text: `${
-                    ctx.session.buyamount === userSettings.buyBottomRightX
+                    ctx.session.selectedBuySwapAmount === userSettings.buyBottomRightX
                         ? "✅ "
                         : ""
                 }Buy ${userSettings.buyBottomRightX} MON`,
@@ -87,7 +87,7 @@ async function _displaySwapBuyToken(ctx: BotContext) {
             },
             {
                 text: `${
-                    ctx.session.buyamount === userSettings.buyCustomX ? "✅ " : ""
+                    ctx.session.selectedBuySwapAmount === userSettings.buyCustomX ? "✅ " : ""
                 }Buy ${
                     userSettings.buyCustomX <= 0 ? "X" : userSettings.buyCustomX
                 } MON ✏️`,
@@ -97,7 +97,7 @@ async function _displaySwapBuyToken(ctx: BotContext) {
         [
             {
                 text: `${
-                    ctx.session.buyslippage === userSettings.slippageBuy
+                    ctx.session.selectedBuySwapSlippage === userSettings.slippageBuy
                         ? "✅ "
                         : ""
                 }${userSettings.slippageBuy}% Slippage`,
@@ -105,7 +105,7 @@ async function _displaySwapBuyToken(ctx: BotContext) {
             },
             {
                 text: `${
-                    ctx.session.buyslippage === userSettings.slippageBuyCustom
+                    ctx.session.selectedBuySwapSlippage === userSettings.slippageBuyCustom
                         ? "✅ "
                         : ""
                 }${
@@ -140,8 +140,9 @@ Price: *\$${formatNumber(
 // insert quote details here
         `;
 
+    
     // This condition will catch false, null, and undefined
-    if (!ctx.tempData?.swapBuyTokenUpdated) {
+    if (!ctx.temp.swapBuyTokenUpdated) {
         await ctx.reply(headerText, {
             parse_mode: "Markdown",
             reply_markup: {
@@ -156,13 +157,13 @@ Price: *\$${formatNumber(
             },
         });
     }
-    ctx.tempData.swapBuyTokenUpdated = false
 
 
 }
 
+
 const displaySwapBuyToken = {
-    displaySwapBuyToken: _displaySwapBuyToken,
+    displaySwapBuyToken: displaySwapBuyToken_,
 };
 
 export { displaySwapBuyToken };
@@ -187,14 +188,14 @@ async function load_token(ctx: BotContext) {
     if (!ctx?.message?.text) return;
 
     const token = ctx?.message.text?.trim();
-    ctx.session.selectedToken = token;
+    ctx.session.tokenAddressSelected = token;
 
-    console.log("Printing ctx.tempData");
-    console.log(ctx.tempData);
+    console.log("Printing ctx.temp");
+    console.log(ctx.temp);
     console.log("Printing ctx.");
     console.log(ctx);
 
-    return await _displaySwapBuyToken(ctx);
+    return await displaySwapBuyToken_(ctx);
 }
 
 bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);

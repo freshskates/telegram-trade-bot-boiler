@@ -4,36 +4,36 @@ import bot from "../bot_init";
 import { BotContext } from "../utils/utils";
 
 async function cb_swapBuyToken_swap(ctx: BotContext) {
-  await ctx.reply(`[dev] Selected Token: ${ctx.session.selectedToken}`);
-  await ctx.reply(`[dev] Slippage: ${ctx.session.buyslippage}%`);
-  await ctx.reply(`[dev] Buy Amount: ${ctx.session.buyamount}TRX`);
+  await ctx.reply(`[dev] Selected Token: ${ctx.session.tokenAddressSelected}`);
+  await ctx.reply(`[dev] Slippage: ${ctx.session.selectedBuySwapSlippage}%`);
+  await ctx.reply(`[dev] Buy Amount: ${ctx.session.selectedBuySwapAmount}TRX`);
 
   const fromToken = "TRX";
-  const toToken = ctx.session.selectedToken;
+  const toToken = ctx.session.tokenAddressSelected;
 
   if (!toToken) {
     await ctx.reply("Please select a token first");
     return;
   }
 
-  const amount = ctx.session.buyamount;
+  const amount = ctx.session.selectedBuySwapAmount;
 
   if (!amount) {
     await ctx.reply("Please select an amount first");
     return;
   }
 
-  const slippage = ctx.session.buyslippage;
+  const slippage = ctx.session.selectedBuySwapSlippage;
 
   if (!slippage) {
     await ctx.reply("Please select a slippage first");
     return;
   }
 
-  const pk = ctx.session.user.walletPk;
+  const pk = ctx.user.user.walletPk;
 
   const walletBalance = await MonadClient.checkMonadBalance(
-    ctx.session.user.walletPb
+    ctx.user.user.walletPb
   );
 
   if (Number(walletBalance) < amount) {

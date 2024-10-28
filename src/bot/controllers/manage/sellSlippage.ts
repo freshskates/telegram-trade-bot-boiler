@@ -54,7 +54,7 @@ export async function conversation_sellSlippage(
         );
       }
 
-      ctx.session.sellslippage = customSlippage;
+      ctx.session.selectedSellSwapSplippage = customSlippage;
 
       const prisma = getPrismaClientSingleton();
       const updatedSettings = await prisma.settings.update({
@@ -77,7 +77,7 @@ export async function conversation_sellSlippage(
 
       await ctx.reply(`You have selected to use ${slippage}% slippage.`);
 
-      ctx.session.sellslippage = slippage;
+      ctx.session.selectedSellSwapSplippage = slippage;
 
       const prisma = getPrismaClientSingleton();
       const updatedSettings = await prisma.settings.update({

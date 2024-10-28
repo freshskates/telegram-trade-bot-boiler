@@ -27,9 +27,8 @@ export const middlewareAddUserDataToCTX = () => {
 
             return next();
         }
-
-        // Attach user to session
-        ctx.session.user = {
+        
+        const userData = {
             walletPk: user.walletPk,
             walletPb: user.walletPb,
         };
@@ -41,12 +40,14 @@ export const middlewareAddUserDataToCTX = () => {
             return next();
         }
 
-        // Attach user's settings to session
-        ctx.session.settings = {
+        const settingsData = {
             gasFee: settings.gasFee,
             autoBuy: settings.autoBuy,
             autoBuyTrx: settings.autoBuyTrx,
         };
+
+        ctx.user = {user: userData, settings: settingsData}
+
 
         console.log("Printing ctx.session");
         console.log(ctx.session);

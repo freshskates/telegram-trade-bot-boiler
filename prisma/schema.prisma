@@ -12,13 +12,17 @@ model User {
   username   String  @default("anon")
   walletPk   String
   walletPb   String // ease of use? optional tbh
+  
   referredBy String?
 
   // foreign keys
   referrer  User?      @relation("UserReferrals", fields: [referredBy], references: [id])
   referrals User[]     @relation("UserReferrals")
+
   settings  Settings?
+
   positions Position[] @relation("UserPositions")
+
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
