@@ -4,8 +4,8 @@ import { BotContext } from "../../utils";
 import { formatNumber } from "../../utils/menu_helpers/homedata";
 import { UserClient } from "../../clients/userClient";
 
-async function start(ctx: BotContext, edit: boolean = false) {
-    const tokenAddress = ctx.session.tokenAddressSelected;
+async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
+    const tokenAddress = ctx.session.selectedTokenAddress;
     const userId = ctx.from?.id;
 
     if (!userId || !tokenAddress) {
@@ -152,7 +152,7 @@ Price: *\$${formatNumber(
 }
 
 const sell = {
-  start: start,
+  start: displaySwapSellToken_,
 };
 export { sell };
 

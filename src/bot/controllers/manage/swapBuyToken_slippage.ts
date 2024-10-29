@@ -26,7 +26,7 @@ async function fetchSlippageByButtonId(
   return 0;
 }
 
-export async function conversation_buySwapToken_slippage(
+export async function conversation_swapBuyToken_slippage(
   conversation: BotConversation,
   ctx: BotContext
 ) {
@@ -57,21 +57,21 @@ export async function conversation_buySwapToken_slippage(
         );
       }
 
-      ctx.session.selectedBuySwapSlippage = customSlippage;
+      ctx.session.swapBuyToken_slippage_selected = customSlippage;
 
-      const prisma = getPrismaClientSingleton();
-      const updatedSettings = await prisma.settings.update({
-        where: { userId: userId.toString() },
-        data: {
-          slippageBuyCustom: customSlippage,
-          selectedBuySlippage: customSlippage,
-        },
-      });
+      // const prisma = getPrismaClientSingleton();
+      // const updatedSettings = await prisma.settings.update({
+      //   where: { userId: userId.toString() },
+      //   data: {
+      //     slippageBuyCustom: customSlippage, // FIXME: Why is customSlippage here???????
+      //     selectedBuySlippage: customSlippage,
+      //   },
+      // });
 
       await ctx.reply(`You have selected to use ${customSlippage}% slippage.`);
       
 
-      ctx.temp.swapBuyTokenUpdated = true;
+      ctx.temp.selectedswapBuyAmountUpdated = true;
       await displaySwapBuyToken.displaySwapBuyToken(ctx);
 
       return;
@@ -96,8 +96,8 @@ export async function conversation_buySwapToken_slippage(
       });
 
       // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
-      ctx.session.selectedBuySwapSlippage = slippage;
-      ctx.temp.swapBuyTokenUpdated = true;
+      ctx.session.swapBuyToken_slippage_selected = slippage;
+      ctx.temp.selectedswapBuyAmountUpdated = true;
       await displaySwapBuyToken.displaySwapBuyToken(ctx);
 
 
@@ -112,13 +112,13 @@ Buy Menu - Slippage Conversation
 **************************************************
 */
 
-bot.use(createConversation(conversation_buySwapToken_slippage, "conversation_buySwapToken_slippage"));
+bot.use(createConversation(conversation_swapBuyToken_slippage, "conversation_swapBuyToken_slippage"));
 bot.callbackQuery("cb_swapBuyToken_slippage", async (ctx) => {
-  await ctx.conversation.enter("conversation_buySwapToken_slippage");
+  await ctx.conversation.enter("conversation_swapBuyToken_slippage");
   await ctx.answerCallbackQuery();
 });
 
 bot.callbackQuery("cb_swapBuyToken_slippage_x", async (ctx) => {
-  await ctx.conversation.enter("conversation_buySwapToken_slippage");
+  await ctx.conversation.enter("conversation_swapBuyToken_slippage");
   await ctx.answerCallbackQuery();
 });

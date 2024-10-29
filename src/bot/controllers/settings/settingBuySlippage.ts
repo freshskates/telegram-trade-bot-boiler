@@ -77,12 +77,12 @@ Settings Menu - Set Buy Slippage
 bot.use(
   createConversation(
     conversation_settingBuySlippage,
-    "conversation_buySwapSlippageSetting"
+    "conversation_swapBuySlippageSetting"
   )
 );
 
 async function cb_buy_setting_slippage(ctx: CallbackQueryContext<BotContext>) {
-  await ctx.conversation.enter("conversation_buySwapSlippageSetting");
+  await ctx.conversation.enter("conversation_swapBuySlippageSetting");
   await ctx.answerCallbackQuery();
 }
 

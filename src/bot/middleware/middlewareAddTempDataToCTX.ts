@@ -6,7 +6,7 @@ export const middlewareAddTempDataToCTX = () => {
     return async (ctx: BotContext, next: NextFunction) => {
 
         ctx.temp = {
-            swapBuyTokenUpdated: false
+            selectedswapBuyAmountUpdated: false
         }
 
         return next();

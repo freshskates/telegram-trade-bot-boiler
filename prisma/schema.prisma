@@ -8,23 +8,23 @@ datasource db {
 }
 
 model User {
-  id         String  @id
-  username   String  @default("anon")
-  walletPk   String
-  walletPb   String // ease of use? optional tbh
-  
+  id       String @id
+  username String @default("anon")
+  walletPk String
+  walletPb String // ease of use? optional tbh
+
   referredBy String?
 
   // foreign keys
-  referrer  User?      @relation("UserReferrals", fields: [referredBy], references: [id])
-  referrals User[]     @relation("UserReferrals")
+  referrer  User?  @relation("UserReferrals", fields: [referredBy], references: [id])
+  referrals User[] @relation("UserReferrals")
 
-  settings  Settings?
+  settings Settings?
 
   positions Position[] @relation("UserPositions")
 
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Settings {
@@ -32,35 +32,35 @@ model Settings {
   userId String @unique
 
   // gas fees in TRX
-  gasFee Float @default(70)
+  gasFee Float @default(70) //FIXME: WHY ARE GAS FEES PER USER???????????????
 
   // auto buy
-  autoBuy    Boolean @default(false)
-  autoBuyTrx Float   @default(100)
+  autoBuy       Boolean @default(false) // 
+  autoBuyAmount Float   @default(100) 
 
   // slippage
-  selectedBuySlippage Float @default(0)
-  slippageBuyCustom   Float @default(0)
-  slippageBuy         Float @default(10)
+  // selectedBuySlippage Float @default(0)  // POTENTIALLY MOVE TO SESSIONS IN CODE, this is the custom slippage number on the display
+  // slippageBuyCustom   Float @default(0)  // POTENTIALLY MOVE TO SESSIONS IN CODE, this is the custom slippage number on the display
+  // slippageBuy         Float @default(10) // POTENTIALLY MOVE TO SESSIONS IN CODE, this is the slippage number on the display
 
   selectedSellSlippage Float @default(0)
-  slippageSell         Float @default(10)
   slippageSellCustom   Float @default(0)
+  slippageSell         Float @default(10)
 
   // button layout [buy]
-  selectedBuy     Float @default(0)
-  buyTopLeftX     Float @default(100)
-  buyTopCenterX   Float @default(500)
-  buyTopRightX    Float @default(1000)
-  buyBottomLeftX  Float @default(1000)
-  buyBottomRightX Float @default(5000)
-  buyCustomX      Float @default(0)
+  // selectedBuy     Float @default(0) // POTENTIALLY MOVE TO SESSIONS IN CODE //
+  // buyTopLeftX     Float @default(100) // POTENTIALLY MOVE TO SESSIONS IN CODE
+  // buyTopCenterX   Float @default(500) // POTENTIALLY MOVE TO SESSIONS IN CODE
+  // buyTopRightX    Float @default(1000) // POTENTIALLY MOVE TO SESSIONS IN CODE
+  // buyBottomLeftX  Float @default(1000) // POTENTIALLY MOVE TO SESSIONS IN CODE
+  // buyBottomRightX Float @default(5000) // POTENTIALLY MOVE TO SESSIONS IN CODE
+  // buyCustomX      Float @default(0) // POTENTIALLY MOVE TO SESSIONS IN CODE //
 
   // button layout [sell]
-  selectedSellPercent Float @default(0)
+  selectedSellPercent Float @default(0) // 
   sellLeftPercentX    Float @default(100)
   sellRightPercentX   Float @default(100)
-  sellCustomX         Float @default(0)
+  sellCustomX         Float @default(0) //
 
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

@@ -1,6 +1,6 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
-import { sell } from "../sell";
+import { sell } from "../../display/displaySwapSellToken";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
 
@@ -61,7 +61,7 @@ export async function conversation_sellTrx(
         `You have selected to sell ${customPercent}% of your TRX.` // FIXME: Should be Coin Name not TRX
       );
 
-      ctx.session.selectedSellSwapPercent = customPercent;
+      ctx.session.swapSellToekn_selected_percent = customPercent;
 
       const prisma = getPrismaClientSingleton();
       const updatedSettings = await prisma.settings.update({
@@ -83,7 +83,7 @@ export async function conversation_sellTrx(
         );
 
         // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
-        ctx.session.selectedSellSwapPercent = sellPercent;
+        ctx.session.swapSellToekn_selected_percent = sellPercent;
         const prisma = getPrismaClientSingleton();
         const updatedSettings = await prisma.settings.update({
           where: { userId: userId.toString() },

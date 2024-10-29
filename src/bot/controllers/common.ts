@@ -15,6 +15,8 @@ bot.callbackQuery("cb_cancel", cb_cancel);
 
 // Former was ctx: CallbackQueryContext<Context>
 async function cb_help (ctx: BotContext) {
+  
+
   await ctx.reply(
     `
 *How do I use Electron?*

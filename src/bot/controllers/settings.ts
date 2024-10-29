@@ -52,11 +52,11 @@ export async function cb_settings(ctx: BotContext) {
   }
 
   // Use the settings values to populate the button labels
-  const buyTopLeftX = userSettings.buyTopLeftX;
-  const buyTopCenterX = userSettings.buyTopCenterX;
-  const buyTopRightX = userSettings.buyTopRightX;
-  const buyBottomLeftX = userSettings.buyBottomLeftX;
-  const buyBottomRightX = userSettings.buyBottomRightX;
+  const buyTopLeftX = ctx.session.swapBuyToken_amount_1;
+  const buyTopCenterX = ctx.session.swapBuyToken_amount_2;
+  const buyTopRightX = ctx.session.swapBuyToken_amount_3;
+  const buyBottomLeftX = ctx.session.swapBuyToken_amount_4;
+  const buyBottomRightX = ctx.session.swapBuyToken_amount_5;
 
   await ctx.reply(
     `

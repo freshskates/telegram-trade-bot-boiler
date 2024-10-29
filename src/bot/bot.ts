@@ -1,3 +1,22 @@
+/*
+#################### WARNING: READ ME BEFORE MODIFYING THIS FILE ####################
+    Make sure that every module imported/required in this file except for bot from the file "./bot_init"
+    must not contain any bot function/method such as
+        bot.callbackQuery(...)
+        bot.createConversation(...)
+        etc.
+    
+    being executed immediately. 
+    The above statement also applies to the modules imported/required from the modules imported in this file. 
+
+    Bot function/method calls executed BEFORE this file will potentially lead to unfavorable
+    behavior because those executed function/method calls will execute before any of this
+    file's bot function/method calls execute. This means that some intended logic 
+    will happen out of order. For example, middleware might not run at all because a bot.callbackQuery(...)
+    call was executed before middleware was registered to the bot.
+    
+
+*/
 import { conversations } from "@grammyjs/conversations";
 import { PrismaAdapter } from "@grammyjs/storage-prisma";
 import ansiColors from "ansi-colors";
@@ -5,14 +24,14 @@ import { GrammyError, HttpError, session } from "grammy";
 import path from "path";
 import { fileURLToPath } from "url";
 import getPrismaClientSingleton from "../services/prisma_client_singleton";
-import { BotContext } from "../utils";
+import { BotContext, GetNewInitialSessionData, SessionData } from "../utils";
 import mainMenu from "./_test";
 import auto_load_modules_from from "./auto_load_module";
 import bot from "./bot_init";
 import middleware_debugger from "./middleware/_middleware_debugger";
-import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataToCTX";
-import routerRoot from "./structure/root_router";
 import { middlewareAddTempDataToCTX } from "./middleware/middlewareAddTempDataToCTX";
+import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataToCTX";
+import { RootLogic } from "./structure/root_logic";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
@@ -40,7 +59,7 @@ async function main() {
             Date Today:
                 10/25/2024
             Notes:
-                Proper way of adding sessiosn
+                Proper way of adding session
             Reference:
                 https://grammy.dev/plugins/session#initial-session-data
 
@@ -59,9 +78,11 @@ async function main() {
         session({
             // initial option in the configuration object, which correctly initializes session objects for new chats.
             initial() {
-                return {}; // return empty object (The object created here must always be a new object and not referenced outside this function otherwise you might share data )
+                return GetNewInitialSessionData(); // return empty object (The object created here must always be a new object and not referenced outside this function otherwise you might share data )
             },
-            storage: new PrismaAdapter(getPrismaClientSingleton().session),
+            storage: new PrismaAdapter<SessionData>(
+                getPrismaClientSingleton().session
+            ),
         })
     );
 
@@ -79,7 +100,7 @@ async function main() {
 
     // Append user to CTX (Context) Middleware
     bot.use(middlewareAddUserDataToCTX());
-    
+
     bot.use(middlewareAddTempDataToCTX());
 
     // Debugging Middleware
@@ -90,9 +111,12 @@ async function main() {
     Load all possible js/ts files relative to this file's directory
 
     Notes:
-        The primary purpose is to automatically call
-        bot.callbackQuery(...) from other files without
-        those calls being explicitly called within this file.
+        The primary purpose of auto_load_modules_from(...) is to automatically call bot.callbackQuery(...) 
+        functions and functions similar to it from other files without those functions
+        being explicitly executed in this file.
+
+        The reason why auto_load_modules_from(...) is executed here is to prevent this file from being
+        bloated with a bunch of bot function calls.
     ****************************************************************************************************
     */
 
@@ -110,10 +134,19 @@ async function main() {
     */
 
     // Chat commands
-    // bot.command("start", RootLogic.start);
-    // bot.command("help", RootLogic.help);
+    bot.command("start", RootLogic.start);
+    bot.command("help", RootLogic.help);
 
-    bot.use(routerRoot);
+    // ------- FOR TESTING -------
+    // bot.on('message:text', ctx => {
+    //     console.log("message:text");
+    //     console.log(ctx);
+
+    //     ctx.reply(ctx.message.text)
+
+    // })
+
+    // bot.use(routerRoot);
 
     /////////////////////////////// PAST THIS POINT IS SOME OTHER SHIT LIKE TESTING
 

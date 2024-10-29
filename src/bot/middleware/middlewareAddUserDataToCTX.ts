@@ -41,7 +41,7 @@ export const middlewareAddUserDataToCTX = () => {
         }
 
         const settingsData = {
-            gasFee: settings.gasFee,
+            gasFee: settings.gasFee,  //FIXME: WHY ARE GAS FEES PER USER???????????????
             autoBuy: settings.autoBuy,
             autoBuyTrx: settings.autoBuyTrx,
         };

@@ -2,7 +2,7 @@ import { createConversation } from "@grammyjs/conversations";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
 import bot from "../../bot_init";
-import { sell } from "../sell";
+import { sell } from "../../display/displaySwapSellToken";
 
 async function fetchSellSlippageByButtonId(
   userId: string,
@@ -54,7 +54,7 @@ export async function conversation_sellSlippage(
         );
       }
 
-      ctx.session.selectedSellSwapSplippage = customSlippage;
+      ctx.session.swapSellToken_selected_splippage = customSlippage;
 
       const prisma = getPrismaClientSingleton();
       const updatedSettings = await prisma.settings.update({
@@ -77,7 +77,7 @@ export async function conversation_sellSlippage(
 
       await ctx.reply(`You have selected to use ${slippage}% slippage.`);
 
-      ctx.session.selectedSellSwapSplippage = slippage;
+      ctx.session.swapSellToken_selected_splippage = slippage;
 
       const prisma = getPrismaClientSingleton();
       const updatedSettings = await prisma.settings.update({
