@@ -29,6 +29,18 @@ Joseph's Notes
                 reference:
                     https://www.npmjs.com/package/@grammyjs/router
 
+            Sessions and Storing Data (built-in) 
+            
+                Date Today:
+                    10/30/2024
+                Notes:
+                    Everything about Session stuff such as:
+                        1. How to write it correctly
+                        2. Session key (Per user, Per chat, or both)
+
+                
+                Reference:
+                    https://grammy.dev/plugins/session
 
             Inline Keyboard (It's actual buttons)
             
@@ -249,3 +261,21 @@ Joseph's Notes
                     Reference:
                         https://www.youtube.com/watch?v=fpBYj55-zd8
                 
+
+                Dynamic import() Expressions in TypeScript
+                
+                    Date Today:
+                        10/30/2024
+                    Tags:
+                        
+                    Rank:
+                        
+                    Joseph Notes:
+                        
+                    Notes:
+                        January 14, 2018
+
+                        JS and TS on dynamic imports.
+                        TS has some caveats depending on "module" in tsconfig.json
+                    Reference:
+                        https://mariusschulz.com/blog/dynamic-import-expressions-in-typescript

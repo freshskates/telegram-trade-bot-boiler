@@ -14,6 +14,8 @@
     file's bot function/method calls execute. This means that some intended logic 
     will happen out of order. For example, middleware might not run at all because a bot.callbackQuery(...)
     call was executed before middleware was registered to the bot.
+
+    In order to bypass this problem, you need
     
 
 */
@@ -31,19 +33,19 @@ import bot from "./bot_init";
 import middleware_debugger from "./middleware/_middleware_debugger";
 import { middlewareAddTempDataToCTX } from "./middleware/middlewareAddTempDataToCTX";
 import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataToCTX";
-import { RootLogic } from "./structure/root_logic";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
 // TODO: positions_cb?
 
 /**
- * This function was made to prevent typescirpt from complaining about Top-level 'await' expressions
+ * This function was made to prevent typescript from complaining about Top-level 'await' expressions
  *
  * @async
  * @returns {*}
  */
 async function main() {
+
     /* 
     ****************************************************************************************************
     Middleware
@@ -111,12 +113,26 @@ async function main() {
     Load all possible js/ts files relative to this file's directory
 
     Notes:
-        The primary purpose of auto_load_modules_from(...) is to automatically call bot.callbackQuery(...) 
+        The primary purpose of auto_load_modules_from(...) is to automatically execute bot.callbackQuery(...) 
         functions and functions similar to it from other files without those functions
         being explicitly executed in this file.
 
         The reason why auto_load_modules_from(...) is executed here is to prevent this file from being
-        bloated with a bunch of bot function calls.
+        bloated with a bunch of bot function/method`calls.
+
+        The benefits of having auto_load_modules_from(...):
+            1. This file won't get bloated
+            2. You can register bot functionality where the functionality is defined.
+                e.g 
+                    async function cb_foo(...){
+                        ...
+                    }
+                    bot.callbackQuery("cb_foo", cb_foo) 
+            
+        The downsides of having auto_load_modules_from(...):
+            1. There is no direct tracking on how the variable "bot" is being used by the files imported
+               from auto_load_modules_from(...)
+            
     ****************************************************************************************************
     */
 
@@ -129,13 +145,31 @@ async function main() {
 
     /* 
     ****************************************************************************************************
+    Late Imports
+    Notes:
+        If you have code that uses the variable bot before any bot functionality has been
+        registered, such as bot middleware, then you want to import here.
+    ****************************************************************************************************
+    */
+
+    // const module_root_logic = await import("./structure/root_logic");
+    // const module_router_root = await import("./structure/root_router");
+
+
+    /* 
+    ****************************************************************************************************
     Routes
     ****************************************************************************************************
     */
 
     // Chat commands
-    bot.command("start", RootLogic.start);
-    bot.command("help", RootLogic.help);
+    // bot.command("start", module_root_logic.RootLogic.start);
+    // bot.command("help", module_root_logic.RootLogic.help);
+
+
+    // bot.use(module_router_root.default);
+
+    /////////////////////////////// PAST THIS POINT IS SOME OTHER SHIT LIKE TESTING
 
     // ------- FOR TESTING -------
     // bot.on('message:text', ctx => {
@@ -146,9 +180,6 @@ async function main() {
 
     // })
 
-    // bot.use(routerRoot);
-
-    /////////////////////////////// PAST THIS POINT IS SOME OTHER SHIT LIKE TESTING
 
     bot.use(mainMenu);
     bot.command("_test", (ctx) =>
@@ -156,9 +187,10 @@ async function main() {
     );
 
     /*
-     ****************************************************************************************************
-     ****************************************************************************************************
-     */
+    ****************************************************************************************************
+    Special Handlers
+    ****************************************************************************************************
+    */
 
     /* 
     Catching callbackQuery callback_query that is not handled

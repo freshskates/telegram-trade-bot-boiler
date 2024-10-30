@@ -53,7 +53,7 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Help",
-                            callback_data: "cb_root_help_2",
+                            callback_data: "cb_root_help",
                         },
                         {
                             text: "Refresh",
@@ -66,11 +66,13 @@ Once done, tap refresh, and your balance will appear here.
     );
 }
 
-// FIXME: NOT USED
+// // FIXME: NOT USED
 async function help(ctx: BotContext, next: NextFunction | null = null) {
     console.log("FROM HELP");
     console.log(ctx);
 
+    ctx.session = null;
+    
     await ctx.reply(`lorem help`, {
         parse_mode: "HTML",
         reply_markup: {
@@ -86,8 +88,6 @@ async function help(ctx: BotContext, next: NextFunction | null = null) {
     });
     ctx.answerCallbackQuery();
 }
-
-bot.callbackQuery("cb_root_help_2", help);
 
 const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
     await ctx.reply(`CHAT`, {
@@ -125,11 +125,5 @@ const RootLogic = {
 
 export { RootLogic };
 
-// ------- FOR TESTING -------
-// bot.on("message:text", (ctx) => {
-//     console.log("message:text");
-//     console.log(ctx);
-
-//     ctx.reply(ctx.message.text);
-// });
-
+bot.command("start", RootLogic.start);
+bot.command("help", RootLogic.help);
