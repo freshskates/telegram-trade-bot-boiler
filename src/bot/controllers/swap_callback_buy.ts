@@ -3,33 +3,33 @@ import { SwapClient } from "../../clients/swap";
 import bot from "../bot_init";
 import { BotContext } from "../utils/utils";
 
-async function cb_swapBuyToken_swap(ctx: BotContext) {
+async function cb_tokenSwapBuy_swap(ctx: BotContext) {
     await ctx.reply(
-        `[dev] Selected Token: ${ctx.session.selectedTokenAddress}`
+        `[dev] Selected Token: ${ctx.session.tokenAddress_selected}`
     );
     await ctx.reply(
-        `[dev] Slippage: ${ctx.session.swapBuyToken_slippage_selected}%`
+        `[dev] Slippage: ${ctx.session.tokenSwapBuy_slippage_selected}%`
     );
     await ctx.reply(
-        `[dev] Buy Amount: ${ctx.session.swapBuyToken_amount_selected}TRX`
+        `[dev] Buy Amount: ${ctx.session.tokenSwapBuy_amount_selected}TRX`
     );
 
     const fromToken = "TRX";
-    const toToken = ctx.session.selectedTokenAddress;
+    const toToken = ctx.session.tokenAddress_selected;
 
     if (!toToken) {
         await ctx.reply("Please select a token first");
         return;
     }
 
-    const amount = ctx.session.swapBuyToken_amount_selected;
+    const amount = ctx.session.tokenSwapBuy_amount_selected;
 
     if (!amount) {
         await ctx.reply("Please select an amount first");
         return;
     }
 
-    const slippage = ctx.session.swapBuyToken_slippage_selected;
+    const slippage = ctx.session.tokenSwapBuy_slippage_selected;
 
     if (!slippage) {
         await ctx.reply("Please select a slippage first");
@@ -61,4 +61,4 @@ async function cb_swapBuyToken_swap(ctx: BotContext) {
 
     await ctx.answerCallbackQuery();
 }
-bot.callbackQuery("cb_swapBuyToken_swap", cb_swapBuyToken_swap);
+bot.callbackQuery("cb_tokenSwapBuy_swap", cb_tokenSwapBuy_swap);

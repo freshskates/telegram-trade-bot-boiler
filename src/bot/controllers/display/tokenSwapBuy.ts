@@ -1,11 +1,16 @@
 import "dotenv/config";
-import { MonadClient } from "../../clients/monad";
-import { BotContext } from "../../utils";
-import { formatNumber } from "../../utils/menu_helpers/homedata";
-import bot from "../bot_init";
+import { MonadClient } from "../../../clients/monad";
+import { BotContext, TokenMarketDetails, UserSessionData } from "../../../utils";
+import { formatNumber } from "../../../utils/menu_helpers/homedata";
+import bot from "../../bot_init";
+import { Session } from "inspector/promises";
 
-async function displaySwapBuyToken_(ctx: BotContext) {
-    const tokenAddress = ctx.session.selectedTokenAddress;
+
+// async function _getHeader(tokenDetails: TokenMarketDetails, walletBalance: number): Promise<string> {
+// }
+
+async function tokenSwapBuy_(ctx: BotContext) {
+    const tokenAddress = ctx.session.tokenAddress_selected;
     const userId = ctx.from?.id; // Gets the author of the message, callback query, or other things
 
     if (!userId || !tokenAddress) {
@@ -25,15 +30,15 @@ async function displaySwapBuyToken_(ctx: BotContext) {
     //     return;
     // }
 
-    ctx.session.swapBuyToken_amount_selected =
-        ctx.session.swapBuyToken_amount_selected <= 0
-            ? ctx.session.swapBuyToken_amount_1
-            : ctx.session.swapBuyToken_amount_selected;
+    ctx.session.tokenSwapBuy_amount_selected =
+        ctx.session.tokenSwapBuy_amount_selected <= 0
+            ? ctx.session.tokenSwapBuy_amount_1
+            : ctx.session.tokenSwapBuy_amount_selected;
 
-    ctx.session.swapBuyToken_slippage_selected =
-        ctx.session.swapBuyToken_slippage_selected <= 0
-            ? ctx.session.swapBuyToken_slippage_1
-            : ctx.session.swapBuyToken_slippage_selected;
+    ctx.session.tokenSwapBuy_slippage_selected =
+        ctx.session.tokenSwapBuy_slippage_selected <= 0
+            ? ctx.session.tokenSwapBuy_slippage_1
+            : ctx.session.tokenSwapBuy_slippage_selected;
 
     const inlineKeyboard = [
         [
@@ -43,99 +48,99 @@ async function displaySwapBuyToken_(ctx: BotContext) {
             },
             {
                 text: "Refresh",
-                callback_data: "cb_swapBuyToken_refresh",
+                callback_data: "cb_tokenSwapBuy_refresh",
             },
         ],
         [
             {
                 text: `${
-                    ctx.session.swapBuyToken_amount_selected ===
-                    ctx.session.swapBuyToken_amount_1
+                    ctx.session.tokenSwapBuy_amount_selected ===
+                    ctx.session.tokenSwapBuy_amount_1
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapBuyToken_amount_1} MON`,
-                callback_data: "cb_swapBuyToken_amount_LOCATION_0_0",
+                }Buy ${ctx.session.tokenSwapBuy_amount_1} MON`,
+                callback_data: "cb_tokenSwapBuy_amount_LOCATION_0_0",
             },
             {
                 text: `${
-                    ctx.session.swapBuyToken_amount_selected ===
-                    ctx.session.swapBuyToken_amount_2
+                    ctx.session.tokenSwapBuy_amount_selected ===
+                    ctx.session.tokenSwapBuy_amount_2
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapBuyToken_amount_2} MON`,
-                callback_data: "cb_swapBuyToken_amount_LOCATION_0_1",
+                }Buy ${ctx.session.tokenSwapBuy_amount_2} MON`,
+                callback_data: "cb_tokenSwapBuy_amount_LOCATION_0_1",
             },
             {
                 text: `${
-                    ctx.session.swapBuyToken_amount_selected ===
-                    ctx.session.swapBuyToken_amount_3
+                    ctx.session.tokenSwapBuy_amount_selected ===
+                    ctx.session.tokenSwapBuy_amount_3
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapBuyToken_amount_3} MON`,
-                callback_data: "cb_swapBuyToken_amount_LOCATION_0_2",
+                }Buy ${ctx.session.tokenSwapBuy_amount_3} MON`,
+                callback_data: "cb_tokenSwapBuy_amount_LOCATION_0_2",
             },
         ],
         [
             {
                 text: `${
-                    ctx.session.swapBuyToken_amount_selected ===
-                    ctx.session.swapBuyToken_amount_4
+                    ctx.session.tokenSwapBuy_amount_selected ===
+                    ctx.session.tokenSwapBuy_amount_4
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapBuyToken_amount_4} MON`,
-                callback_data: "cb_swapBuyToken_amount_LOCATION_1_0",
+                }Buy ${ctx.session.tokenSwapBuy_amount_4} MON`,
+                callback_data: "cb_tokenSwapBuy_amount_LOCATION_1_0",
             },
             {
                 text: `${
-                    ctx.session.swapBuyToken_amount_selected ===
-                    ctx.session.swapBuyToken_amount_5
+                    ctx.session.tokenSwapBuy_amount_selected ===
+                    ctx.session.tokenSwapBuy_amount_5
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapBuyToken_amount_5} MON`,
-                callback_data: "cb_swapBuyToken_amount_LOCATION_1_1",
+                }Buy ${ctx.session.tokenSwapBuy_amount_5} MON`,
+                callback_data: "cb_tokenSwapBuy_amount_LOCATION_1_1",
             },
             {
                 text: `${
-                    ctx.session.swapBuyToken_amount_selected ===
-                    ctx.session.swapBuyToken_amount_custom
+                    ctx.session.tokenSwapBuy_amount_selected ===
+                    ctx.session.tokenSwapBuy_amount_custom
                         ? "✅ "
                         : ""
                 }Buy ${
-                    ctx.session.swapBuyToken_amount_custom <= 0
+                    ctx.session.tokenSwapBuy_amount_custom <= 0
                         ? "X"
-                        : ctx.session.swapBuyToken_amount_custom
+                        : ctx.session.tokenSwapBuy_amount_custom
                 } MON ✏️`,
-                callback_data: "cb_swapBuyToken_amount_LOCATION_CUSTOM",
+                callback_data: "cb_tokenSwapBuy_amount_LOCATION_CUSTOM",
             },
         ],
         [
             {
                 text: `${
-                    ctx.session.swapBuyToken_slippage_selected ===
-                    ctx.session.swapBuyToken_slippage_1
+                    ctx.session.tokenSwapBuy_slippage_selected ===
+                    ctx.session.tokenSwapBuy_slippage_1
                         ? "✅ "
                         : ""
-                }${ctx.session.swapBuyToken_slippage_1}% Slippage`,
-                callback_data: "cb_swapBuyToken_slippage",
+                }${ctx.session.tokenSwapBuy_slippage_1}% Slippage`,
+                callback_data: "cb_tokenSwapBuy_slippage",
             },
             {
                 text: `${
-                    ctx.session.swapBuyToken_slippage_selected ===
-                    ctx.session.swapBuyToken_slippage_custom
+                    ctx.session.tokenSwapBuy_slippage_selected ===
+                    ctx.session.tokenSwapBuy_slippage_custom
                         ? "✅ "
                         : ""
                 }${
-                    ctx.session.swapBuyToken_slippage_custom <= 0
+                    ctx.session.tokenSwapBuy_slippage_custom <= 0
                         ? "X%"
-                        : ctx.session.swapBuyToken_slippage_custom
+                        : ctx.session.tokenSwapBuy_slippage_custom
                 }% Slippage ✏️`,
-                callback_data: "cb_swapBuyToken_slippage_x",
+                callback_data: "cb_tokenSwapBuy_slippage_x",
             },
         ],
         [
             {
                 text: "Swap",
-                callback_data: "cb_swapBuyToken_swap",
+                callback_data: "cb_tokenSwapBuy_swap",
             },
         ],
     ];
@@ -156,6 +161,7 @@ Price: *\$${formatNumber(
 // insert quote details here
         `;
 
+
     // This condition will catch false, null, and undefined
     if (!ctx.temp.selectedswapBuyAmountUpdated) {
         await ctx.reply(headerText, {
@@ -174,11 +180,11 @@ Price: *\$${formatNumber(
     }
 }
 
-const displaySwapBuyToken = {
-    displaySwapBuyToken: displaySwapBuyToken_,
+const tokenSwapBuy = {
+    tokenSwapBuy: tokenSwapBuy_,
 };
 
-export { displaySwapBuyToken };
+export { tokenSwapBuy };
 
 /* 
 **************************************************
@@ -193,25 +199,24 @@ async function cb_buy(ctx: BotContext) {
     );
 }
 
-bot.callbackQuery("cb_root_swapBuyToken", cb_buy);
+bot.callbackQuery("cb_root_tokenSwapBuy", cb_buy);
 
 // TODO: CHANGE THIS FROM REGEX TO A CONVERSATION
 async function load_token(ctx: BotContext) {
     if (!ctx?.message?.text) return;
 
     const token = ctx?.message.text?.trim();
-    ctx.session.selectedTokenAddress = token;
+    ctx.session.tokenAddress_selected = token;
 
     console.log("Printing ctx.temp");
     console.log(ctx.temp);
     console.log("Printing ctx.");
     console.log(ctx);
 
-    return await displaySwapBuyToken_(ctx);
+    return await tokenSwapBuy_(ctx);
 }
 
 bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);
 
 // @ts-ignore
 // console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded
-

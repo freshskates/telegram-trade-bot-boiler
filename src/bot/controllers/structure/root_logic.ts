@@ -1,7 +1,7 @@
 import { NextFunction } from "grammy";
-import { MonadClient } from "../../clients/monad";
-import { BotContext } from "../../utils";
-import bot from "../bot_init";
+import { MonadClient } from "../../../clients/monad";
+import { BotContext } from "../../../utils";
+import bot from "../../bot_init";
 
 async function start(ctx: BotContext, next: NextFunction | null = null) {
     const user_id = ctx?.from?.id;
@@ -37,7 +37,7 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Buy",
-                            callback_data: "cb_root_swapBuyToken",
+                            callback_data: "cb_root_tokenSwapBuy",
                         },
                         {
                             text: "Sell / Manage",
@@ -71,15 +71,13 @@ async function help(ctx: BotContext, next: NextFunction | null = null) {
     console.log("FROM HELP");
     console.log(ctx);
 
-    ctx.session = null;
-    
     await ctx.reply(`lorem help`, {
         parse_mode: "HTML",
         reply_markup: {
             inline_keyboard: [
                 [
                     {
-                        text: "Close FSDFSDf",
+                        text: "Close",
                         callback_data: "cb_cancel",
                     },
                 ],
@@ -113,6 +111,8 @@ const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
 bot.callbackQuery("cb_root_refresh", async (ctx) => {
     console.log("FROM REFRESH");
     console.log(ctx);
+    console.log("ctx.session");
+    console.log(ctx.session);
     // await start(ctx);
     await ctx.answerCallbackQuery();
 });
@@ -125,5 +125,9 @@ const RootLogic = {
 
 export { RootLogic };
 
+
+
 bot.command("start", RootLogic.start);
 bot.command("help", RootLogic.help);
+
+

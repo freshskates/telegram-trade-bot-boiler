@@ -37,10 +37,86 @@ Joseph's Notes
                     Everything about Session stuff such as:
                         1. How to write it correctly
                         2. Session key (Per user, Per chat, or both)
+                        3. Chat migrations
+                        4. grammY has free cloud storage for hobby projects
+                        5. External storage adaptors 
+                        6. Lazy Sessions
+                            Reduces db reads/writes
+                        7. ***** Session migrations (Changing the data in the session) *****
+
+                        8. Storage enhancements
 
                 
                 Reference:
                     https://grammy.dev/plugins/session
+
+
+            LazySession | Lazy Session
+                Date Today:
+                    10/31/2024
+
+                Important Notes:
+                    When the docs refer to middleware (https://grammy.dev/plugins/session#lazy-sessions)
+                    they are referring functions given to
+                        bot.callbackQuery(..., middleware_function)
+                        bot.use(middleware_function,...)
+                    This means that the primary functions of your code is affected. 
+                    
+                    ***** An important discovery *****
+                        What the documentations dpes not tell you is that if you have a call like this:
+                            bot.use(createConversation(function, "function"))
+                        Then anything that uses ctx.session past this call will not be a promise.
+                        This is probably because createConversation is considered a Handler
+                        (If you jump to the code declaring of createConversation the comments state that it's a handler).
+
+                        If you read the section on Lazy Sessions in the docs (https://grammy.dev/plugins/session#lazy-sessions),
+                        the example steps stating how Lazy Sessions would reduce read and write calls states
+                        that no handler is invoked which implies that a handler somehow affects ctx.session
+                        making it not a promise anymore.
+
+                        Regardless, the documentation is lacking, the examples are lacking, the source code is
+                        just a bunch of comments/documentation in TS and if you do find actual source code transpiled JS it is complex
+                        and does not make sense unless you're a maintainer. 
+                    
+                    ***** On the subject of Multi Sessions, Lazy Session, and Conversations
+                        Note that Enhance and enhanceStorage works with the listed subjects.
+
+                        Multi Sessions AND Conversations
+                            Multi Sessions can work with Conversations.
+                                https://grammy.dev/plugins/session#multi-sessions
+                                https://grammy.dev/plugins/conversations#installation-with-multi-sessions
+
+                        Lazy Session AND Conversations
+                            Lazy Session can work with Conversations.
+                            However, due to Conversations using sessions via ctx.sesssion, it will
+                            mess with every following ctx.session after the first call of
+                                bot.use(createConversation(function, "function"))
+                            by making every ctx.session NOT A Promise ANYMORE which
+                            breaks the entire purpose of Lazy Session.
+
+                            It will also mess with your ctx.session by forcing you to check the type
+                            of ctx.session in order for you to access its properties. This means you
+                            need to make "if conditionals" before accessing ctx.session.
+
+                        Multi Sessions AND Lazy Session
+                            This does not work. Read what the devs say in the below posts.
+                                https://github.com/grammyjs/website/issues/936
+                                https://github.com/grammyjs/grammY/pull/216#issuecomment-1201078050
+
+                        Lazy Session AND Conversations AND Multi Sessions
+                            From the previous combinations, it's not possible
+
+                        Use 2 bot.use(...), 1st with Conversations on Multi Sessions and 2nd with the normal session on Lazy Session
+                            Double stacking bot.use(session(...)) with cause
+                                Unknown error: TypeError: Cannot redefine property: session
+                Notes:
+                    
+                    Basic Lazy Session example (https://github.com/grammyjs/examples/blob/main/stats-lazy.ts)
+
+
+                Reference:
+                    https://grammy.dev/plugins/session#lazy-sessions
+                    https://github.com/grammyjs/examples/blob/main/stats-lazy.ts
 
             Inline Keyboard (It's actual buttons)
             
@@ -56,7 +132,7 @@ Joseph's Notes
                         Date Today:
                             10/22/2024
                         Notes:
-                            If you want this style
+                            If you want this style of assigning properties
                                 const inlineKeyboard = [
                                     [
                                         {
@@ -84,7 +160,7 @@ Joseph's Notes
                                     [...]
                                 ]
 
-                            If you want to communicate data when the button is clicked like the above, look at the source code of
+                            Look at the source code of
                                 InlineKeyboardButton[][]
                                 InlineKeyboardButton
 

@@ -6,7 +6,7 @@ if (!process.env.TG_BOT_TOKEN) {
 }
 
 const config = {
-  getTgBotToken: () => process.env.TG_BOT_TOKEN as string,
+  getTelegramBotToken: () => process.env.TG_BOT_TOKEN as string,
   getTronWebHost: () => {},
 };
 

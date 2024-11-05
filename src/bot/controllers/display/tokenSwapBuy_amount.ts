@@ -2,17 +2,13 @@ import { createConversation } from "@grammyjs/conversations";
 import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
 import { BotContext, BotConversation } from "../../../utils";
 import bot from "../../bot_init";
-import { displaySwapBuyToken } from "../../display/displaySwapBuyToken";
-import { log } from "console";
+import { tokenSwapBuy } from "./tokenSwapBuy";
 
-const PRISMA_CLIENT = getPrismaClientSingleton();
-
-
+// const PRISMA_CLIENT = getPrismaClientSingleton();
 
 async function getTokenAmountFromCallbackData(
     ctx: BotContext
 ): Promise<number> {
-
     // const userSettings = await PRISMA_CLIENT.settings.findUnique({
     //     where: {
     //         userId: userId,
@@ -24,22 +20,22 @@ async function getTokenAmountFromCallbackData(
     // }
 
     switch (ctx.callbackQuery?.data) {
-        case "cb_swapBuyToken_amount_LOCATION_0_0":
-            return ctx.session.swapBuyToken_amount_1;
-        case "cb_swapBuyToken_amount_LOCATION_0_1":
-            return ctx.session.swapBuyToken_amount_2;
-        case "cb_swapBuyToken_amount_LOCATION_0_2":
-            return ctx.session.swapBuyToken_amount_3;
-        case "cb_swapBuyToken_amount_LOCATION_1_0":
-            return ctx.session.swapBuyToken_amount_4;
-        case "cb_swapBuyToken_amount_LOCATION_1_1":
-            return ctx.session.swapBuyToken_amount_5;
+        case "cb_tokenSwapBuy_amount_LOCATION_0_0":
+            return ctx.session.tokenSwapBuy_amount_1;
+        case "cb_tokenSwapBuy_amount_LOCATION_0_1":
+            return ctx.session.tokenSwapBuy_amount_2;
+        case "cb_tokenSwapBuy_amount_LOCATION_0_2":
+            return ctx.session.tokenSwapBuy_amount_3;
+        case "cb_tokenSwapBuy_amount_LOCATION_1_0":
+            return ctx.session.tokenSwapBuy_amount_4;
+        case "cb_tokenSwapBuy_amount_LOCATION_1_1":
+            return ctx.session.tokenSwapBuy_amount_5;
         default:
             throw new Error("Invalid button ID");
     }
 }
 
-export async function conversation_swapBuyToken_amount(
+export async function conversation_tokenSwapBuy_amount(
     conversation: BotConversation,
     ctx: BotContext
 ) {
@@ -52,9 +48,7 @@ export async function conversation_swapBuyToken_amount(
     }
 
     if (callbackData) {
-
-
-        if (callbackData === "cb_swapBuyToken_amount_LOCATION_CUSTOM") {
+        if (callbackData === "cb_tokenSwapBuy_amount_LOCATION_CUSTOM") {
             await ctx.reply("Please enter the amount of TRX you wish to buy:");
 
             const { message } = await conversation.wait();
@@ -69,7 +63,7 @@ export async function conversation_swapBuyToken_amount(
 
             //   await ctx.reply(`You have selected to buy ${customAmount} TRX.`);
 
-            ctx.session.swapBuyToken_amount_selected = customAmount;
+            ctx.session.tokenSwapBuy_amount_selected = customAmount;
 
             // const updatedSettings = await PRISMA_CLIENT.settings.update({
             //     where: { userId: userId.toString() },
@@ -80,8 +74,8 @@ export async function conversation_swapBuyToken_amount(
             // });
 
             ctx.temp.selectedswapBuyAmountUpdated = true;
-            await displaySwapBuyToken.displaySwapBuyToken(ctx);
-            
+            await tokenSwapBuy.tokenSwapBuy(ctx);
+
             return;
         } else {
             try {
@@ -89,7 +83,7 @@ export async function conversation_swapBuyToken_amount(
                     ctx
                 );
 
-                ctx.session.swapBuyToken_amount_selected = tokenBuyAmount;
+                ctx.session.tokenSwapBuy_amount_selected = tokenBuyAmount;
 
                 // const updatedSettings = await PRISMA_CLIENT.settings.update({
                 //     where: { userId: userId.toString() },
@@ -100,10 +94,6 @@ export async function conversation_swapBuyToken_amount(
 
                 // console.log("updatedSettings", updatedSettings);
                 // console.log("updatedSettings.selectedBuy", updatedSettings.selectedBuy);
-                
-                
-
-                
             } catch (error) {
                 await ctx.reply(
                     "An error occurred while fetching your settings."
@@ -111,7 +101,7 @@ export async function conversation_swapBuyToken_amount(
             }
 
             ctx.temp.selectedswapBuyAmountUpdated = true;
-            await displaySwapBuyToken.displaySwapBuyToken(ctx);
+            await tokenSwapBuy.tokenSwapBuy(ctx);
 
             return;
         }
@@ -124,40 +114,44 @@ Buy Trx Conversation
 **************************************************
 */
 
-bot.use(createConversation(conversation_swapBuyToken_amount, "conversation_swapBuyToken_amount"));
+bot.use(
+    createConversation(
+        conversation_tokenSwapBuy_amount,
+        "conversation_tokenSwapBuy_amount"
+    )
+);
 
-bot.callbackQuery(/cb_swapBuyToken_amount_LOCATION_([^\s]+)/, async (ctx) => {
-    await ctx.conversation.enter("conversation_swapBuyToken_amount");
+bot.callbackQuery(/cb_tokenSwapBuy_amount_LOCATION_([^\s]+)/, async (ctx) => {
+    await ctx.conversation.enter("conversation_tokenSwapBuy_amount");
     await ctx.answerCallbackQuery();
 });
 
-
-// bot.callbackQuery("cb_swapBuyToken_amount_LOCATION_0_0", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapBuyToken_amount");
+// bot.callbackQuery("cb_tokenSwapBuy_amount_LOCATION_0_0", async (ctx) => {
+//     await ctx.conversation.enter("conversation_tokenSwapBuy_amount");
 //     await ctx.answerCallbackQuery();
 // });
 
-// bot.callbackQuery("cb_swapBuyToken_amount_LOCATION_0_1", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapBuyToken_amount");
+// bot.callbackQuery("cb_tokenSwapBuy_amount_LOCATION_0_1", async (ctx) => {
+//     await ctx.conversation.enter("conversation_tokenSwapBuy_amount");
 //     await ctx.answerCallbackQuery();
 // });
 
-// bot.callbackQuery("cb_swapBuyToken_amount_LOCATION_0_2", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapBuyToken_amount");
+// bot.callbackQuery("cb_tokenSwapBuy_amount_LOCATION_0_2", async (ctx) => {
+//     await ctx.conversation.enter("conversation_tokenSwapBuy_amount");
 //     await ctx.answerCallbackQuery();
 // });
 
-// bot.callbackQuery("cb_swapBuyToken_amount_LOCATION_1_0", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapBuyToken_amount");
+// bot.callbackQuery("cb_tokenSwapBuy_amount_LOCATION_1_0", async (ctx) => {
+//     await ctx.conversation.enter("conversation_tokenSwapBuy_amount");
 //     await ctx.answerCallbackQuery();
 // });
 
-// bot.callbackQuery("cb_swapBuyToken_amount_LOCATION_1_1", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapBuyToken_amount");
+// bot.callbackQuery("cb_tokenSwapBuy_amount_LOCATION_1_1", async (ctx) => {
+//     await ctx.conversation.enter("conversation_tokenSwapBuy_amount");
 //     await ctx.answerCallbackQuery();
 // });
 
-// bot.callbackQuery("cb_swapBuyToken_amount_LOCATION_CUSTOM", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapBuyToken_amount");
+// bot.callbackQuery("cb_tokenSwapBuy_amount_LOCATION_CUSTOM", async (ctx) => {
+//     await ctx.conversation.enter("conversation_tokenSwapBuy_amount");
 //     await ctx.answerCallbackQuery();
 // });

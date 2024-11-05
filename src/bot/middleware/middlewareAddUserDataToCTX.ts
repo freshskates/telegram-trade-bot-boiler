@@ -48,10 +48,6 @@ export const middlewareAddUserDataToCTX = () => {
 
         ctx.user = {user: userData, settings: settingsData}
 
-
-        console.log("Printing ctx.session");
-        console.log(ctx.session);
-
         return next();
     };
 };

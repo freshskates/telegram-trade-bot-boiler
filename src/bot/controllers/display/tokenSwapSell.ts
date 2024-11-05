@@ -1,11 +1,11 @@
 import "dotenv/config";
-import { MonadClient } from "../../clients/monad";
-import { BotContext } from "../../utils";
-import { formatNumber } from "../../utils/menu_helpers/homedata";
-import { UserClient } from "../../clients/userClient";
+import { MonadClient } from "../../../clients/monad";
+import { BotContext } from "../../../utils";
+import { formatNumber } from "../../../utils/menu_helpers/homedata";
+import { UserClient } from "../../../clients/userClient";
 
 async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
-    const tokenAddress = ctx.session.selectedTokenAddress;
+    const tokenAddress = ctx.session.tokenAddress_selected;
     const userId = ctx.from?.id;
 
     if (!userId || !tokenAddress) {

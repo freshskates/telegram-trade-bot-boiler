@@ -4,8 +4,27 @@ import config from "../config/config";
 import { CallbackQueryContext, MaybeArray } from "grammy/out/context";
 import { BotContext } from "../utils";
 
-const bot = new Bot<BotContext>(config.getTgBotToken());
+const bot = new Bot<BotContext>(config.getTelegramBotToken());
 
+
+
+// ----- THE BELOW IS TESTING TO FIX A UNINTENDED BEHAVIOR, LEAVE HERE UNTIL RESOLVED -----
+// declare global {
+//     var bot: Bot<BotContext>;
+//   }
+
+//   function getBot(): Bot<BotContext> {
+
+//     if (globalThis.prismaGlobal == null){
+//         globalThis.bot = new Bot<BotContext>(config.getTgBotToken());
+//     }
+  
+//     return globalThis.bot
+  
+//   }
+
+
+// const bot = getBot()
 /*
  **************************************************
  **************************************************
