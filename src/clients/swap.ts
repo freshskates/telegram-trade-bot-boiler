@@ -1,4 +1,4 @@
-import { ClientResult } from "../utils";
+import { ServerError } from "../utils/types";
 
 export class SwapClient {
   constructor() {}
@@ -10,7 +10,7 @@ export class SwapClient {
     amountIn: string,
     slippage: number
   ): Promise<
-    { txId: string; quoteIn: string; quoteOut: string } & ClientResult
+    { txId: string; quoteIn: string; quoteOut: string } & ServerError
   > {
     return {
       txId: "0x1234",

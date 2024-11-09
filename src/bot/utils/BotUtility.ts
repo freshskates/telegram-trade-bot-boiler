@@ -14,20 +14,20 @@ import { Context, LazySessionFlavor, Migrations, SessionFlavor } from "grammy";
 export interface UserSessionData {
     tokenAddress_selected?: string;
 
-    tokenSwapBuy_slippage_1: number;
-    tokenSwapBuy_slippage_custom: number;  // Value is given by the user
-    tokenSwapBuy_slippage_selected: number;  // Value selected by user
+    swapCoinToToken_slippage_1: number;  // Value can be given by the user
+    swapCoinToToken_slippage_custom: number;  // Value is given by the user
+    swapCoinToToken_slippage_selected: number;  // Value selected by user
 
-    tokenSwapBuy_amount_1: number;
-    tokenSwapBuy_amount_2: number;
-    tokenSwapBuy_amount_3: number;
-    tokenSwapBuy_amount_4: number;
-    tokenSwapBuy_amount_5: number;
-    tokenSwapBuy_amount_custom: number;  // Value is given by the user
-    tokenSwapBuy_amount_selected: number;  // Value selected by user
+    swapCoinToToken_amount_1: number;  // Value can be given by the user
+    swapCoinToToken_amount_2: number;  // Value can be given by the user  
+    swapCoinToToken_amount_3: number;  // Value can be given by the user
+    swapCoinToToken_amount_4: number;  // Value can be given by the user
+    swapCoinToToken_amount_5: number;  // Value can be given by the user
+    swapCoinToToken_amount_custom: number;  // Value is given by the user
+    swapCoinToToken_amount_selected: number;  // Value selected by user
 
-    swapSellToekn_selected_percent?: number;
-    swapSellToken_selected_splippage?: number;
+    swapTokenToCoin_selected_percent?: number;
+    swapTokenToCoin_selected_splippage?: number;
 }
 
 /**
@@ -47,17 +47,17 @@ export interface UserSessionData {
  */
 export function GetNewInitialSessionData(): UserSessionData {
     return {
-        tokenSwapBuy_slippage_1: 19,
-        tokenSwapBuy_slippage_custom: 0,
-        tokenSwapBuy_slippage_selected: 0,
+        swapCoinToToken_slippage_1: 19,
+        swapCoinToToken_slippage_custom: 0,
+        swapCoinToToken_slippage_selected: 0,
 
-        tokenSwapBuy_amount_1: 100,
-        tokenSwapBuy_amount_2: 500,
-        tokenSwapBuy_amount_3: 1000,
-        tokenSwapBuy_amount_4: 1000,
-        tokenSwapBuy_amount_5: 5000,
-        tokenSwapBuy_amount_custom: 0,
-        tokenSwapBuy_amount_selected: 0,
+        swapCoinToToken_amount_1: 100,
+        swapCoinToToken_amount_2: 500,
+        swapCoinToToken_amount_3: 1000,
+        swapCoinToToken_amount_4: 1000,
+        swapCoinToToken_amount_5: 5000,
+        swapCoinToToken_amount_custom: 0,
+        swapCoinToToken_amount_selected: 0,
     };
 }
 
@@ -88,8 +88,8 @@ export function getSessionMigration(): Migrations {
  */
 export interface UserData {
     user: {
-        walletPb: string;
-        walletPk: string;
+        walletPublicKey: string;
+        walletPrivateKey: string;
     };
 
     settings: {

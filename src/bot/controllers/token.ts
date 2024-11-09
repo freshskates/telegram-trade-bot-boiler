@@ -1,6 +1,6 @@
 import bot from "../bot_init";
-import { BotContext } from "../utils/utils";
-import { sell } from "./display/tokenSwapSell";
+import { BotContext } from "../utils/BotUtility";
+import { sell } from "./display/swapTokenToCoin";
 
 async function cb_token(ctx: BotContext) {
   if (ctx.match == null) {

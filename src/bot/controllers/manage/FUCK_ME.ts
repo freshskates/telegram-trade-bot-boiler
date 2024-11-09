@@ -2,7 +2,7 @@
 // import { BotContext, BotConversation } from "../../../utils";
 // import bot from "../../bot_init";
 
-// export async function conversation_tokenSwapBuy_amount(
+// export async function conversation_swapCoinToToken_amount(
 //     conversation: BotConversation,
 //     ctx: BotContext
 // ) {
@@ -23,8 +23,8 @@
 
 // bot.use(
 //     createConversation(
-//         conversation_tokenSwapBuy_amount,
-//         "conversation_tokenSwapBuy_amount"
+//         conversation_swapCoinToToken_amount,
+//         "conversation_swapCoinToToken_amount"
 //     )
 // );
 
@@ -36,7 +36,7 @@
 ////////////////////////////////////////////////////
 
 import bot from "../../bot_init";
-import { BotContext } from "../../utils/utils";
+import { BotContext } from "../../utils/BotUtility";
 
 // export async function conversation_FUCK_ME(
 //     conversation: BotConversation,

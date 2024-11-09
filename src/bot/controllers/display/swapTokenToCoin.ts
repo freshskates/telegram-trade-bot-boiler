@@ -1,8 +1,8 @@
 import "dotenv/config";
-import { MonadClient } from "../../../clients/monad";
-import { BotContext } from "../../../utils";
+import { MonadCoinClient } from "../../defined/MonadCoinClient";
 import { formatNumber } from "../../../utils/menu_helpers/homedata";
-import { UserClient } from "../../../clients/userClient";
+import { PrismaClientDatabaseHandler } from "../../defined/PrismaDatabaseClientHandler";
+import { BotContext } from "../../utils/BotUtility";
 
 async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
     const tokenAddress = ctx.session.tokenAddress_selected;
@@ -12,14 +12,14 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
         return;
     }
 
-    const tokenDetails = await MonadClient.fetchTokenMarketDetails(
+    const tokenDetails = await MonadCoinClient.fetchTokenMarketDetails(
         tokenAddress
     );
-    const walletBalance = await MonadClient.checkMonadBalance(
-        ctx.user.user.walletPb
+    const walletBalance = await MonadCoinClient.checkcoinBalance(
+        ctx.user.user.walletPublicKey
     );
 
-    const settings = await UserClient.getUserSettings(userId.toString());
+    const settings = await PrismaClientDatabaseHandler.getUserSettings(userId.toString());
 
     if (!settings) {
         return;
@@ -108,7 +108,7 @@ Sell ${
             } [📉](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
 \`${tokenAddress}\`
   
-Balance: *${walletBalance.monadBalance} MONAD* 
+Balance: *${walletBalance.coinBalance} MONAD* 
 Price: *\$${formatNumber(
                 tokenDetails.token.priceInUsd
             )}* — VOL: *\$${formatNumber(

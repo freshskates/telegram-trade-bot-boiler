@@ -1,17 +1,18 @@
-import { MonadClient } from "../../clients/monad";
+import { MonadCoinClient } from "../defined/MonadCoinClient";
 import { SwapClient } from "../../clients/swap";
 import bot from "../bot_init";
-import { BotContext } from "../utils/utils";
+import { BotContext } from "../utils/BotUtility";
+import getBotSharedSingleton from "../defined/BotShared";
 
-async function cb_tokenSwapBuy_swap(ctx: BotContext) {
+async function cb_swapCoinToToken_swap(ctx: BotContext) {
     await ctx.reply(
         `[dev] Selected Token: ${ctx.session.tokenAddress_selected}`
     );
     await ctx.reply(
-        `[dev] Slippage: ${ctx.session.tokenSwapBuy_slippage_selected}%`
+        `[dev] Slippage: ${ctx.session.swapCoinToToken_slippage_selected}%`
     );
     await ctx.reply(
-        `[dev] Buy Amount: ${ctx.session.tokenSwapBuy_amount_selected}TRX`
+        `[dev] Buy Amount: ${ctx.session.swapCoinToToken_amount_selected}TRX`
     );
 
     const fromToken = "TRX";
@@ -22,37 +23,37 @@ async function cb_tokenSwapBuy_swap(ctx: BotContext) {
         return;
     }
 
-    const amount = ctx.session.tokenSwapBuy_amount_selected;
+    const amount = ctx.session.swapCoinToToken_amount_selected;
 
     if (!amount) {
         await ctx.reply("Please select an amount first");
         return;
     }
 
-    const slippage = ctx.session.tokenSwapBuy_slippage_selected;
+    const slippage = ctx.session.swapCoinToToken_slippage_selected;
 
     if (!slippage) {
         await ctx.reply("Please select a slippage first");
         return;
     }
 
-    const pk = ctx.user.user.walletPk;
+    const walletPrivateKey = ctx.user.user.walletPrivateKey;
 
-    const walletBalance = await MonadClient.checkMonadBalance(
-        ctx.user.user.walletPb
+    const walletCoinBalance = await getBotSharedSingleton().getCoinClient().getCoinWalletBalance(
+        ctx.user.user.walletPublicKey
     );
 
-    if (Number(walletBalance) < amount) {
+    if (Number(walletCoinBalance) < amount) {
         await ctx.reply(
             "Insufficient balance to perform this swap! You have " +
-                walletBalance.monadBalance +
+                walletCoinBalance.coinBalance +
                 " TRX in your wallet."
         );
         return;
     }
 
     const swap = await SwapClient.swap(
-        pk,
+        walletPrivateKey,
         fromToken,
         toToken,
         amount.toString(),
@@ -61,4 +62,4 @@ async function cb_tokenSwapBuy_swap(ctx: BotContext) {
 
     await ctx.answerCallbackQuery();
 }
-bot.callbackQuery("cb_tokenSwapBuy_swap", cb_tokenSwapBuy_swap);
+bot.callbackQuery("cb_swapCoinToToken_swap", cb_swapCoinToToken_swap);

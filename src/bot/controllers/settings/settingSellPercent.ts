@@ -1,10 +1,10 @@
-import { CallbackQueryContext } from "grammy";
-import getPrismaClientSingleton from "../../../services/prisma_client_singleton";
-import { BotContext, BotConversation } from "../../../utils";
 import { createConversation } from "@grammyjs/conversations";
+import { CallbackQueryContext } from "grammy";
 import bot from "../../bot_init";
+import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
+import { BotContext, BotConversation } from "../../utils/BotUtility";
 
-const prisma = getPrismaClientSingleton();
+const prisma = getPrismaDatabaseClientSingleton();
 
 export const settingSellPercent = async (
     conversation: BotConversation,
@@ -82,10 +82,7 @@ Settings Menu - Set Sell Percents
 */
 
 bot.use(
-    createConversation(
-        settingSellPercent,
-        "conversation_sellPercentSetting"
-    )
+    createConversation(settingSellPercent, "conversation_sellPercentSetting")
 );
 
 bot.callbackQuery("cb_sell_percent_l", async (ctx) => {

@@ -1,10 +1,10 @@
 import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext, Context } from "grammy";
 import bot from "../bot_init";
-import getPrismaClientSingleton from "../../services/prisma_client_singleton";
+import getPrismaDatabaseClientSingleton from "../defined/PrismaDatabaseClient";
 import { BotContext, BotConversation } from "../../utils";
 
-const PRISMA_CLIENT = getPrismaClientSingleton();
+const PRISMA_CLIENT = getPrismaDatabaseClientSingleton();
 
 async function cb_buybutton(ctx: CallbackQueryContext<BotContext>) {
   await ctx.conversation.exit();
@@ -52,11 +52,11 @@ export async function cb_settings(ctx: BotContext) {
   }
 
   // Use the settings values to populate the button labels
-  const buyTopLeftX = ctx.session.tokenSwapBuy_amount_1;
-  const buyTopCenterX = ctx.session.tokenSwapBuy_amount_2;
-  const buyTopRightX = ctx.session.tokenSwapBuy_amount_3;
-  const buyBottomLeftX = ctx.session.tokenSwapBuy_amount_4;
-  const buyBottomRightX = ctx.session.tokenSwapBuy_amount_5;
+  const buyTopLeftX = ctx.session.swapCoinToToken_amount_1;
+  const buyTopCenterX = ctx.session.swapCoinToToken_amount_2;
+  const buyTopRightX = ctx.session.swapCoinToToken_amount_3;
+  const buyBottomLeftX = ctx.session.swapCoinToToken_amount_4;
+  const buyBottomRightX = ctx.session.swapCoinToToken_amount_5;
 
   await ctx.reply(
     `

@@ -10,8 +10,8 @@ datasource db {
 model User {
   id       String @id
   username String @default("anon")
-  walletPk String
-  walletPb String // ease of use? optional tbh
+  walletPrivateKey String
+  walletPublicKey String // ease of use? optional tbh
 
   referredBy String?
 
@@ -31,8 +31,8 @@ model Settings {
   id     String @id @default(cuid())
   userId String @unique
 
-  // gas fees in TRX
-  gasFee Float @default(70) //FIXME: WHY ARE GAS FEES PER USER???????????????
+  // gas fees
+  gasFee Float @default(70) 
 
   // auto buy
   autoBuy       Boolean @default(false) // 

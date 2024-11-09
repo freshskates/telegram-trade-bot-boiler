@@ -1,7 +1,7 @@
 import { CallbackQueryContext, Context } from "grammy";
 import { RootLogic } from "./structure/root_logic";
 import bot from "../bot_init";
-import { BotContext } from "../utils/utils";
+import { BotContext } from "../utils/BotUtility";
 // import { root } from ".";
 
 // Former was ctx: CallbackQueryContext<Context>

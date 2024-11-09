@@ -1,12 +1,9 @@
-import { Bot, CallbackQueryMiddleware, Composer } from "grammy";
+import { Bot } from "grammy";
 import config from "../config/config";
 
-import { CallbackQueryContext, MaybeArray } from "grammy/out/context";
-import { BotContext } from "../utils";
+import { BotContext } from "./utils/BotUtility";
 
 const bot = new Bot<BotContext>(config.getTelegramBotToken());
-
-
 
 // ----- THE BELOW IS TESTING TO FIX A UNINTENDED BEHAVIOR, LEAVE HERE UNTIL RESOLVED -----
 // declare global {
@@ -18,11 +15,10 @@ const bot = new Bot<BotContext>(config.getTelegramBotToken());
 //     if (globalThis.prismaGlobal == null){
 //         globalThis.bot = new Bot<BotContext>(config.getTgBotToken());
 //     }
-  
-//     return globalThis.bot
-  
-//   }
 
+//     return globalThis.bot
+
+//   }
 
 // const bot = getBot()
 /*
@@ -30,12 +26,12 @@ const bot = new Bot<BotContext>(config.getTelegramBotToken());
  **************************************************
  */
 
-function botRegisterCallbackQuery(
-    trigger: MaybeArray<string | RegExp>,
-    ...middleware: Array<CallbackQueryMiddleware<BotContext>>
-): Composer<CallbackQueryContext<BotContext>> {
-    return bot.callbackQuery(trigger, ...middleware);
-}
+// function botRegisterCallbackQuery(
+//     trigger: MaybeArray<string | RegExp>,
+//     ...middleware: Array<CallbackQueryMiddleware<BotContext>>
+// ): Composer<CallbackQueryContext<BotContext>> {
+//     return bot.callbackQuery(trigger, ...middleware);
+// }
 
 // const BotInitialized = {
 //     bot: bot,

@@ -1,7 +1,7 @@
 import "dotenv/config";
-import { MonadClient } from "../../clients/monad";
+import { MonadCoinClient } from "../defined/MonadCoinClient";
 import bot from "../bot_init";
-import { BotContext } from "../utils/utils";
+import { BotContext } from "../utils/BotUtility";
 import { WalletClient } from "../../clients/wallet";
 import { TokenPosition } from "../../utils";
 

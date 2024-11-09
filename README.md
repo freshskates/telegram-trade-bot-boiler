@@ -38,6 +38,9 @@ back
 
     Get the .env
 
+
+
+
 #### Dev Run
 
     npm install
@@ -49,10 +52,15 @@ back
     # Read migration file and make changes
     npx primsa migrate dev
 
-    # If you want the modity the actual db with your migrations then call
+    # Generate the new prisma index.d.ts file npx prisma generate  
+    npx prisma generate  
+
+    # If you want the modity the actual db with your migrations
     npx primsa migrate deploy
 
     npx prisma studio  # Use this to see the database
     npm run dev
 
 
+#### See the DB
+    npx prisma studio

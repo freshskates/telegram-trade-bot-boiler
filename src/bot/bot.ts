@@ -33,18 +33,19 @@ import {
 } from "grammy";
 import path from "path";
 import url from "url";
-import getPrismaClientSingleton from "../services/prisma_client_singleton";
+import getPrismaDatabaseClientSingleton from "./defined/PrismaDatabaseClient";
 import {
     BotContext,
     BotConversation,
     GetNewInitialSessionData,
     UserSessionData,
-} from "../utils";
+} from "./utils/BotUtility";
 import auto_load_modules_from from "./auto_load_module";
 import bot from "./bot_init";
-import middleware_debugger from "./middleware/_middleware_debugger";
-import { middlewareAddTempDataToCTX } from "./middleware/middlewareAddTempDataToCTX";
-import { middlewareAddUserDataToCTX } from "./middleware/middlewareAddUserDataToCTX";
+import middleware_debugger from "./controllers/middleware/_middleware_debugger";
+import { middlewareAddTempDataToCTX } from "./controllers/middleware/middlewareAddTempDataToCTX";
+import { middlewareAddUserDataToCTX } from "./controllers/middleware/middlewareAddUserDataToCTX";
+import { BotShared } from "./defined/BotShared";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
@@ -116,7 +117,7 @@ async function main() {
     bot.use(
         // Session middleware provides a persistent data storage for your bot.
         session({
-        // lazySession({ // Uncomment this line and comment out "session({"" if you want Lazy Sessions
+            // lazySession({ // Uncomment this line and comment out "session({"" if you want Lazy Sessions
             // initial option in the configuration object, which correctly initializes session objects for new chats.
             initial() {
                 return GetNewInitialSessionData(); // return empty object (The object created here must always be a new object and not referenced outside this function otherwise you might share data )
@@ -125,7 +126,7 @@ async function main() {
             // storage: new PrismaAdapter<SessionData>(getPrismaClientSingleton().session),  // Original version
             storage: enhanceStorage({
                 storage: new PrismaAdapter<Enhance<UserSessionData>>(
-                    getPrismaClientSingleton().session
+                    getPrismaDatabaseClientSingleton().session
                 ),
                 // migrations: getSessionMigration()
             }),
@@ -184,7 +185,7 @@ async function main() {
     const PATH_FILE_THIS_FILE = url.fileURLToPath(import.meta.url);
     const PATH_DIRECTORY_THIS_FILE = path.dirname(PATH_FILE_THIS_FILE);
     const PATH_DIRECTORY_CONTROLLERS = path.join(
-        PATH_DIRECTORY_THIS_FILE,
+        PATH_DIRECTORY_THIS_FILE
         // "controllers/manage/"
     );
     await auto_load_modules_from(PATH_DIRECTORY_CONTROLLERS, [
@@ -312,8 +313,8 @@ async function main() {
 
     // bot.use(
     //     createConversation(
-    //         conversation_tokenSwapBuy_amount,
-    //         "conversation_tokenSwapBuy_amount"
+    //         conversation_swapCoinToToken_amount,
+    //         "conversation_swapCoinToToken_amount"
     //     )
     // );
 
@@ -386,14 +387,6 @@ export async function start_bot() {
     ]);
 }
 
-
-
-
-
-
-
-
-
 ////////////////////////////// BELOW IS TESTING WHY THE FUCK Lazy Session IS BREAKING ctx.session //////////////////////////////
 ////////////////////////////// It's breaking because it does not work with ConversationFlavor.
 ////////////////////////////// What i mean by breaking is that they both use ctx.session as a promise which mean you need to
@@ -425,13 +418,11 @@ export async function start_bot() {
 // }
 
 // // flavor the context type to include sessions
-// type MyContext = 
-// Context & 
-// // SessionFlavor<(SessionDataTest)> & 
+// type MyContext =
+// Context &
+// // SessionFlavor<(SessionDataTest)> &
 // // LazySessionFlavor<(SessionDataTest)> & ConversationFlavor
-// LazySessionFlavor<(SessionDataTest& ConversationSessionData)> & ConversationFlavor 
-
-
+// LazySessionFlavor<(SessionDataTest& ConversationSessionData)> & ConversationFlavor
 
 // // Create a bot
 // const bot = new Bot<MyContext>('') // <-- place your token inside this string
@@ -453,7 +444,6 @@ export async function start_bot() {
 //         // migrations: getSessionMigration()
 //     }),
 // }))
-
 
 // // ------------- THE BELOW IS A TEST ON MULTI SESSION IN GENERAL TO SEE THE POSSIBLE CONFLICTS (Multi Session + Session migration + Conversations)
 // // bot.use(
@@ -478,7 +468,6 @@ export async function start_bot() {
 // // }))
 // bot.use(conversations());
 
-
 // function isSessionData(object: any): object is SessionDataTest{
 //     return 'photoCount' in object
 // }
@@ -490,7 +479,6 @@ export async function start_bot() {
 //     // LAZY SESSION, THEN TYPE IS: SessionDataTest | ConversationSessionData | (SessionDataTest & ConversationSessionData)
 //     const stats = await ctx.session
 
-    
 //     // NO LAZY SESSION THEN TYPE IS: SessionDataTest & MaybePromise<ConversationSessionData>
 //     // LAZY SESSION TYPE IS: (SessionDataTest & ConversationSessionData) | (Promise<SessionDataTest> & ConversationSessionData) | (SessionDataTest & Promise<...>) | (Promise<...> & Promise<...>)
 //     let x = ctx.session
@@ -499,8 +487,6 @@ export async function start_bot() {
 
 //         stats.photoCount++
 //     }
-
-
 
 //     stats.photoCount++
 //     await next()
@@ -535,4 +521,3 @@ export async function start_bot() {
 
 // // Start bot!
 // bot.start()
-

@@ -1,7 +1,8 @@
 import { NextFunction } from "grammy";
-import { MonadClient } from "../../../clients/monad";
-import { BotContext } from "../../../utils";
 import bot from "../../bot_init";
+import { MonadCoinClient } from "../../defined/MonadCoinClient";
+import { BotContext } from "../../utils/BotUtility";
+import getBotSharedSingleton, { BotShared } from "../../defined/BotShared";
 
 async function start(ctx: BotContext, next: NextFunction | null = null) {
     const user_id = ctx?.from?.id;
@@ -12,9 +13,10 @@ async function start(ctx: BotContext, next: NextFunction | null = null) {
 
     console.log("Printing ctx.user.user", ctx.user.user);
     console.log("Printing ctx", ctx);
-    const wallet = ctx.user.user.walletPb;
 
-    const balance = await MonadClient.checkMonadBalance(wallet);
+    const walletPublicKey = ctx.user.user.walletPublicKey;
+
+    const walletBalance = await getBotSharedSingleton().getCoinClient().getCoinWalletBalance(walletPublicKey);
 
     await ctx.reply(
         `
@@ -22,11 +24,11 @@ async function start(ctx: BotContext, next: NextFunction | null = null) {
 
 ${
     // @ts-ignore
-    balance.monadBalance == 0 // show bal in trx ?usdt?
+    walletBalance.coinBalance == 0 // show bal in trx ?usdt?
         ? "You currently have no MONAD in your wallet. Deposit MONAD to your Monad wallet address:\n"
-        : `*Balance: ${balance.monadBalance} MONAD*\n`
+        : `*Balance: ${walletBalance.coinBalance} MONAD*\n`
 } 
-\`${wallet}\` (tap to copy)
+\`${walletPublicKey}\` (tap to copy)
 
 Once done, tap refresh, and your balance will appear here.
 `,
@@ -37,7 +39,7 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Buy",
-                            callback_data: "cb_root_tokenSwapBuy",
+                            callback_data: "cb_root_swapCoinToToken",
                         },
                         {
                             text: "Sell / Manage",
@@ -125,9 +127,5 @@ const RootLogic = {
 
 export { RootLogic };
 
-
-
 bot.command("start", RootLogic.start);
 bot.command("help", RootLogic.help);
-
-
