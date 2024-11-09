@@ -1,6 +1,6 @@
 import ansiColors from "ansi-colors";
 import { NextFunction } from "grammy";
-import { BotContext } from "../../utils/BotUtility";
+import { BotContext } from "../../utils/bot_utility";
 
 async function middleware_debugger(ctx: BotContext, next: NextFunction) {
     const date_formatted_1 = new Date()

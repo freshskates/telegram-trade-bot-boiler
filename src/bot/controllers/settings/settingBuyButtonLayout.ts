@@ -1,7 +1,7 @@
 import { createConversation } from "@grammyjs/conversations";
 import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
 import bot from "../../bot_init";
-import { BotConversation } from "../../utils/BotUtility";
+import { BotConversation } from "../../utils/bot_utility";
 
 const prisma = getPrismaDatabaseClientSingleton();
 

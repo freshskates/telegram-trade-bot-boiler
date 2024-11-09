@@ -1,12 +1,8 @@
 import "dotenv/config";
-import { MonadCoinClient } from "../../defined/MonadCoinClient";
 import { formatNumber } from "../../../utils/menu_helpers/homedata";
 import bot from "../../bot_init";
-import {
-    BotContext
-} from "../../utils/BotUtility";
 import getBotSharedSingleton from "../../defined/BotShared";
-
+import { BotContext } from "../../utils/bot_utility";
 
 // async function _getHeader(tokenDetails: TokenMarketDetails, walletBalance: number): Promise<string> {
 // }
@@ -19,12 +15,12 @@ async function swapCoinToToken_(ctx: BotContext) {
         return;
     }
 
-    const tokenDetails = await getBotSharedSingleton().getCoinClient().getTokenMarketDetails(
-        tokenAddress
-    );
-    const walletBalance = await getBotSharedSingleton().getCoinClient().getCoinWalletBalance(
-        ctx.user.user.walletPublicKey
-    );
+    const tokenDetails = await getBotSharedSingleton()
+        .getCoinClient()
+        .getTokenMarketDetails(tokenAddress);
+    const walletBalance = await getBotSharedSingleton()
+        .getCoinClient()
+        .getCoinWalletBalance(ctx.user.user.walletPublicKey);
 
     // const userSettings = await UserClient.getUserSettings(userId.toString());
 
@@ -32,15 +28,21 @@ async function swapCoinToToken_(ctx: BotContext) {
     //     return;
     // }
 
+    // This should reduce read/writes
+    let ctx_session_cached = ctx.session;
+
     ctx.session.swapCoinToToken_amount_selected =
-        ctx.session.swapCoinToToken_amount_selected <= 0
-            ? ctx.session.swapCoinToToken_amount_1
-            : ctx.session.swapCoinToToken_amount_selected;
+        ctx_session_cached.swapCoinToToken_amount_selected <= 0
+            ? ctx_session_cached.swapCoinToToken_amount_1
+            : ctx_session_cached.swapCoinToToken_amount_selected;
 
     ctx.session.swapCoinToToken_slippage_selected =
-        ctx.session.swapCoinToToken_slippage_selected <= 0
-            ? ctx.session.swapCoinToToken_slippage_1
-            : ctx.session.swapCoinToToken_slippage_selected;
+        ctx_session_cached.swapCoinToToken_slippage_selected <= 0
+            ? ctx_session_cached.swapCoinToToken_slippage_1
+            : ctx_session_cached.swapCoinToToken_slippage_selected;
+
+    // This should reduce read/writes
+    ctx_session_cached = ctx.session;
 
     const inlineKeyboard = [
         [
@@ -56,61 +58,71 @@ async function swapCoinToToken_(ctx: BotContext) {
         [
             {
                 text: `${
-                    ctx.session.swapCoinToToken_amount_selected ===
-                    ctx.session.swapCoinToToken_amount_1
+                    ctx_session_cached.swapCoinToToken_amount_selected ===
+                    ctx_session_cached.swapCoinToToken_amount_1
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapCoinToToken_amount_1} ${getBotSharedSingleton().getCoinInformation().ticker}`,
+                }Buy ${ctx_session_cached.swapCoinToToken_amount_1} ${
+                    getBotSharedSingleton().getCoinInformation().ticker
+                }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_0_0",
             },
             {
                 text: `${
-                    ctx.session.swapCoinToToken_amount_selected ===
-                    ctx.session.swapCoinToToken_amount_2
+                    ctx_session_cached.swapCoinToToken_amount_selected ===
+                    ctx_session_cached.swapCoinToToken_amount_2
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapCoinToToken_amount_2} ${getBotSharedSingleton().getCoinInformation().ticker}`,
+                }Buy ${ctx_session_cached.swapCoinToToken_amount_2} ${
+                    getBotSharedSingleton().getCoinInformation().ticker
+                }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_0_1",
             },
             {
                 text: `${
-                    ctx.session.swapCoinToToken_amount_selected ===
-                    ctx.session.swapCoinToToken_amount_3
+                    ctx_session_cached.swapCoinToToken_amount_selected ===
+                    ctx_session_cached.swapCoinToToken_amount_3
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapCoinToToken_amount_3} ${getBotSharedSingleton().getCoinInformation().ticker}`,
+                }Buy ${ctx_session_cached.swapCoinToToken_amount_3} ${
+                    getBotSharedSingleton().getCoinInformation().ticker
+                }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_0_2",
             },
         ],
         [
             {
                 text: `${
-                    ctx.session.swapCoinToToken_amount_selected ===
-                    ctx.session.swapCoinToToken_amount_4
+                    ctx_session_cached.swapCoinToToken_amount_selected ===
+                    ctx_session_cached.swapCoinToToken_amount_4
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapCoinToToken_amount_4} ${getBotSharedSingleton().getCoinInformation().ticker}`,
+                }Buy ${ctx_session_cached.swapCoinToToken_amount_4} ${
+                    getBotSharedSingleton().getCoinInformation().ticker
+                }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_1_0",
             },
             {
                 text: `${
-                    ctx.session.swapCoinToToken_amount_selected ===
-                    ctx.session.swapCoinToToken_amount_5
+                    ctx_session_cached.swapCoinToToken_amount_selected ===
+                    ctx_session_cached.swapCoinToToken_amount_5
                         ? "✅ "
                         : ""
-                }Buy ${ctx.session.swapCoinToToken_amount_5} ${getBotSharedSingleton().getCoinInformation().ticker}`,
+                }Buy ${ctx_session_cached.swapCoinToToken_amount_5} ${
+                    getBotSharedSingleton().getCoinInformation().ticker
+                }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_1_1",
             },
             {
                 text: `${
-                    ctx.session.swapCoinToToken_amount_selected ===
-                    ctx.session.swapCoinToToken_amount_custom
+                    ctx_session_cached.swapCoinToToken_amount_selected ===
+                    ctx_session_cached.swapCoinToToken_amount_custom
                         ? "✅ "
                         : ""
                 }Buy ${
-                    ctx.session.swapCoinToToken_amount_custom <= 0
+                    ctx_session_cached.swapCoinToToken_amount_custom <= 0
                         ? "X"
-                        : ctx.session.swapCoinToToken_amount_custom
+                        : ctx_session_cached.swapCoinToToken_amount_custom
                 } ${getBotSharedSingleton().getCoinInformation().ticker} ✏️`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_CUSTOM",
             },
@@ -118,23 +130,23 @@ async function swapCoinToToken_(ctx: BotContext) {
         [
             {
                 text: `${
-                    ctx.session.swapCoinToToken_slippage_selected ===
-                    ctx.session.swapCoinToToken_slippage_1
+                    ctx_session_cached.swapCoinToToken_slippage_selected ===
+                    ctx_session_cached.swapCoinToToken_slippage_1
                         ? "✅ "
                         : ""
-                }${ctx.session.swapCoinToToken_slippage_1}% Slippage`,
+                }${ctx_session_cached.swapCoinToToken_slippage_1}% Slippage`,
                 callback_data: "cb_swapCoinToToken_slippage",
             },
             {
                 text: `${
-                    ctx.session.swapCoinToToken_slippage_selected ===
-                    ctx.session.swapCoinToToken_slippage_custom
+                    ctx_session_cached.swapCoinToToken_slippage_selected ===
+                    ctx_session_cached.swapCoinToToken_slippage_custom
                         ? "✅ "
                         : ""
                 }${
-                    ctx.session.swapCoinToToken_slippage_custom <= 0
+                    ctx_session_cached.swapCoinToToken_slippage_custom <= 0
                         ? "X%"
-                        : ctx.session.swapCoinToToken_slippage_custom
+                        : ctx_session_cached.swapCoinToToken_slippage_custom
                 }% Slippage ✏️`,
                 callback_data: "cb_swapCoinToToken_slippage_x",
             },
@@ -153,7 +165,9 @@ Buy \$${
     } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
 \`${tokenAddress}\`
   
-Balance: *${walletBalance.coinBalance} ${getBotSharedSingleton().getCoinInformation().name}* 
+Balance: *${walletBalance.coinBalance} ${
+        getBotSharedSingleton().getCoinInformation().name
+    }* 
 Price: *\$${formatNumber(
         tokenDetails.token.priceInUsd
     )}* — VOL: *\$${formatNumber(
@@ -162,7 +176,6 @@ Price: *\$${formatNumber(
   
 // insert quote details here
         `;
-
 
     // This condition will catch false, null, and undefined
     if (!ctx.temp.selectedswapBuyAmountUpdated) {

@@ -43,9 +43,9 @@ model Settings {
   // slippageBuyCustom   Float @default(0)  // POTENTIALLY MOVE TO SESSIONS IN CODE, this is the custom slippage number on the display
   // slippageBuy         Float @default(10) // POTENTIALLY MOVE TO SESSIONS IN CODE, this is the slippage number on the display
 
-  selectedSellSlippage Float @default(0)
-  slippageSellCustom   Float @default(0)
-  slippageSell         Float @default(10)
+  // selectedSellSlippage Float @default(0)
+  // slippageSellCustom   Float @default(0)
+  // slippageSell         Float @default(10)
 
   // button layout [buy]
   // selectedBuy     Float @default(0) // POTENTIALLY MOVE TO SESSIONS IN CODE //
@@ -57,10 +57,10 @@ model Settings {
   // buyCustomX      Float @default(0) // POTENTIALLY MOVE TO SESSIONS IN CODE //
 
   // button layout [sell]
-  selectedSellPercent Float @default(0) // 
-  sellLeftPercentX    Float @default(100)
-  sellRightPercentX   Float @default(100)
-  sellCustomX         Float @default(0) //
+  // selectedSellPercent Float @default(0) // 
+  // sellLeftPercentX    Float @default(100)
+  // sellRightPercentX   Float @default(100)
+  // sellCustomX         Float @default(0) //
 
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

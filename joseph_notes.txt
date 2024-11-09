@@ -61,6 +61,8 @@ Joseph's Notes
                         bot.callbackQuery(..., middleware_function)
                         bot.use(middleware_function,...)
                     This means that the primary functions of your code is affected. 
+
+                    ***** Accessing ctx.session causes a corresponding read or write to the database
                     
                     ***** An important discovery *****
                         What the documentations dpes not tell you is that if you have a call like this:

@@ -1,6 +1,6 @@
 import { createConversation } from "@grammyjs/conversations";
 import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
-import { BotContext, BotConversation } from "../../utils/BotUtility";
+import { BotContext, BotConversation } from "../../utils/bot_utility";
 import bot from "../../bot_init";
 import { swapCoinToToken } from "./swapCoinToToken";
 

@@ -1,7 +1,7 @@
 import { NextFunction } from "grammy";
 import bot from "../../bot_init";
 import { MonadCoinClient } from "../../defined/MonadCoinClient";
-import { BotContext } from "../../utils/BotUtility";
+import { BotContext } from "../../utils/bot_utility";
 import getBotSharedSingleton, { BotShared } from "../../defined/BotShared";
 
 async function start(ctx: BotContext, next: NextFunction | null = null) {

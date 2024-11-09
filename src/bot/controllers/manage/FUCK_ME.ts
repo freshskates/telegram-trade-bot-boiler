@@ -36,7 +36,7 @@
 ////////////////////////////////////////////////////
 
 import bot from "../../bot_init";
-import { BotContext } from "../../utils/BotUtility";
+import { BotContext } from "../../utils/bot_utility";
 
 // export async function conversation_FUCK_ME(
 //     conversation: BotConversation,

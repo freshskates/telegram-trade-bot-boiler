@@ -1,7 +1,7 @@
 import { NextFunction } from "grammy";
 import { PrismaClientDatabaseHandler } from "../../defined/PrismaDatabaseClientHandler";
 import getBotSharedSingleton from "../../defined/BotShared";
-import { BotContext } from "../../utils/BotUtility";
+import { BotContext } from "../../utils/bot_utility";
 
 export const middlewareAddUserDataToCTX = () => {
     return async (ctx: BotContext, next: NextFunction) => {

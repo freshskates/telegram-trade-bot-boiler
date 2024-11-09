@@ -3,7 +3,7 @@ import { CallbackQueryContext } from "grammy";
 import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
 import bot from "../../bot_init";
 import { cb_settings } from "../settings";
-import { BotContext, BotConversation } from "../../utils/BotUtility";
+import { BotContext, BotConversation } from "../../utils/bot_utility";
 
 const prisma = getPrismaDatabaseClientSingleton();
 

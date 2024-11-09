@@ -39,7 +39,7 @@ import {
     BotConversation,
     GetNewInitialSessionData,
     UserSessionData,
-} from "./utils/BotUtility";
+} from "./utils/bot_utility";
 import auto_load_modules_from from "./auto_load_module";
 import bot from "./bot_init";
 import middleware_debugger from "./controllers/middleware/_middleware_debugger";

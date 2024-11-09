@@ -1,8 +1,7 @@
 import "dotenv/config";
-import { MonadCoinClient } from "../../defined/MonadCoinClient";
 import { formatNumber } from "../../../utils/menu_helpers/homedata";
-import { PrismaClientDatabaseHandler } from "../../defined/PrismaDatabaseClientHandler";
-import { BotContext } from "../../utils/BotUtility";
+import getBotSharedSingleton from "../../defined/BotShared";
+import { BotContext } from "../../utils/bot_utility";
 
 async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
     const tokenAddress = ctx.session.tokenAddress_selected;
@@ -12,28 +11,34 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
         return;
     }
 
-    const tokenDetails = await MonadCoinClient.fetchTokenMarketDetails(
-        tokenAddress
-    );
-    const walletBalance = await MonadCoinClient.checkcoinBalance(
-        ctx.user.user.walletPublicKey
-    );
+    const tokenDetails = await getBotSharedSingleton()
+        .getCoinClient()
+        .getTokenMarketDetails(tokenAddress);
+    const walletBalance = await getBotSharedSingleton()
+        .getCoinClient()
+        .getCoinWalletBalance(ctx.user.user.walletPublicKey);
 
-    const settings = await PrismaClientDatabaseHandler.getUserSettings(userId.toString());
+    // const settings = await getBotSharedSingleton().getDatabaseClientHandler().getUserSettings(userId.toString());
 
-    if (!settings) {
-        return;
-    }
+    // if (!settings) {
+    //     return;
+    // }
 
-    const selectedSellPercent =
-        settings.selectedSellPercent <= 0
-            ? settings.sellLeftPercentX
-            : settings.selectedSellPercent;
+    // This should reduce read/writes
+    let ctx_session_cached = ctx.session;
 
-    const selectedSlippage =
-        settings.selectedSellSlippage <= 0
-            ? settings.slippageSell
-            : settings.selectedSellSlippage;
+    ctx.session.swapTokenToCoin_amount_percent_selected =
+        ctx_session_cached.swapTokenToCoin_amount_percent_selected <= 0
+            ? ctx_session_cached.swapTokenToCoin_amount_percent_1
+            : ctx_session_cached.swapTokenToCoin_amount_percent_selected;
+
+    ctx.session.swapTokenToCoin_slippage_selected =
+        ctx_session_cached.swapTokenToCoin_slippage_selected <= 0
+            ? ctx_session_cached.swapTokenToCoin_slippage_1
+            : ctx_session_cached.swapTokenToCoin_slippage_selected;
+
+    // This should reduce read/writes
+    ctx_session_cached = ctx.session
 
     const inlineKeyboard = [
         [
@@ -49,25 +54,33 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
         [
             {
                 text: `${
-                    selectedSellPercent === settings.sellLeftPercentX
+                    ctx_session_cached.swapTokenToCoin_amount_percent_selected ===
+                    ctx_session_cached.swapTokenToCoin_amount_percent_1
                         ? "✅ "
                         : ""
-                }Sell ${settings.sellLeftPercentX}%`,
+                }Sell ${ctx_session_cached.swapTokenToCoin_amount_percent_1}%`,
                 callback_data: "swap_sellbutton_left_cb",
             },
             {
                 text: `${
-                    selectedSellPercent === settings.sellRightPercentX
+                    ctx_session_cached.swapTokenToCoin_amount_percent_selected ===
+                    ctx_session_cached.swapTokenToCoin_amount_percent_2
                         ? "✅ "
                         : ""
-                }Sell ${settings.sellRightPercentX}%`,
+                }Sell ${ctx_session_cached.swapTokenToCoin_amount_percent_2}%`,
                 callback_data: "swap_sellbutton_right_cb",
             },
             {
                 text: `${
-                    selectedSellPercent === settings.sellCustomX ? "✅ " : ""
+                    ctx_session_cached.swapTokenToCoin_amount_percent_selected ===
+                    ctx_session_cached.swapTokenToCoin_amount_percent_custom
+                        ? "✅ "
+                        : ""
                 } Sell ${
-                    settings.sellCustomX <= 0 ? "X" : settings.sellCustomX
+                    ctx_session_cached.swapTokenToCoin_amount_percent_custom <=
+                    0
+                        ? "X"
+                        : ctx_session_cached.swapTokenToCoin_amount_percent_custom
                 }% ✏️`,
                 callback_data: "swap_sellbutton_x_cb",
             },
@@ -75,19 +88,23 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
         [
             {
                 text: `${
-                    selectedSlippage === settings.slippageSell ? "✅ " : ""
-                } ${settings.slippageSell}% Slippage`,
+                    ctx_session_cached.swapTokenToCoin_slippage_selected ===
+                    ctx_session_cached.swapTokenToCoin_slippage_1
+                        ? "✅ "
+                        : ""
+                } ${ctx_session_cached.swapTokenToCoin_slippage_1}% Slippage`,
                 callback_data: "sell_slippagebutton_cb",
             },
             {
                 text: `${
-                    selectedSlippage === settings.slippageSellCustom
+                    ctx_session_cached.swapTokenToCoin_slippage_selected ===
+                    ctx_session_cached.swapTokenToCoin_slippage_custom
                         ? "✅ "
                         : ""
                 }${
-                    settings.slippageSellCustom <= 0
+                    ctx_session_cached.swapTokenToCoin_slippage_custom <= 0
                         ? "X"
-                        : settings.slippageSellCustom
+                        : ctx_session_cached.swapTokenToCoin_slippage_custom
                 }% Slippage ✏️`,
                 callback_data: "cb_sell_slippagebutton_x",
             },
@@ -152,7 +169,7 @@ Price: *\$${formatNumber(
 }
 
 const sell = {
-  start: displaySwapSellToken_,
+    start: displaySwapSellToken_,
 };
 export { sell };
 

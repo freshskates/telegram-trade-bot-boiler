@@ -1,7 +1,7 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
 import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
-import { BotContext, BotConversation } from "../../utils/BotUtility";
+import { BotContext, BotConversation } from "../../utils/bot_utility";
 import { sell } from "./swapTokenToCoin";
 
 // Function to fetch sell percent by button ID
@@ -61,14 +61,14 @@ export async function conversation_sellTrx(
         `You have selected to sell ${customPercent}% of your TRX.` // FIXME: Should be Coin Name not TRX
       );
 
-      ctx.session.swapTokenToCoin_selected_percent = customPercent;
+      ctx.session.swapTokenToCoin_percent_selected = customPercent;
 
       const prisma = getPrismaDatabaseClientSingleton();
       const updatedSettings = await prisma.settings.update({
         where: { userId: userId.toString() },
         data: {
           sellCustomX: customPercent,
-          selectedSellPercent: customPercent,
+          swapTokenToCoin_amount_percent_selected: customPercent,
         },
       });
 
@@ -83,12 +83,12 @@ export async function conversation_sellTrx(
         );
 
         // await ctx.answerCallbackQuery(); // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
-        ctx.session.swapTokenToCoin_selected_percent = sellPercent;
+        ctx.session.swapTokenToCoin_percent_selected = sellPercent;
         const prisma = getPrismaDatabaseClientSingleton();
         const updatedSettings = await prisma.settings.update({
           where: { userId: userId.toString() },
           data: {
-            selectedSellPercent: sellPercent,
+            swapTokenToCoin_amount_percent_selected: sellPercent,
           },
         });
 

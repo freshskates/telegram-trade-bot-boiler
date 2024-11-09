@@ -25,9 +25,15 @@ export interface UserSessionData {
     swapCoinToToken_amount_5: number;  // Value can be given by the user
     swapCoinToToken_amount_custom: number;  // Value is given by the user
     swapCoinToToken_amount_selected: number;  // Value selected by user
+    
+    swapTokenToCoin_slippage_1: number;  // Value can be given by the user
+    swapTokenToCoin_slippage_custom: number;  // Value is given by the user
+    swapTokenToCoin_slippage_selected: number;  // Value selected by user
 
-    swapTokenToCoin_selected_percent?: number;
-    swapTokenToCoin_selected_splippage?: number;
+    swapTokenToCoin_amount_percent_1: number;  // Value can be given by the user
+    swapTokenToCoin_amount_percent_2: number;  // Value can be given by the user
+    swapTokenToCoin_amount_percent_custom: number;  // Value can be given by the user
+    swapTokenToCoin_amount_percent_selected: number;  // Value selected by user
 }
 
 /**
@@ -58,6 +64,15 @@ export function GetNewInitialSessionData(): UserSessionData {
         swapCoinToToken_amount_5: 5000,
         swapCoinToToken_amount_custom: 0,
         swapCoinToToken_amount_selected: 0,
+
+        swapTokenToCoin_slippage_1:10,
+        swapTokenToCoin_slippage_custom: 0,
+        swapTokenToCoin_slippage_selected: 0,
+
+        swapTokenToCoin_amount_percent_1: 10,
+        swapTokenToCoin_amount_percent_2: 20,
+        swapTokenToCoin_amount_percent_custom: 0,
+        swapTokenToCoin_amount_percent_selected: 0,
     };
 }
 

@@ -1,7 +1,7 @@
 import { createConversation } from "@grammyjs/conversations";
 import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
 import bot from "../../bot_init";
-import { BotContext, BotConversation } from "../../utils/BotUtility";
+import { BotContext, BotConversation } from "../../utils/bot_utility";
 import { sell } from "./swapTokenToCoin";
 
 async function fetchSellSlippageByButtonId(
@@ -21,6 +21,8 @@ async function fetchSellSlippageByButtonId(
 
   if (buttonId === "sell_slippagebutton_cb") {
     return settings.slippageSell;
+    return ctx.session.swapTokenToCoin_splippage_selected;
+
   }
 
   return 0;
@@ -54,7 +56,7 @@ export async function conversation_sellSlippage(
         );
       }
 
-      ctx.session.swapTokenToCoin_selected_splippage = customSlippage;
+      ctx.session.swapTokenToCoin_splippage_selected = customSlippage;
 
       const prisma = getPrismaDatabaseClientSingleton();
       const updatedSettings = await prisma.settings.update({
@@ -77,7 +79,7 @@ export async function conversation_sellSlippage(
 
       await ctx.reply(`You have selected to use ${slippage}% slippage.`);
 
-      ctx.session.swapTokenToCoin_selected_splippage = slippage;
+      ctx.session.swapTokenToCoin_splippage_selected = slippage;
 
       const prisma = getPrismaDatabaseClientSingleton();
       const updatedSettings = await prisma.settings.update({

@@ -50,13 +50,13 @@ back
     # OR
     npx prisma migrate dev --create-only  # Create migration file but not run it
     # Read migration file and make changes
-    npx primsa migrate dev
+    npx prisma migrate dev
 
     # Generate the new prisma index.d.ts file npx prisma generate  
     npx prisma generate  
 
     # If you want the modity the actual db with your migrations
-    npx primsa migrate deploy
+    npx prisma migrate deploy
 
     npx prisma studio  # Use this to see the database
     npm run dev
