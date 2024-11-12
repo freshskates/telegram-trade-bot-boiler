@@ -51,12 +51,19 @@ export async function cb_settings(ctx: BotContext) {
     return;
   }
 
+
+  const ctx_session_cached = ctx.session
+
   // Use the settings values to populate the button labels
-  const buyTopLeftX = ctx.session.swapCoinToToken_amount_1;
-  const buyTopCenterX = ctx.session.swapCoinToToken_amount_2;
-  const buyTopRightX = ctx.session.swapCoinToToken_amount_3;
-  const buyBottomLeftX = ctx.session.swapCoinToToken_amount_4;
-  const buyBottomRightX = ctx.session.swapCoinToToken_amount_5;
+  const buyTokenTopLeftX = ctx_session_cached.swapCoinToToken_amount_1;
+  const buyTokenTopCenterX = ctx_session_cached.swapCoinToToken_amount_2;
+  const buyTokenTopRightX = ctx_session_cached.swapCoinToToken_amount_3;
+  const buyTokenBottomLeftX = ctx_session_cached.swapCoinToToken_amount_4;
+  const buyTokenBottomRightX = ctx_session_cached.swapCoinToToken_amount_5;
+  const buyTokenSlippage = ctx_session_cached.swapCoinToToken_slippage_selected;
+  const sellTokenAmountPrecent_1 = ctx_session_cached.swapTokenToCoin_amount_percent_1;
+  const sellTokenAmountPrecent_2 = ctx_session_cached.swapTokenToCoin_amount_percent_1d;
+  const sellTokenSlippage = ctx_session_cached.swapTokenToCoin_slippage_selected;
 
   await ctx.reply(
     `
@@ -90,48 +97,48 @@ export async function cb_settings(ctx: BotContext) {
           [{ text: "-- Buy Amounts --", callback_data: "empty" }],
           [
             {
-              text: `${buyTopLeftX} TRX ✏️`,
+              text: `${buyTokenTopLeftX} TRX ✏️`,
               callback_data: "cb_buy_button_tl",
             },
             {
-              text: `${buyTopCenterX} TRX ✏️`,
+              text: `${buyTokenTopCenterX} TRX ✏️`,
               callback_data: "cb_buy_button_tc",
             },
             {
-              text: `${buyTopRightX} TRX ✏️`,
+              text: `${buyTokenTopRightX} TRX ✏️`,
               callback_data: "cb_buy_button_tr",
             },
           ],
           [
             {
-              text: `${buyBottomLeftX} TRX ✏️`,
+              text: `${buyTokenBottomLeftX} TRX ✏️`,
               callback_data: "cb_buy_button_bl",
             },
             {
-              text: `${buyBottomRightX} TRX ✏️`,
+              text: `${buyTokenBottomRightX} TRX ✏️`,
               callback_data: "cb_buy_button_br",
             },
           ],
           [
             {
-              text: `Buy Slippage: ${userSettings.slippageBuy}% ✏️`,
+              text: `Buy Slippage: ${buyTokenSlippage}% ✏️`,
               callback_data: "cb_buy_setting_slippage",
             },
           ],
           [{ text: "-- Sell Amounts --", callback_data: "empty" }],
           [
             {
-              text: `${userSettings.sellLeftPercentX}% ✏️`,
+              text: `${sellTokenAmountPrecent_1}% ✏️`,
               callback_data: "cb_sell_percent_l",
             },
             {
-              text: `${userSettings.sellRightPercentX}% ✏️`,
+              text: `${sellTokenAmountPrecent_2}% ✏️`,
               callback_data: "cb_sell_percent_r",
             },
           ],
           [
             {
-              text: `Sell Slippage: ${userSettings.slippageSell}% ✏️`,
+              text: `Sell Slippage: ${sellTokenSlippage}% ✏️`,
               callback_data: "cb_sell_setting_slippage",
             },
           ],

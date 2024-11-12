@@ -19,33 +19,29 @@
     
 
 */
-import { conversations, createConversation } from "@grammyjs/conversations";
-import { PrismaAdapter } from "@grammyjs/storage-prisma";
+import { conversations } from "@grammyjs/conversations";
 import ansiColors from "ansi-colors";
 import {
     Enhance,
     enhanceStorage,
     GrammyError,
     HttpError,
-    lazySession,
-    NextFunction,
-    session,
+    session
 } from "grammy";
 import path from "path";
 import url from "url";
-import getPrismaDatabaseClientSingleton from "./defined/PrismaDatabaseClient";
-import {
-    BotContext,
-    BotConversation,
-    GetNewInitialSessionData,
-    UserSessionData,
-} from "./utils/bot_utility";
 import auto_load_modules_from from "./auto_load_module";
 import bot from "./bot_init";
 import middleware_debugger from "./controllers/middleware/_middleware_debugger";
 import { middlewareAddTempDataToCTX } from "./controllers/middleware/middlewareAddTempDataToCTX";
 import { middlewareAddUserDataToCTX } from "./controllers/middleware/middlewareAddUserDataToCTX";
-import { BotShared } from "./defined/BotShared";
+import getBotSharedSingleton from "./defined/BotShared";
+import getPrismaDatabaseClientSingleton from "./defined/PrismaDatabaseClient";
+import {
+    BotContext,
+    GetNewInitialSessionData,
+    UserSessionData
+} from "./utils/bot_utility";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
@@ -114,6 +110,7 @@ async function main() {
                 https://grammy.dev/plugins/session#lazy-sessions
     
     */
+    
     bot.use(
         // Session middleware provides a persistent data storage for your bot.
         session({
@@ -125,9 +122,14 @@ async function main() {
 
             // storage: new PrismaAdapter<SessionData>(getPrismaClientSingleton().session),  // Original version
             storage: enhanceStorage({
-                storage: new PrismaAdapter<Enhance<UserSessionData>>(
-                    getPrismaDatabaseClientSingleton().session
-                ),
+                storage: (() => {
+                    // Note that you cannot do this "new getBotSharedSingleton().getStorageAdaptorClass()" 
+                    let storageAdaptorClass = getBotSharedSingleton().getStorageAdaptorClass();
+
+                    return new storageAdaptorClass<Enhance<UserSessionData>>( // The <Enhance<...> is needed as stated in the docs in a convoluted way...
+                        getPrismaDatabaseClientSingleton().session
+                    );
+                })(),
                 // migrations: getSessionMigration()
             }),
         })
@@ -230,8 +232,8 @@ async function main() {
     */
 
     // Chat commands
-    // bot.command("start", module_root_logic.RootLogic.start);
-    // bot.command("help", module_root_logic.RootLogic.help);
+    // bot.command("start", module_root_logic.Root.start);
+    // bot.command("help", module_root_logic.Root.help);
 
     // bot.use(mainMenu);
     // bot.command("_test", (ctx) =>

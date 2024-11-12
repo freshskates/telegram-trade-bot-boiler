@@ -32,11 +32,11 @@ model Settings {
   userId String @unique
 
   // gas fees
-  gasFee Float @default(70) 
+  // gasFee Float @default(70) 
 
   // auto buy
-  autoBuy       Boolean @default(false) // 
-  autoBuyAmount Float   @default(100) 
+  // autoBuy       Boolean @default(false) // 
+  // autoBuyAmount Float   @default(100) 
 
   // slippage
   // selectedBuySlippage Float @default(0)  // POTENTIALLY MOVE TO SESSIONS IN CODE, this is the custom slippage number on the display

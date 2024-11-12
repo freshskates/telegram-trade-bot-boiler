@@ -1,6 +1,6 @@
 // import { Router } from "@grammyjs/router";
 // import { BotContext } from "../utils/utils";
-// import { RootLogic } from "./root_logic";
+// import { Root } from "./root_logic";
 
 // const routerRoot = new Router<BotContext>((ctx: BotContext)  => {
 //     // Determine route to pick here.
@@ -8,8 +8,8 @@
 // });
   
 
-// routerRoot.route("/start", RootLogic.start)
-// routerRoot.route("/help", RootLogic.help);
+// routerRoot.route("/start", Root.start)
+// routerRoot.route("/help", Root.help);
 
 // // router.route("key", async (ctx) => {/* ... */});
 // // router.route("other-key", async (ctx) => {/* ... */});

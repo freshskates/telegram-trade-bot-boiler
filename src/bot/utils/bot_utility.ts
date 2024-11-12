@@ -1,10 +1,17 @@
 import { Conversation, ConversationFlavor } from "@grammyjs/conversations";
-import { Context, LazySessionFlavor, Migrations, SessionFlavor } from "grammy";
+import { Context, Migrations, SessionFlavor } from "grammy";
 
 /**
- * Session data is data that is stored in the database and is automatically saved to the database if any changes happen to that data.
+ * User Session Data is data that is stored in the database and is automatically saved to the database if any changes happen to that data.
  * This data is stored in a table called Session and all the data within this interface will be in JSON format and that
  * JSON data will be stored as a single string.
+ *
+ * Notes:
+ *      The data here should not be important or the data can be removed/not used/modified in such a way that
+ *      it does not break major functionality.
+ *
+ *      Basically, data here should be on the level of importance of storing settings/options/preferences,
+ *      but not on the level of importance of storing credit card information.
  *
  *
  * @export
@@ -12,28 +19,49 @@ import { Context, LazySessionFlavor, Migrations, SessionFlavor } from "grammy";
  * @typedef {UserSessionData}
  */
 export interface UserSessionData {
+    /* ----- Token Related ----- */
     tokenAddress_selected?: string;
 
-    swapCoinToToken_slippage_1: number;  // Value can be given by the user
-    swapCoinToToken_slippage_custom: number;  // Value is given by the user
-    swapCoinToToken_slippage_selected: number;  // Value selected by user
+    /* ----- Buy Token (Coin to Token) ----- */
 
-    swapCoinToToken_amount_1: number;  // Value can be given by the user
-    swapCoinToToken_amount_2: number;  // Value can be given by the user  
-    swapCoinToToken_amount_3: number;  // Value can be given by the user
-    swapCoinToToken_amount_4: number;  // Value can be given by the user
-    swapCoinToToken_amount_5: number;  // Value can be given by the user
-    swapCoinToToken_amount_custom: number;  // Value is given by the user
-    swapCoinToToken_amount_selected: number;  // Value selected by user
-    
-    swapTokenToCoin_slippage_1: number;  // Value can be given by the user
-    swapTokenToCoin_slippage_custom: number;  // Value is given by the user
-    swapTokenToCoin_slippage_selected: number;  // Value selected by user
+    swapCoinToToken_slippage_1: number; // Value can be given by the user
+    swapCoinToToken_slippage_custom: number; // Value is given by the user
+    swapCoinToToken_slippage_selected: number; // Value selected by user
 
-    swapTokenToCoin_amount_percent_1: number;  // Value can be given by the user
-    swapTokenToCoin_amount_percent_2: number;  // Value can be given by the user
-    swapTokenToCoin_amount_percent_custom: number;  // Value can be given by the user
-    swapTokenToCoin_amount_percent_selected: number;  // Value selected by user
+    swapCoinToToken_amount_1: number; // Value can be given by the user
+    swapCoinToToken_amount_2: number; // Value can be given by the user
+    swapCoinToToken_amount_3: number; // Value can be given by the user
+    swapCoinToToken_amount_4: number; // Value can be given by the user
+    swapCoinToToken_amount_5: number; // Value can be given by the user
+    swapCoinToToken_amount_custom: number; // Value is given by the user
+    swapCoinToToken_amount_selected: number; // Value selected by user
+
+    swapCoinToToken_gas_fee_1: number; // Value can be given by the user
+    swapCoinToToken_gas_fee_2: number; // Value can be given by the user
+    swapCoinToToken_gas_fee_3: number; // Value can be given by the user
+    swapCoinToToken_gas_fee_selected: number; // Value selected by user
+
+    /* ----- Auto Buy Token (Coin to Token) ----- */
+
+    swapCoinToToken_auto_amount_custom: number; // Value is given by the user
+    swapCoinToToken_auto_amount_selected: number; // Value selected by user
+    swapCoinToToken_auto_amount_toggle: boolean;
+
+    /* ----- Sell Token (Token to Coin)  ----- */
+
+    swapTokenToCoin_slippage_1: number; // Value can be given by the user
+    swapTokenToCoin_slippage_custom: number; // Value is given by the user
+    swapTokenToCoin_slippage_selected: number; // Value selected by user
+
+    swapTokenToCoin_amount_percent_1: number; // Value can be given by the user
+    swapTokenToCoin_amount_percent_2: number; // Value can be given by the user
+    swapTokenToCoin_amount_percent_custom: number; // Value can be given by the user
+    swapTokenToCoin_amount_percent_selected: number; // Value selected by user
+
+    swapTokenToCoin_gas_fee_1: number; // Value can be given by the user
+    swapTokenToCoin_gas_fee_2: number; // Value can be given by the user
+    swapTokenToCoin_gas_fee_3: number; // Value can be given by the user
+    swapTokenToCoin_gas_fee_selected: number; // Value selected by user
 }
 
 /**
@@ -53,6 +81,8 @@ export interface UserSessionData {
  */
 export function GetNewInitialSessionData(): UserSessionData {
     return {
+        /* ----- Buy Token (Coin to Token) ----- */
+
         swapCoinToToken_slippage_1: 19,
         swapCoinToToken_slippage_custom: 0,
         swapCoinToToken_slippage_selected: 0,
@@ -65,7 +95,20 @@ export function GetNewInitialSessionData(): UserSessionData {
         swapCoinToToken_amount_custom: 0,
         swapCoinToToken_amount_selected: 0,
 
-        swapTokenToCoin_slippage_1:10,
+        swapCoinToToken_gas_fee_1: 10,
+        swapCoinToToken_gas_fee_2: 20,
+        swapCoinToToken_gas_fee_3: 30,
+        swapCoinToToken_gas_fee_selected: 0,
+
+        /* ----- Auto Buy Token (Coin to Token) ----- */
+
+        swapCoinToToken_auto_amount_custom: 0,
+        swapCoinToToken_auto_amount_selected: 0,
+        swapCoinToToken_auto_amount_toggle: false,
+
+        /* ----- Sell Token (Token to Coin)  ----- */
+
+        swapTokenToCoin_slippage_1: 10,
         swapTokenToCoin_slippage_custom: 0,
         swapTokenToCoin_slippage_selected: 0,
 
@@ -73,6 +116,11 @@ export function GetNewInitialSessionData(): UserSessionData {
         swapTokenToCoin_amount_percent_2: 20,
         swapTokenToCoin_amount_percent_custom: 0,
         swapTokenToCoin_amount_percent_selected: 0,
+
+        swapTokenToCoin_gas_fee_1: 10,
+        swapTokenToCoin_gas_fee_2: 20,
+        swapTokenToCoin_gas_fee_3: 30,
+        swapTokenToCoin_gas_fee_selected: 0,
     };
 }
 
@@ -108,9 +156,9 @@ export interface UserData {
     };
 
     settings: {
-        gasFee: number;
-        autoBuy: boolean;
-        autoBuyTrx: number;
+        // gasFee: number;
+        // autoBuy: boolean;
+        // autoBuyTrx: number;
     };
 
     // ////////////////// IGNORE THE BELOW
@@ -133,7 +181,7 @@ export interface TempData {
 export type BotContext = Context &
     ConversationFlavor &
     SessionFlavor<UserSessionData> & { user: UserData } & { temp: TempData }; // Non lazySession way
-    // LazySessionFlavor<SessionData> & { user: UserData } & { temp: TempData };
+// LazySessionFlavor<SessionData> & { user: UserData } & { temp: TempData };
 
 export type BotConversation = Conversation<BotContext>;
-1
+1;

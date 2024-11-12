@@ -45,9 +45,7 @@ export const middlewareAddUserDataToCTX = () => {
         }
 
         const settingsData = {
-            gasFee: settings.gasFee,
-            autoBuy: settings.autoBuy,
-            autoBuyTrx: settings.autoBuyTrx,
+            
         };
 
         ctx.user = {user: userData, settings: settingsData}

@@ -27,11 +27,7 @@ export interface CoinInformation {
     ticker: string;
 }
 
-export interface UserTokenPosition
-    extends Pick<TokenInformation, "name" | "symbol" | "address"> {
-    balance: number;
-    balanceUsd: number;
-}
+
 export interface UserWallet {
     walletPublicKey: string;
     walletPrivateKey: string;
@@ -40,8 +36,8 @@ export interface UserWallet {
 export interface User {
     id: string;
     username: string;
-    walletPrivateKey: string; 
-    walletPublicKey: string; 
+    walletPrivateKey: string;
+    walletPublicKey: string;
     referredBy: string | null;
     createdAt: Date;
     updatedAt: Date;
@@ -52,4 +48,16 @@ export interface UserSettings {
     userId: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface UserTokenPosition
+    extends Pick<TokenInformation, "name" | "symbol" | "address"> {
+    balance: number;
+    balanceUSD: number;
+}
+
+export interface SwapTransaction {
+    transactionId: string;
+    quoteIn: string;
+    quoteOut: string;
 }

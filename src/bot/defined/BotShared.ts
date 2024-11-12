@@ -3,42 +3,57 @@ import { AbstractDatabaseClientHandler } from "../../clients/AbstractDatabaseCli
 import { CoinInformation } from "../../utils/types";
 import { MonadCoinClient } from "./MonadCoinClient";
 
-import { Settings, User } from "@prisma/client";
+import { PrismaAdapter } from "@grammyjs/storage-prisma";
+import { StorageAdapter } from "grammy";
+import { AbstractWalletClient } from "../../clients/AbstractWalletClient";
 import { PrismaClientDatabaseHandler } from "./PrismaDatabaseClientHandler";
+import { WalletClient } from "./WalletClient";
 
 declare global {
-    var __globalBotUtility: BotShared<any, any> | undefined;
+    var __globalBotUtility: BotShared | undefined;
 }
-
-export class BotShared<GenericDatabaseUser, GenericDatabaseSettings> {
-    _coinInformtoin: CoinInformation;
-    _coinClient: AbstractCoinClient;
-    _databaseClientHandler: AbstractDatabaseClientHandler;
+export class BotShared {
+    coinInformtoin: CoinInformation;
+    coinClient: AbstractCoinClient;
+    databaseClientHandler: AbstractDatabaseClientHandler;
+    walletClient: AbstractWalletClient;
 
     constructor(
         databaseClientHandler: AbstractDatabaseClientHandler,
         coinInformtoin: CoinInformation,
-        coinClinet: AbstractCoinClient
+        coinClinet: AbstractCoinClient,
+        walletClient: AbstractWalletClient,
     ) {
-        this._databaseClientHandler = databaseClientHandler;
-        this._coinInformtoin = coinInformtoin;
-        this._coinClient = coinClinet;
+        this.databaseClientHandler = databaseClientHandler;
+        this.coinInformtoin = coinInformtoin;
+        this.coinClient = coinClinet;
+        this.walletClient = walletClient
     }
 
     getCoinInformation(): CoinInformation {
-        return this._coinInformtoin;
+        return this.coinInformtoin;
     }
 
     getCoinClient(): AbstractCoinClient {
-        return this._coinClient;
+        return this.coinClient;
     }
 
-    getDatabaseClientHandler(): AbstractDatabaseClientHandler{
-        return this._databaseClientHandler;
+    getDatabaseClientHandler(): AbstractDatabaseClientHandler {
+        return this.databaseClientHandler;
+    }
+
+    getWalletClient(): AbstractWalletClient {
+        return this.walletClient
+    }
+
+    /* ------ Special Functions ------ */
+    getStorageAdaptorClass(): new <T>(...args: any[]) => StorageAdapter<T> {
+        // Alternative Return Type: "new <T>(repository: SessionDelegate) => StorageAdapter<T>"
+        return PrismaAdapter;
     }
 }
 
-function getBotSharedSingleton(): BotShared<Settings, User> {
+function getBotSharedSingleton(): BotShared {
     if (globalThis.__globalBotUtility == null) {
         const prismaDatabaseClientHandler = new PrismaClientDatabaseHandler();
 
@@ -49,10 +64,13 @@ function getBotSharedSingleton(): BotShared<Settings, User> {
 
         const monadCoinClient = new MonadCoinClient();
 
+        const walletClient = new WalletClient()
+
         globalThis.__globalBotUtility = new BotShared(
             prismaDatabaseClientHandler,
             monadInformation,
-            monadCoinClient
+            monadCoinClient,
+            walletClient,
         );
     }
 

@@ -62,7 +62,16 @@ Joseph's Notes
                         bot.use(middleware_function,...)
                     This means that the primary functions of your code is affected. 
 
-                    ***** Accessing ctx.session causes a corresponding read or write to the database
+                    ***** Accessing/Modifying ctx.session causes a corresponding read/write to the database 
+                        This is implied within the Lazy Sessions documentation (https://grammy.dev/plugins/session#lazy-sessions).
+                            "
+                            This is achieved by intercepting access to ctx.session. 
+                            If no handler is invoked, then ctx.session will never be accessed. 
+                            Lazy sessions use this as an indicator to prevent database communication.
+                            "
+                        This functionality is probably achieved via "get _VAR_NAME_()" and "set _VAR_NAME_()" within an object.
+                        This functionality is similar to python's descriptors.
+
                     
                     ***** An important discovery *****
                         What the documentations dpes not tell you is that if you have a call like this:

@@ -1,10 +1,9 @@
 import { NextFunction } from "grammy";
 import bot from "../../bot_init";
-import { MonadCoinClient } from "../../defined/MonadCoinClient";
+import getBotSharedSingleton from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
-import getBotSharedSingleton, { BotShared } from "../../defined/BotShared";
 
-async function start(ctx: BotContext, next: NextFunction | null = null) {
+async function cb_root(ctx: BotContext, next: NextFunction | null = null) {
     const user_id = ctx?.from?.id;
 
     if (!user_id) {
@@ -16,7 +15,9 @@ async function start(ctx: BotContext, next: NextFunction | null = null) {
 
     const walletPublicKey = ctx.user.user.walletPublicKey;
 
-    const walletBalance = await getBotSharedSingleton().getCoinClient().getCoinWalletBalance(walletPublicKey);
+    const walletBalance = await getBotSharedSingleton()
+        .getCoinClient()
+        .getCoinWalletBalance(walletPublicKey);
 
     await ctx.reply(
         `
@@ -43,7 +44,7 @@ Once done, tap refresh, and your balance will appear here.
                         },
                         {
                             text: "Sell / Manage",
-                            callback_data: "cb_root_swapSellToken",
+                            callback_data: "cb_tokensOwned",
                         },
                     ],
                     [
@@ -105,11 +106,6 @@ const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
     });
 };
 
-// bot.callbackQuery("cb_root_settings", async (ctx: BotContext) =>{
-//   console.log("SDFSDFSDFSDF")
-//   ctx.answerCallbackQuery()
-// });
-
 bot.callbackQuery("cb_root_refresh", async (ctx) => {
     console.log("FROM REFRESH");
     console.log(ctx);
@@ -119,13 +115,10 @@ bot.callbackQuery("cb_root_refresh", async (ctx) => {
     await ctx.answerCallbackQuery();
 });
 
-const RootLogic = {
-    start: start,
-    help: help,
-    chat: chat,
+const Root = {
+    cb_root: cb_root,
 };
+export default Root;
 
-export { RootLogic };
-
-bot.command("start", RootLogic.start);
-bot.command("help", RootLogic.help);
+bot.command("start", cb_root);
+bot.command("help", help);
