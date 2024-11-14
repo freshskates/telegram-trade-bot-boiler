@@ -8,26 +8,31 @@ import { StorageAdapter } from "grammy";
 import { AbstractWalletClient } from "../../clients/AbstractWalletClient";
 import { PrismaClientDatabaseHandler } from "./PrismaDatabaseClientHandler";
 import { WalletClient } from "./WalletClient";
+import { AbstractSwapClient } from "../../clients/AbstractSwapClient";
+import { SwapClient } from "./SwapClient";
 
 declare global {
     var __globalBotUtility: BotShared | undefined;
 }
 export class BotShared {
-    coinInformtoin: CoinInformation;
-    coinClient: AbstractCoinClient;
-    databaseClientHandler: AbstractDatabaseClientHandler;
-    walletClient: AbstractWalletClient;
+    protected coinInformtoin: CoinInformation;
+    protected coinClient: AbstractCoinClient;
+    protected databaseClientHandler: AbstractDatabaseClientHandler;
+    protected walletClient: AbstractWalletClient;
+    protected swapClient: AbstractSwapClient;
 
     constructor(
         databaseClientHandler: AbstractDatabaseClientHandler,
         coinInformtoin: CoinInformation,
         coinClinet: AbstractCoinClient,
         walletClient: AbstractWalletClient,
+        swapClient: AbstractSwapClient,
     ) {
         this.databaseClientHandler = databaseClientHandler;
         this.coinInformtoin = coinInformtoin;
         this.coinClient = coinClinet;
         this.walletClient = walletClient
+        this.swapClient = swapClient
     }
 
     getCoinInformation(): CoinInformation {
@@ -44,6 +49,10 @@ export class BotShared {
 
     getWalletClient(): AbstractWalletClient {
         return this.walletClient
+    }
+
+    getSwapClient(): AbstractSwapClient{
+        return this.swapClient
     }
 
     /* ------ Special Functions ------ */
@@ -65,16 +74,22 @@ function getBotSharedSingleton(): BotShared {
         const monadCoinClient = new MonadCoinClient();
 
         const walletClient = new WalletClient()
+        
+        const swapClient = new SwapClient()
 
         globalThis.__globalBotUtility = new BotShared(
             prismaDatabaseClientHandler,
             monadInformation,
             monadCoinClient,
             walletClient,
+            swapClient,
         );
     }
 
     return globalThis.__globalBotUtility;
 }
 
-export default getBotSharedSingleton;
+
+const getBotShared = getBotSharedSingleton;
+
+export default getBotShared;

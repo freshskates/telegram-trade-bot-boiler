@@ -2,7 +2,8 @@ import { MonadCoinClient } from "../defined/MonadCoinClient";
 import { SwapClient } from "../defined/SwapClient";
 import bot from "../bot_init";
 import { BotContext } from "../utils/bot_utility";
-import getBotSharedSingleton from "../defined/BotShared";
+import BotSharedSingleton from "../defined/BotShared";
+import getBotShared from "../defined/BotShared";
 
 async function cb_swapCoinToToken_swap(ctx: BotContext) {
     await ctx.reply(
@@ -12,7 +13,7 @@ async function cb_swapCoinToToken_swap(ctx: BotContext) {
         `[dev] Slippage: ${ctx.session.swapCoinToToken_slippage_selected}%`
     );
     await ctx.reply(
-        `[dev] Buy Amount: ${ctx.session.swapCoinToToken_amount_selected}TRX`
+        `[dev] Buy Amount: ${ctx.session.swapCoinToToken_amount_selected} ${getBotShared().getCoinInformation().ticker}`
     );
 
     const fromToken = "TRX";
@@ -39,7 +40,7 @@ async function cb_swapCoinToToken_swap(ctx: BotContext) {
 
     const walletPrivateKey = ctx.user.user.walletPrivateKey;
 
-    const walletCoinBalance = await getBotSharedSingleton().getCoinClient().getCoinWalletBalance(
+    const walletCoinBalance = await getBotShared().getCoinClient().getCoinWalletBalance(
         ctx.user.user.walletPublicKey
     );
 
@@ -52,7 +53,7 @@ async function cb_swapCoinToToken_swap(ctx: BotContext) {
         return;
     }
 
-    const swap = await SwapClient.swap(
+    const swap = await getBotShared().getSwapClient().swap(
         walletPrivateKey,
         fromToken,
         toToken,

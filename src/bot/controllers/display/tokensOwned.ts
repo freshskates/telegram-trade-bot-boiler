@@ -1,9 +1,8 @@
 import "dotenv/config";
-import { WalletClient } from "../../defined/WalletClient";
 import { UserTokenPosition } from "../../../utils/types";
 import bot from "../../bot_init";
+import getBotShared from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
-import getBotSharedSingleton from "../../defined/BotShared";
 
 function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
     const maxRows = 6;
@@ -48,11 +47,10 @@ function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
 }
 
 async function cb_tokensOwned(ctx: BotContext) {
-
-
     const walletPublicKey = ctx.user.user.walletPublicKey;
-    const tokensOwned = await getBotSharedSingleton().getWalletClient().getOwnedTokens(walletPublicKey);
-
+    const tokensOwned = await getBotShared()
+        .getWalletClient()
+        .getOwnedTokens(walletPublicKey);
 
     const inlineKeyboard = [
         [

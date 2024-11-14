@@ -1,8 +1,8 @@
 import "dotenv/config";
-import { formatNumber } from "../../../utils/menu_helpers/homedata";
 import bot from "../../bot_init";
-import getBotSharedSingleton from "../../defined/BotShared";
+import getBotShared from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
+import { getTokenHeaderFormatted } from "../utils/common";
 
 // async function _getHeader(tokenDetails: TokenMarketDetails, walletBalance: number): Promise<string> {
 // }
@@ -10,17 +10,13 @@ import { BotContext } from "../../utils/bot_utility";
 async function swapCoinToToken_(ctx: BotContext) {
     const tokenAddress = ctx.session.tokenAddress_selected;
     const userId = ctx.from?.id; // Gets the author of the message, callback query, or other things
-
+    
     if (!userId || !tokenAddress) {
         return;
     }
+    
 
-    const tokenDetails = await getBotSharedSingleton()
-        .getCoinClient()
-        .getTokenMarketDetails(tokenAddress);
-    const walletBalance = await getBotSharedSingleton()
-        .getCoinClient()
-        .getCoinWalletBalance(ctx.user.user.walletPublicKey);
+
 
     // const userSettings = await UserClient.getUserSettings(userId.toString());
 
@@ -41,8 +37,11 @@ async function swapCoinToToken_(ctx: BotContext) {
             ? ctx_session_cached.swapCoinToToken_slippage_1
             : ctx_session_cached.swapCoinToToken_slippage_selected;
 
-    // This should reduce read/writes
+    // Update the cache // This should reduce read/writes
     ctx_session_cached = ctx.session;
+
+    console.log("swapCoinToToken_", ctx_session_cached);
+    
 
     const inlineKeyboard = [
         [
@@ -63,7 +62,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_1} ${
-                    getBotSharedSingleton().getCoinInformation().ticker
+                    getBotShared().getCoinInformation().ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_0_0",
             },
@@ -74,7 +73,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_2} ${
-                    getBotSharedSingleton().getCoinInformation().ticker
+                    getBotShared().getCoinInformation().ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_0_1",
             },
@@ -85,7 +84,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_3} ${
-                    getBotSharedSingleton().getCoinInformation().ticker
+                    getBotShared().getCoinInformation().ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_0_2",
             },
@@ -98,7 +97,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_4} ${
-                    getBotSharedSingleton().getCoinInformation().ticker
+                    getBotShared().getCoinInformation().ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_1_0",
             },
@@ -109,7 +108,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_5} ${
-                    getBotSharedSingleton().getCoinInformation().ticker
+                    getBotShared().getCoinInformation().ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_1_1",
             },
@@ -123,7 +122,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                     ctx_session_cached.swapCoinToToken_amount_custom <= 0
                         ? "X"
                         : ctx_session_cached.swapCoinToToken_amount_custom
-                } ${getBotSharedSingleton().getCoinInformation().ticker} ✏️`,
+                } ${getBotShared().getCoinInformation().ticker} ✏️`,
                 callback_data: "cb_swapCoinToToken_amount_LOCATION_CUSTOM",
             },
         ],
@@ -135,7 +134,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }${ctx_session_cached.swapCoinToToken_slippage_1}% Slippage`,
-                callback_data: "cb_swapCoinToToken_slippage",
+                callback_data: "cb_swapCoinToToken_slippage_LOCATION_0_0",
             },
             {
                 text: `${
@@ -145,10 +144,10 @@ async function swapCoinToToken_(ctx: BotContext) {
                         : ""
                 }${
                     ctx_session_cached.swapCoinToToken_slippage_custom <= 0
-                        ? "X%"
+                        ? "(CUSTOM)"
                         : ctx_session_cached.swapCoinToToken_slippage_custom
                 }% Slippage ✏️`,
-                callback_data: "cb_swapCoinToToken_slippage_x",
+                callback_data: "cb_swapCoinToToken_slippage_LOCATION_CUSTOM",
             },
         ],
         [
@@ -158,27 +157,11 @@ async function swapCoinToToken_(ctx: BotContext) {
             },
         ],
     ];
-
-    const headerText = `
-Buy \$${
-        tokenDetails.token.name
-    } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
-\`${tokenAddress}\`
-  
-Balance: *${walletBalance.coinBalance} ${
-        getBotSharedSingleton().getCoinInformation().name
-    }* 
-Price: *\$${formatNumber(
-        tokenDetails.token.priceInUsd
-    )}* — VOL: *\$${formatNumber(
-        tokenDetails.token.volume24h
-    )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
-  
-// insert quote details here
-        `;
+    
+    const headerText = await getTokenHeaderFormatted(ctx, tokenAddress);
 
     // This condition will catch false, null, and undefined
-    if (!ctx.temp.selectedswapBuyAmountUpdated) {
+    if (!ctx.temp.selectedSwapBuyAmountUpdated || ctx.temp.conversationMethodReturnedANewCTX) {
         await ctx.reply(headerText, {
             parse_mode: "Markdown",
             reply_markup: {
@@ -186,12 +169,14 @@ Price: *\$${formatNumber(
             },
         });
     } else {
+        
         await ctx.editMessageText(headerText, {
             parse_mode: "Markdown",
             reply_markup: {
                 inline_keyboard: inlineKeyboard,
             },
         });
+
     }
 }
 
@@ -207,17 +192,27 @@ Something about buying idk
 **************************************************
 */
 
+async function cb_swapCoinToToken_refresh(ctx: BotContext){
+    await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
+    await ctx.answerCallbackQuery("Refreshed");  // Answer any existing callback_query to prevent buggy behavior
+    
+    await swapCoinToToken_(ctx);
+
+}
+
+bot.callbackQuery("cb_swapCoinToToken_refresh", cb_swapCoinToToken_refresh);
+
 // TODO: CallbackQueryContext<BotContext> IS THAT CORRECT? IDK
-async function cb_buy(ctx: BotContext) {
+async function cb_swapCoinToToken(ctx: BotContext) {
     return await ctx.reply(
         "Enter a valid Monad token address:\n(temp example: TUFonyWZ4Tza5MzgDj6g2u5rfdGoRVYG7g)"
     );
 }
 
-bot.callbackQuery("cb_root_swapCoinToToken", cb_buy);
+bot.callbackQuery("cb_swapCoinToToken", cb_swapCoinToToken);
 
 // TODO: CHANGE THIS FROM REGEX TO A CONVERSATION
-async function load_token(ctx: BotContext) {
+async function cb_load_token(ctx: BotContext) {
     if (!ctx?.message?.text) return;
 
     const token = ctx?.message.text?.trim();
@@ -228,10 +223,10 @@ async function load_token(ctx: BotContext) {
     console.log("Printing ctx.");
     console.log(ctx);
 
-    return await swapCoinToToken_(ctx);
+    await swapCoinToToken_(ctx);
 }
 
-bot.hears(/^T[a-zA-Z0-9]{33}$/, load_token);
+bot.hears(/^T[a-zA-Z0-9]{33}$/, cb_load_token);
 
 // @ts-ignore
 // console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded

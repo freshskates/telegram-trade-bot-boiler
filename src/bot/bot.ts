@@ -26,7 +26,7 @@ import {
     enhanceStorage,
     GrammyError,
     HttpError,
-    session
+    session,
 } from "grammy";
 import path from "path";
 import url from "url";
@@ -35,12 +35,12 @@ import bot from "./bot_init";
 import middleware_debugger from "./controllers/middleware/_middleware_debugger";
 import { middlewareAddTempDataToCTX } from "./controllers/middleware/middlewareAddTempDataToCTX";
 import { middlewareAddUserDataToCTX } from "./controllers/middleware/middlewareAddUserDataToCTX";
-import getBotSharedSingleton from "./defined/BotShared";
+import getBotShared from "./defined/BotShared";
 import getPrismaDatabaseClientSingleton from "./defined/PrismaDatabaseClient";
 import {
     BotContext,
     GetNewInitialSessionData,
-    UserSessionData
+    UserSessionData,
 } from "./utils/bot_utility";
 
 // TODO: refresh_cb?
@@ -110,7 +110,7 @@ async function main() {
                 https://grammy.dev/plugins/session#lazy-sessions
     
     */
-    
+
     bot.use(
         // Session middleware provides a persistent data storage for your bot.
         session({
@@ -123,8 +123,9 @@ async function main() {
             // storage: new PrismaAdapter<SessionData>(getPrismaClientSingleton().session),  // Original version
             storage: enhanceStorage({
                 storage: (() => {
-                    // Note that you cannot do this "new getBotSharedSingleton().getStorageAdaptorClass()" 
-                    let storageAdaptorClass = getBotSharedSingleton().getStorageAdaptorClass();
+                    // Note that you cannot do this "new botShared.getStorageAdaptorClass()"
+                    let storageAdaptorClass =
+                        getBotShared().getStorageAdaptorClass();
 
                     return new storageAdaptorClass<Enhance<UserSessionData>>( // The <Enhance<...> is needed as stated in the docs in a convoluted way...
                         getPrismaDatabaseClientSingleton().session

@@ -129,6 +129,22 @@ Joseph's Notes
                     https://grammy.dev/plugins/session#lazy-sessions
                     https://github.com/grammyjs/examples/blob/main/stats-lazy.ts
 
+            * On the subject of Conversations *
+                Date Today:
+                    11/14/2024
+                Notes:
+                    If you call a conversation method that returns a new context object (ctx), you must use that 
+                    ctx because any previous ctx will not saved in the database.
+
+                    ExampleS of methods called that return a new ctx object (https://grammy.dev/ref/conversations/conversationhandle)
+                        conversation.wait()
+                        conversation.waitFor()
+                        conversation.waitFrom()
+                        conversation.waitForReplyTo()
+
+                Reference:
+                    https://grammy.dev/ref/conversations/conversationhandle#wait
+
             Inline Keyboard (It's actual buttons)
             
                 Date Today:

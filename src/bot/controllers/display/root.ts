@@ -1,6 +1,6 @@
 import { NextFunction } from "grammy";
 import bot from "../../bot_init";
-import getBotSharedSingleton from "../../defined/BotShared";
+import getBotShared from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
 
 async function cb_root(ctx: BotContext, next: NextFunction | null = null) {
@@ -15,7 +15,7 @@ async function cb_root(ctx: BotContext, next: NextFunction | null = null) {
 
     const walletPublicKey = ctx.user.user.walletPublicKey;
 
-    const walletBalance = await getBotSharedSingleton()
+    const walletBalance = await getBotShared()
         .getCoinClient()
         .getCoinWalletBalance(walletPublicKey);
 
@@ -40,7 +40,7 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Buy",
-                            callback_data: "cb_root_swapCoinToToken",
+                            callback_data: "cb_swapCoinToToken",
                         },
                         {
                             text: "Sell / Manage",
@@ -68,8 +68,9 @@ Once done, tap refresh, and your balance will appear here.
         }
     );
 }
+bot.command("start", cb_root);
 
-// // FIXME: NOT USED
+// // FIXME: NOT USED // TODO: IDK FUCK
 async function help(ctx: BotContext, next: NextFunction | null = null) {
     console.log("FROM HELP");
     console.log(ctx);
@@ -89,36 +90,37 @@ async function help(ctx: BotContext, next: NextFunction | null = null) {
     });
     ctx.answerCallbackQuery();
 }
+bot.command("help", help);
 
-const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
-    await ctx.reply(`CHAT`, {
-        parse_mode: "HTML",
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    {
-                        text: "Close",
-                        callback_data: "cb_cancel",
-                    },
-                ],
-            ],
-        },
-    });
-};
+// const chat = async (ctx: BotContext, next: NextFunction | null = null) => {
+//     await ctx.reply(`CHAT`, {
+//         parse_mode: "HTML",
+//         reply_markup: {
+//             inline_keyboard: [
+//                 [
+//                     {
+//                         text: "Close",
+//                         callback_data: "cb_cancel",
+//                     },
+//                 ],
+//             ],
+//         },
+//     });
+// };
 
-bot.callbackQuery("cb_root_refresh", async (ctx) => {
-    console.log("FROM REFRESH");
-    console.log(ctx);
-    console.log("ctx.session");
-    console.log(ctx.session);
-    // await start(ctx);
-    await ctx.answerCallbackQuery();
-});
+
+async function cb_root_refresh(ctx: BotContext){
+    await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
+    await ctx.answerCallbackQuery("Refreshed");  // Answer any existing callback_query to prevent buggy behavior
+    
+    await cb_root(ctx);
+
+}
+
+
+bot.callbackQuery("cb_root_refresh", cb_root_refresh);
 
 const Root = {
     cb_root: cb_root,
 };
 export default Root;
-
-bot.command("start", cb_root);
-bot.command("help", help);

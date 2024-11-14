@@ -1,11 +1,11 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
-import { swapCoinToToken } from "./swapCoinToToken";
 import { BotContext, BotConversation } from "../../utils/bot_utility";
+import { swapCoinToToken } from "./swapCoinToToken";
 
 // const PRISMA_CLIENT = getPrismaClientSingleton();
 
-async function getTokenAmountFromCallbackData(
+async function _getTokenAmountFromCallbackData(
     ctx: BotContext
 ): Promise<number> {
     // const userSettings = await PRISMA_CLIENT.settings.findUnique({
@@ -47,12 +47,17 @@ export async function conversation_swapCoinToToken_amount(
     }
 
     if (callbackData) {
+        // Handle Custom Amount
         if (callbackData === "cb_swapCoinToToken_amount_LOCATION_CUSTOM") {
             await ctx.reply("Please enter the amount of TRX you wish to buy:");
 
-            const { message } = await conversation.wait();
+            ctx = await conversation.wait();
+            const { message } = ctx;
 
             const customAmount = parseFloat(message?.text || "0");
+            
+            // const customAmount = await conversation.form.number(); // TODO: TEST THIS METHOD
+
 
             if (isNaN(customAmount) || customAmount < 0) {
                 return await ctx.reply(
@@ -62,6 +67,7 @@ export async function conversation_swapCoinToToken_amount(
 
             //   await ctx.reply(`You have selected to buy ${customAmount} TRX.`);
 
+            ctx.session.swapCoinToToken_amount_custom = customAmount;
             ctx.session.swapCoinToToken_amount_selected = customAmount;
 
             // const updatedSettings = await PRISMA_CLIENT.settings.update({
@@ -72,15 +78,19 @@ export async function conversation_swapCoinToToken_amount(
             //     },
             // });
 
-            ctx.temp.selectedswapBuyAmountUpdated = true;
+            ctx.temp.selectedSwapBuyAmountUpdated = true;
+            ctx.temp.conversationMethodReturnedANewCTX = true;
+
             await swapCoinToToken.swapCoinToToken(ctx);
 
             return;
         } else {
             try {
-                const tokenBuyAmount = await getTokenAmountFromCallbackData(
+                const tokenBuyAmount = await _getTokenAmountFromCallbackData(
                     ctx
                 );
+
+                console.log("FUSDFSDKFJKL", tokenBuyAmount);
 
                 ctx.session.swapCoinToToken_amount_selected = tokenBuyAmount;
 
@@ -99,7 +109,8 @@ export async function conversation_swapCoinToToken_amount(
                 );
             }
 
-            ctx.temp.selectedswapBuyAmountUpdated = true;
+            ctx.temp.selectedSwapBuyAmountUpdated = true;
+            ctx.temp.conversationMethodReturnedANewCTX = false;
             await swapCoinToToken.swapCoinToToken(ctx);
 
             return;
@@ -120,7 +131,10 @@ bot.use(
     )
 );
 
-bot.callbackQuery(/cb_swapCoinToToken_amount_LOCATION_([^\s]+)/, async (ctx) => {
-    await ctx.conversation.enter("conversation_swapCoinToToken_amount");
-    await ctx.answerCallbackQuery();
-});
+bot.callbackQuery(
+    /cb_swapCoinToToken_amount_LOCATION_([^\s]+)/,
+    async (ctx) => {
+        await ctx.conversation.enter("conversation_swapCoinToToken_amount");
+        await ctx.answerCallbackQuery();
+    }
+);

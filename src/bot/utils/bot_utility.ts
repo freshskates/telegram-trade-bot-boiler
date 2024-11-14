@@ -83,7 +83,7 @@ export function GetNewInitialSessionData(): UserSessionData {
     return {
         /* ----- Buy Token (Coin to Token) ----- */
 
-        swapCoinToToken_slippage_1: 19,
+        swapCoinToToken_slippage_1: 18,
         swapCoinToToken_slippage_custom: 0,
         swapCoinToToken_slippage_selected: 0,
 
@@ -175,7 +175,12 @@ export interface UserData {
  * @typedef {TempData}
  */
 export interface TempData {
-    selectedswapBuyAmountUpdated: boolean;
+    selectedSwapBuyAmountUpdated: boolean;
+
+    /* 
+    This is used to determine if a conversation method has returned a new ctx
+    */
+    conversationMethodReturnedANewCTX: boolean;  
 }
 
 export type BotContext = Context &

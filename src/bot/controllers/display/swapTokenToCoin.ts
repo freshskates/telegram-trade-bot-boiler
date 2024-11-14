@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { formatNumber } from "../../../utils/menu_helpers/homedata";
-import getBotSharedSingleton from "../../defined/BotShared";
+import getBotShared from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
 
 async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
@@ -11,14 +11,14 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
         return;
     }
 
-    const tokenDetails = await getBotSharedSingleton()
+    const tokenDetails = await getBotShared()
         .getCoinClient()
         .getTokenMarketDetails(tokenAddress);
-    const walletBalance = await getBotSharedSingleton()
+    const walletBalance = await getBotShared()
         .getCoinClient()
         .getCoinWalletBalance(ctx.user.user.walletPublicKey);
 
-    // const settings = await getBotSharedSingleton().getDatabaseClientHandler().getUserSettings(userId.toString());
+    // const settings = await BotShared.getDatabaseClientHandler().getUserSettings(userId.toString());
 
     // if (!settings) {
     //     return;
