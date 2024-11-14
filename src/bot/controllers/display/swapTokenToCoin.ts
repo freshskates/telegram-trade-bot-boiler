@@ -7,6 +7,7 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
     const tokenAddress = ctx.session.tokenAddress_selected;
     const userId = ctx.from?.id;
 
+    // TODO: FIX THIS SHIT
     if (!userId || !tokenAddress) {
         return;
     }

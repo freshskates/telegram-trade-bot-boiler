@@ -11,6 +11,7 @@ async function swapCoinToToken_(ctx: BotContext) {
     const tokenAddress = ctx.session.tokenAddress_selected;
     const userId = ctx.from?.id; // Gets the author of the message, callback query, or other things
     
+    // TODO: FUCKING FIX THIS
     if (!userId || !tokenAddress) {
         return;
     }
@@ -195,7 +196,7 @@ Something about buying idk
 async function cb_swapCoinToToken_refresh(ctx: BotContext){
     await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
     await ctx.answerCallbackQuery("Refreshed");  // Answer any existing callback_query to prevent buggy behavior
-    
+
     await swapCoinToToken_(ctx);
 
 }
