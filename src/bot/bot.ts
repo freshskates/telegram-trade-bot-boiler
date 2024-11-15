@@ -36,7 +36,7 @@ import middleware_debugger from "./controllers/middleware/_middleware_debugger";
 import { middlewareAddTempDataToCTX } from "./controllers/middleware/middlewareAddTempDataToCTX";
 import { middlewareAddUserDataToCTX } from "./controllers/middleware/middlewareAddUserDataToCTX";
 import getBotShared from "./defined/BotShared";
-import getPrismaDatabaseClientSingleton from "./defined/PrismaDatabaseClient";
+import getDatabaseClientPrismaSingleton from "./defined/DatabaseClientPrisma";
 import {
     BotContext,
     GetNewInitialSessionData,
@@ -128,7 +128,7 @@ async function main() {
                         getBotShared().getStorageAdaptorClass();
 
                     return new storageAdaptorClass<Enhance<UserSessionData>>( // The <Enhance<...> is needed as stated in the docs in a convoluted way...
-                        getPrismaDatabaseClientSingleton().session
+                        getDatabaseClientPrismaSingleton().session
                     );
                 })(),
                 // migrations: getSessionMigration()

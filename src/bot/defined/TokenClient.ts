@@ -1,43 +1,11 @@
-import { AbstractCoinClient } from "../../clients/AbstractCoinClient";
+import { AbstractTokenClient } from "../../clients/AbstractTokenClient";
 import {
     ServerError,
     TokenInformation,
     TokenMarketDetails,
-    UserWallet,
 } from "../../utils/types";
 
-export class MonadCoinClient extends AbstractCoinClient {
-    constructor() {
-        super();
-    }
-
-    async createCoinWallet(): Promise<UserWallet & ServerError> {
-        return {
-            walletPublicKey: "0x1234",
-            walletPrivateKey: "0x1234",
-            message: "",
-            err: false,
-        };
-    }
-
-    async getCoinWalletBalance(
-        publicWalletAdress: string
-    ): Promise<{ coinBalance: number } & ServerError> {
-        return {
-            coinBalance: 1020,
-            message: "",
-            err: false,
-        };
-    }
-
-    async getCoinPrice(): Promise<{ coinPrice: number } & ServerError> {
-        return {
-            coinPrice: 124.1,
-            message: "",
-            err: false,
-        };
-    }
-
+export class TokenClient extends AbstractTokenClient {
     async getTokenBalance(
         publicWalletAddress: string,
         tokenContractAddress: string
@@ -54,7 +22,8 @@ export class MonadCoinClient extends AbstractCoinClient {
         walletPrivateKey: string,
         toAddress: string,
         amount: string
-    ): Promise<{ txId: string } & ServerError> { // FIXME: WTF IS txId
+    ): Promise<{ txId: string } & ServerError> {
+        // FIXME: WTF IS txId
         return {
             txId: "0x1234",
             message: "",
@@ -92,10 +61,12 @@ export class MonadCoinClient extends AbstractCoinClient {
                 marketCap: 1000020,
                 volume24h: 324555,
                 liquidity: 50000,
-                imageUrl: "imageurl",
-                website: "https://website.com",
-                twitter: "https://x.com/twitter",
-                telegram: "https://tg.me/telegram",
+                URL_image: "imageurl",
+                URL_website: "https://website.com",
+                URL_twitter: "https://x.com/twitter",
+                URL_telegram: "https://tg.me/telegram",
+                URL_dexscreener: "https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6",
+                
             },
             message: "",
             err: false,

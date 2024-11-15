@@ -175,7 +175,7 @@ export interface UserData {
  * @typedef {TempData}
  */
 export interface TempData {
-    selectedSwapBuyAmountUpdated: boolean;
+    shouldEditCurrentCTXMessage: boolean;
 
     /* 
     This is used to determine if a conversation method has returned a new ctx

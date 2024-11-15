@@ -1,11 +1,11 @@
 import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext } from "grammy";
-import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
+import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
 import bot from "../../bot_init";
 import { cb_settings } from "../display/settings";
 import { BotContext, BotConversation } from "../../utils/bot_utility";
 
-const prisma = getPrismaDatabaseClientSingleton();
+const prisma = getDatabaseClientPrismaSingleton();
 
 export const conversation_settingBuySlippage = async (
     conversation: BotConversation,

@@ -55,9 +55,8 @@ export async function conversation_swapCoinToToken_amount(
             const { message } = ctx;
 
             const customAmount = parseFloat(message?.text || "0");
-            
-            // const customAmount = await conversation.form.number(); // TODO: TEST THIS METHOD
 
+            // const customAmount = await conversation.form.number(); // TODO: TEST THIS METHOD
 
             if (isNaN(customAmount) || customAmount < 0) {
                 return await ctx.reply(
@@ -78,7 +77,7 @@ export async function conversation_swapCoinToToken_amount(
             //     },
             // });
 
-            ctx.temp.selectedSwapBuyAmountUpdated = true;
+            ctx.temp.shouldEditCurrentCTXMessage = true;
             ctx.temp.conversationMethodReturnedANewCTX = true;
 
             await swapCoinToToken.swapCoinToToken(ctx);
@@ -89,8 +88,6 @@ export async function conversation_swapCoinToToken_amount(
                 const tokenBuyAmount = await _getTokenAmountFromCallbackData(
                     ctx
                 );
-
-                console.log("FUSDFSDKFJKL", tokenBuyAmount);
 
                 ctx.session.swapCoinToToken_amount_selected = tokenBuyAmount;
 
@@ -103,15 +100,18 @@ export async function conversation_swapCoinToToken_amount(
 
                 // console.log("updatedSettings", updatedSettings);
                 // console.log("updatedSettings.selectedBuy", updatedSettings.selectedBuy);
+
+                ctx.temp.shouldEditCurrentCTXMessage = true;
+                ctx.temp.conversationMethodReturnedANewCTX = false;
+
+                await swapCoinToToken.swapCoinToToken(ctx);
+
             } catch (error) {
                 await ctx.reply(
                     "An error occurred while fetching your settings."
                 );
             }
 
-            ctx.temp.selectedSwapBuyAmountUpdated = true;
-            ctx.temp.conversationMethodReturnedANewCTX = false;
-            await swapCoinToToken.swapCoinToToken(ctx);
 
             return;
         }
@@ -131,10 +131,16 @@ bot.use(
     )
 );
 
+async function cb_swapCoinToToken_amount_LOCATION_REGEX(ctx: BotContext) {
+    // await ctx.deleteMessage();  // Delete current message
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
+
+    await ctx.conversation.enter("conversation_swapCoinToToken_amount");
+    await ctx.answerCallbackQuery();
+}
+
 bot.callbackQuery(
     /cb_swapCoinToToken_amount_LOCATION_([^\s]+)/,
-    async (ctx) => {
-        await ctx.conversation.enter("conversation_swapCoinToToken_amount");
-        await ctx.answerCallbackQuery();
-    }
+    cb_swapCoinToToken_amount_LOCATION_REGEX
 );

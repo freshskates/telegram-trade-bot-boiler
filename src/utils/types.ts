@@ -16,10 +16,11 @@ export interface TokenMarketDetails extends TokenInformation {
     marketCap: number;
     volume24h: number;
     liquidity: number;
-    imageUrl: string;
-    website: string;
-    twitter: string;
-    telegram: string;
+    URL_image: string;
+    URL_website: string;
+    URL_twitter: string;
+    URL_telegram: string;
+    URL_dexscreener: string,
 }
 
 export interface CoinInformation {

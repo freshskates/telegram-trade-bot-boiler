@@ -24,17 +24,17 @@ import { PrismaClient } from '@prisma/client'
 
 // Extend globalThis to include a custom property for Prisma
 declare global {
-    var __globalPrismaDatabaseClient: PrismaClient | undefined;
+    var __globalDatabaseClientPrisma: PrismaClient | undefined;
   }
   
-function getPrismaDatabaseClientSingleton(): PrismaClient {
+function getDatabaseClientPrismaSingleton(): PrismaClient {
 
-  if (globalThis.__globalPrismaDatabaseClient == null){
-      globalThis.__globalPrismaDatabaseClient = new PrismaClient()
+  if (globalThis.__globalDatabaseClientPrisma == null){
+      globalThis.__globalDatabaseClientPrisma = new PrismaClient()
   }
 
-  return globalThis.__globalPrismaDatabaseClient
+  return globalThis.__globalDatabaseClientPrisma
 
 }
 
-export default getPrismaDatabaseClientSingleton
+export default getDatabaseClientPrismaSingleton

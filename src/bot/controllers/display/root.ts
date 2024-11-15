@@ -43,7 +43,7 @@ Once done, tap refresh, and your balance will appear here.
                             callback_data: "cb_swapCoinToToken",
                         },
                         {
-                            text: "Sell / Manage",
+                            text: "Manage → Sell",
                             callback_data: "cb_tokensOwned",
                         },
                     ],
@@ -108,15 +108,25 @@ bot.command("help", help);
 //     });
 // };
 
+//TODO: IDK ABOUT NAME AND ABOUT cb_root_refresh
+async function cb_root_home(ctx: BotContext) {
+    await ctx.deleteMessage();  // Delete current message
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
 
-async function cb_root_refresh(ctx: BotContext){
-    await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
-    await ctx.answerCallbackQuery("Refreshed");  // Answer any existing callback_query to prevent buggy behavior
+    await cb_root(ctx);
+    await ctx.answerCallbackQuery();
+}
+bot.callbackQuery("cb_root_home", cb_root_home);
+
+async function cb_root_refresh(ctx: BotContext) {
+    await ctx.deleteMessage();  // Delete current message
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
     
     await cb_root(ctx);
-
+    await ctx.answerCallbackQuery();
 }
-
 
 bot.callbackQuery("cb_root_refresh", cb_root_refresh);
 

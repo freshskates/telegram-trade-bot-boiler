@@ -2,10 +2,10 @@ import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext } from "grammy";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
-import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
+import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
 import { BotContext, BotConversation } from "../../utils/bot_utility";
 
-const PRISMA_CLIENT = getPrismaDatabaseClientSingleton();
+const PRISMA_CLIENT = getDatabaseClientPrismaSingleton();
 
 async function cb_buybutton(ctx: CallbackQueryContext<BotContext>) {
     await ctx.conversation.exit();
@@ -143,7 +143,7 @@ export async function cb_settings(ctx: BotContext) {
                             callback_data: "cb_sell_setting_slippage",
                         },
                     ],
-                    [{ text: "Back", callback_data: "cb_restart" }],
+                    [{ text: "Back", callback_data: "cb_root_home" }],
                 ],
             },
         }

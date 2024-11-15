@@ -24,7 +24,7 @@ function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
 
         row.push({
             text: `${formatTokenSymbol} - ${formatTokenAddress}`,
-            callback_data: `token_${tokens[i].address}_cb`,
+            callback_data: `cb_sTTC_ADDRESS_${tokens[i].address}`,
         });
 
         if (i + 1 < tokens.length) {
@@ -36,7 +36,7 @@ function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
 
             row.push({
                 text: `${formatTokenSymbolNext} - ${formatTokenAddressNext}`,
-                callback_data: `token_${tokens[i + 1].address}_cb`,
+                callback_data: `cb_sTTC_ADDRESS_${tokens[i + 1].address}`,
             });
         }
 
@@ -76,9 +76,8 @@ async function cb_tokensOwned(ctx: BotContext) {
         ],
     ];
 
-    await ctx.reply(
-        `
-Select a token to sell ${tokensOwned.tokens.length}/${tokensOwned.tokens.length}
+    await ctx.reply(`
+  Select a token to sell ${tokensOwned.tokens.length}/${tokensOwned.tokens.length}
     `,
         {
             parse_mode: "Markdown",

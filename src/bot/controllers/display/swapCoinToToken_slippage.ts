@@ -25,7 +25,7 @@ import { swapCoinToToken } from "./swapCoinToToken";
 //     return 0;
 // }
 
-export async function conversation_swapCoinToToken_slippage(
+export async function conversation_swapCoinToToken_slippage_LOCATION_REGEX(
     conversation: BotConversation,
     ctx: BotContext
 ) {
@@ -68,7 +68,7 @@ export async function conversation_swapCoinToToken_slippage(
 
             ctx.session.swapCoinToToken_slippage_custom = customSlippage;
             ctx.session.swapCoinToToken_slippage_selected = customSlippage; // Do not do "ctx.session.swapCoinToToken_slippage_selected = ctx.session.swapCoinToToken_slippage_custom" // This adds another read call
-            ctx.temp.selectedSwapBuyAmountUpdated = true;
+            ctx.temp.shouldEditCurrentCTXMessage = true;
             ctx.temp.conversationMethodReturnedANewCTX = true;
 
             await ctx.reply(
@@ -96,7 +96,7 @@ export async function conversation_swapCoinToToken_slippage(
 
             ctx.session.swapCoinToToken_slippage_selected =
                 ctx.session.swapCoinToToken_slippage_1;
-            ctx.temp.selectedSwapBuyAmountUpdated = true;
+            ctx.temp.shouldEditCurrentCTXMessage = true;
             ctx.temp.conversationMethodReturnedANewCTX = false;
 
             await ctx.reply(
@@ -117,22 +117,26 @@ Buy Menu - Slippage Conversation
 
 bot.use(
     createConversation(
-        conversation_swapCoinToToken_slippage,
-        "conversation_swapCoinToToken_slippage"
+        conversation_swapCoinToToken_slippage_LOCATION_REGEX,
+        "conversation_swapCoinToToken_slippage_LOCATION_REGEX"
     )
 );
 
-async function cb_conversation_swapCoinToToken_slippage(ctx: BotContext) {
-    await ctx.conversation.enter("conversation_swapCoinToToken_slippage");
+async function cb_swapCoinToToken_slippage_LOCATION_REGEX(ctx: BotContext) {
+    // await ctx.deleteMessage();  // Delete current message
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior/ Answer any existing callback_query to prevent buggy behavior
+
+    await ctx.conversation.enter("conversation_swapCoinToToken_slippage_LOCATION_REGEX");
     await ctx.answerCallbackQuery();
 }
 
 bot.callbackQuery(
     /cb_swapCoinToToken_slippage_LOCATION_([^\s]+)/,
-    cb_conversation_swapCoinToToken_slippage
+    cb_swapCoinToToken_slippage_LOCATION_REGEX
 );
 
 // bot.callbackQuery("cb_swapCoinToToken_slippage_x", async (ctx) => {
-//     await ctx.conversation.enter("conversation_swapCoinToToken_slippage");
+//     await ctx.conversation.enter("conversation_swapCoinToToken_slippage_LOCATION_REGEX");
 //     await ctx.answerCallbackQuery();
 // });

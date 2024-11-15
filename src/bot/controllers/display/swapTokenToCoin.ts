@@ -1,9 +1,16 @@
 import "dotenv/config";
-import { formatNumber } from "../../../utils/menu_helpers/homedata";
-import getBotShared from "../../defined/BotShared";
+import bot from "../../bot_init";
 import { BotContext } from "../../utils/bot_utility";
+import { getTokenHeaderFormatted } from "../utils/common";
 
-async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
+async function get_swapTokenToCoin_HeaderFormatted(
+    ctx: BotContext,
+    tokenAddress: string
+): Promise<string> {
+    return getTokenHeaderFormatted(ctx, tokenAddress, "Sell");
+}
+
+async function swapTokenToCoin_(ctx: BotContext) {
     const tokenAddress = ctx.session.tokenAddress_selected;
     const userId = ctx.from?.id;
 
@@ -12,12 +19,12 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
         return;
     }
 
-    const tokenDetails = await getBotShared()
-        .getCoinClient()
-        .getTokenMarketDetails(tokenAddress);
-    const walletBalance = await getBotShared()
-        .getCoinClient()
-        .getCoinWalletBalance(ctx.user.user.walletPublicKey);
+    // const tokenDetails = await getBotShared()
+    //     .getCoinClient()
+    //     .getTokenMarketDetails(tokenAddress);
+    // const walletBalance = await getBotShared()
+    //     .getCoinClient()
+    //     .getCoinWalletBalance(ctx.user.user.walletPublicKey);
 
     // const settings = await BotShared.getDatabaseClientHandler().getUserSettings(userId.toString());
 
@@ -39,13 +46,13 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
             : ctx_session_cached.swapTokenToCoin_slippage_selected;
 
     // This should reduce read/writes
-    ctx_session_cached = ctx.session
+    ctx_session_cached = ctx.session;
 
     const inlineKeyboard = [
         [
             {
-                text: "Back",
-                callback_data: "cb_restart",
+                text: "Home",
+                callback_data: "cb_root_home",
             },
             {
                 text: "Refresh",
@@ -60,7 +67,7 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
                         ? "✅ "
                         : ""
                 }Sell ${ctx_session_cached.swapTokenToCoin_amount_percent_1}%`,
-                callback_data: "swap_sellbutton_left_cb",
+                callback_data: "cb_swapTokenToCoin_amount_percent_LOCATION_0_0",
             },
             {
                 text: `${
@@ -69,7 +76,7 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
                         ? "✅ "
                         : ""
                 }Sell ${ctx_session_cached.swapTokenToCoin_amount_percent_2}%`,
-                callback_data: "swap_sellbutton_right_cb",
+                callback_data: "cb_swapTokenToCoin_amount_percent_LOCATION_0_1",
             },
             {
                 text: `${
@@ -80,10 +87,11 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
                 } Sell ${
                     ctx_session_cached.swapTokenToCoin_amount_percent_custom <=
                     0
-                        ? "X"
+                        ? "(CUSTOM)"
                         : ctx_session_cached.swapTokenToCoin_amount_percent_custom
                 }% ✏️`,
-                callback_data: "swap_sellbutton_x_cb",
+                callback_data:
+                    "cb_swapTokenToCoin_amount_percent_LOCATION_CUSTOM",
             },
         ],
         [
@@ -94,7 +102,7 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
                         ? "✅ "
                         : ""
                 } ${ctx_session_cached.swapTokenToCoin_slippage_1}% Slippage`,
-                callback_data: "sell_slippagebutton_cb",
+                callback_data: "cb_swapTokenToCoin_slippage_LOCATION_0_0",
             },
             {
                 text: `${
@@ -104,10 +112,10 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
                         : ""
                 }${
                     ctx_session_cached.swapTokenToCoin_slippage_custom <= 0
-                        ? "X"
+                        ? "(CUSTOM)"
                         : ctx_session_cached.swapTokenToCoin_slippage_custom
                 }% Slippage ✏️`,
-                callback_data: "cb_sell_slippagebutton_x",
+                callback_data: "cb_swapTokenToCoin_slippage_LOCATION_CUSTOM",
             },
         ],
         [
@@ -118,23 +126,12 @@ async function displaySwapSellToken_(ctx: BotContext, edit: boolean = false) {
         ],
     ];
 
-    if (!edit) {
+    if (
+        !ctx.temp.shouldEditCurrentCTXMessage ||
+        ctx.temp.conversationMethodReturnedANewCTX
+    ) {
         await ctx.reply(
-            `
-Sell ${
-                tokenDetails.token.name
-            } [📉](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
-\`${tokenAddress}\`
-  
-Balance: *${walletBalance.coinBalance} MONAD* 
-Price: *\$${formatNumber(
-                tokenDetails.token.priceInUsd
-            )}* — VOL: *\$${formatNumber(
-                tokenDetails.token.volume24h
-            )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
-  
-// insert quote details here
-        `,
+            await get_swapTokenToCoin_HeaderFormatted(ctx, tokenAddress),
             {
                 parse_mode: "Markdown",
                 reply_markup: {
@@ -144,21 +141,7 @@ Price: *\$${formatNumber(
         );
     } else {
         await ctx.editMessageText(
-            `
-Sell \$${
-                tokenDetails.token.name
-            } [📉](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
-\`${tokenAddress}\`
-
-Balance: *${walletBalance} MONAD* 
-Price: *\$${formatNumber(
-                tokenDetails.token.priceInUsd
-            )}* — VOL: *\$${formatNumber(
-                tokenDetails.token.volume24h
-            )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
-
-// insert quote details here
-        `,
+            await get_swapTokenToCoin_HeaderFormatted(ctx, tokenAddress),
             {
                 parse_mode: "Markdown",
                 reply_markup: {
@@ -169,8 +152,29 @@ Price: *\$${formatNumber(
     }
 }
 
-const sell = {
-    start: displaySwapSellToken_,
+async function cb_swapTokenToCoin_ADDRESS_REGEX(ctx: BotContext) {
+    if (ctx.match == null) {
+        return;
+    }
+
+    const tokenAddress = ctx.match[1];
+    console.log(`Token Address: ${tokenAddress}`);
+
+    ctx.session.tokenAddress_selected = tokenAddress;
+
+    await swapTokenToCoin_(ctx);
+}
+
+bot.callbackQuery(/cb_sTTC_ADDRESS_(.+)/, cb_swapTokenToCoin_ADDRESS_REGEX);
+
+/* 
+**************************************************
+Exporting
+**************************************************
+*/
+
+const swapTokenToCoin = {
+    swapTokenToCoin: swapTokenToCoin_,
 };
-export { sell };
+export { swapTokenToCoin };
 

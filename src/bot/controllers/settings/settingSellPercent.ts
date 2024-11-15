@@ -1,10 +1,10 @@
 import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext } from "grammy";
 import bot from "../../bot_init";
-import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
+import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
 import { BotContext, BotConversation } from "../../utils/bot_utility";
 
-const prisma = getPrismaDatabaseClientSingleton();
+const prisma = getDatabaseClientPrismaSingleton();
 
 export const settingSellPercent = async (
     conversation: BotConversation,

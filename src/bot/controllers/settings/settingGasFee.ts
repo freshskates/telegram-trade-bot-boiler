@@ -2,10 +2,10 @@ import { CallbackQueryContext } from "grammy";
 // import { gasFee } from "../..";
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
-import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
+import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
 import { BotContext, BotConversation } from "../../utils/bot_utility";
 
-const prisma = getPrismaDatabaseClientSingleton();
+const prisma = getDatabaseClientPrismaSingleton();
 
 export const setGas = async (conversation: BotConversation, ctx: any) => {
     const callbackData = ctx.callbackQuery.data; // This should be the callback data from the button

@@ -53,42 +53,37 @@ Join our Telegram group @electron and one of our admins can assist you.
 
 bot.callbackQuery("cb_root_help", cb_help);
 
-async function cb_restart(ctx: BotContext) {
-    await ctx.deleteMessage();
-    await Root.cb_root(ctx);
-    await ctx.answerCallbackQuery();
-}
-bot.callbackQuery("cb_restart", cb_restart);
 
-// TODO: WRITE ME CORRECTLY
+
 export async function getTokenHeaderFormatted(
     ctx: BotContext,
-    tokenAdress: string
-) {
+    tokenAddress: string,
+    headerLineFirst: string
+): Promise<string> {
     const tokenDetails = await getBotShared()
-        .getCoinClient()
-        .getTokenMarketDetails(tokenAdress);
+        .getTokenClient()
+        .getTokenMarketDetails(tokenAddress);
     const walletBalance = await getBotShared()
         .getCoinClient()
         .getCoinWalletBalance(ctx.user.user.walletPublicKey);
 
-    const headerText = `
-  Buy \$${
-        tokenDetails.token.name
-    } [📈](https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6) 
-  \`${tokenAdress}\`
-    
-  Balance: *${walletBalance.coinBalance} ${
+    const headerTextComplete = `
+${headerLineFirst} [${tokenDetails.token.name}](${
+        tokenDetails.token.URL_dexscreener
+    }) [📉](${tokenDetails.token.URL_dexscreener}) 
+\`${tokenAddress}\`
+  
+Balance: *${walletBalance.coinBalance} ${
         getBotShared().getCoinInformation().name
     }* 
-  Price: *\$${formatNumber(
-      tokenDetails.token.priceInUsd
-  )}* — VOL: *\$${formatNumber(
+Price: *\$${formatNumber(
+        tokenDetails.token.priceInUsd
+    )}* — VOL: *\$${formatNumber(
         tokenDetails.token.volume24h
     )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
-    
-  // insert quote details here
-          `;
+  
+// insert quote details here
+        `;
 
-    return headerText;
+    return headerTextComplete;
 }

@@ -16,22 +16,26 @@ export abstract class AbstractCoinClient {
 
     abstract getCoinPrice(): Promise<{ coinPrice: number } & ServerError>;
 
-    abstract getTokenBalance(
-        publicWalletAddress: string,
-        tokenContractAddress: string
-    ): Promise<{ tokenBalance: number } & ServerError>;
+    // abstract getTokenBalance(
+    //     publicWalletAddress: string,
+    //     tokenContractAddress: string
+    // ): Promise<{ tokenBalance: number } & ServerError>;
 
-    abstract withdrawAmount(
-        walletPrivateKey: string,
-        toAddress: string,
-        amount: string
-    ): Promise<{ txId: string } & ServerError>;
+    // abstract withdrawAmount(
+    //     walletPrivateKey: string,
+    //     toAddress: string,
+    //     amount: string
+    // ): Promise<{ txId: string } & ServerError>;
 
-    abstract getTokenInformation(
-        tokenAddress: string
-    ): Promise<{ token: TokenInformation } & ServerError>;
+    // abstract getTokenInformation(
+    //     tokenAddress: string
+    // ): Promise<{ token: TokenInformation } & ServerError>;
 
-    abstract getTokenMarketDetails(
-        tokenAddress: string
-    ): Promise<{ token: TokenMarketDetails } & ServerError>;
+    // abstract getTokenMarketDetails(
+    //     tokenAddress: string
+    // ): Promise<{ token: TokenMarketDetails } & ServerError>;
+
+    // abstract getTokenDexScreenerURL(): Promise<
+    //     { token: TokenMarketDetails } & ServerError
+    // >;
 }

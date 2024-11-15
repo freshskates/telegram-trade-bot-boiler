@@ -1,4 +1,4 @@
-import { MonadCoinClient } from "../defined/MonadCoinClient";
+import { MonadCoinClient } from "../defined/CoinClientMonad";
 import { SwapClient } from "../defined/SwapClient";
 import bot from "../bot_init";
 import { BotContext } from "../utils/bot_utility";

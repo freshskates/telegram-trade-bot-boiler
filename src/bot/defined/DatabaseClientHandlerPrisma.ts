@@ -1,10 +1,10 @@
 import { AbstractDatabaseClientHandler } from "../../clients/AbstractDatabaseClientHandler";
-import getPrismaDatabaseClientSingleton from "./PrismaDatabaseClient";
+import getDatabaseClientPrismaSingleton from "./DatabaseClientPrisma";
 import { User, UserSettings, UserWallet } from "../../utils/types";
 
-const PRISMA_CLIENT_SINGLETON = getPrismaDatabaseClientSingleton();
+const PRISMA_CLIENT_SINGLETON = getDatabaseClientPrismaSingleton();
 
-export class PrismaClientDatabaseHandler extends AbstractDatabaseClientHandler{
+export class DatabaseClientHandlerPrisma extends AbstractDatabaseClientHandler{
     // FIXME: THIS NEEDS TO BE GERNALIZED, STRATEGY PATTERN THIS
 
     async createUser(

@@ -1,9 +1,9 @@
 import { createConversation } from "@grammyjs/conversations";
-import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
+import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
 import bot from "../../bot_init";
 import { BotConversation } from "../../utils/bot_utility";
 
-const prisma = getPrismaDatabaseClientSingleton();
+const prisma = getDatabaseClientPrismaSingleton();
 
 export const conversation_buyButtonLayout = async (
     conversation: BotConversation,

@@ -1,8 +1,8 @@
 import { CallbackQueryContext } from "grammy";
-import getPrismaDatabaseClientSingleton from "../../defined/PrismaDatabaseClient";
-import { BotContext, BotConversation } from "../../../utils";
+import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
+import { BotConversation, BotContext } from "../../utils/bot_utility";
 
-const prisma = getPrismaDatabaseClientSingleton();
+const prisma = getDatabaseClientPrismaSingleton();
 
 export const settingSellSlippage = async (
     conversation: BotConversation,
