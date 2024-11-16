@@ -26,6 +26,14 @@ back
 
 - go back to home page
 
+---- Joseph
+* Better looking Token Header display
+    *  Better Links to Token on internet
+    *  Analysis of Token going up or down
+* Buy / Sell buttons WITh Token Header
+    *  Better indicators on what buttons you selected, like a section of on what buttons you have pressed
+
+* Distinct color/indicator for buttons that allow for custom values and are affected by those custom values 
 
 # Running this shit
 

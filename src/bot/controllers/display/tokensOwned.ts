@@ -4,6 +4,7 @@ import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
 
+// TODO: FIX THIS SHIT, LOOKS UGLY
 function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
     const maxRows = 6;
     const inlineKeyboard = [];
@@ -46,9 +47,11 @@ function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
     return inlineKeyboard;
 }
 
-async function cb_tokensOwned(ctx: BotContext) {
+// TODO: FIX THIS SHIT (IMPLEMENT THE FUNCTIONS)
+async function tokensOwned_(ctx: BotContext){
     const walletPublicKey = ctx.user.user.walletPublicKey;
-    const tokensOwned = await getBotShared()
+
+    const tokensOwned_walletPublicKey = await getBotShared()
         .getWalletClient()
         .getOwnedTokens(walletPublicKey);
 
@@ -56,28 +59,28 @@ async function cb_tokensOwned(ctx: BotContext) {
         [
             {
                 text: "Back",
-                callback_data: "cb_root",
+                callback_data: "cb_root_home",
             },
             {
                 text: "Refresh",
-                callback_data: "refresh_cb_tokens_owned",
+                callback_data: "cb_tokensOwned_refresh",
             },
         ],
-        ..._createTokenInlineKeyboard(tokensOwned.tokens),
+        ..._createTokenInlineKeyboard(tokensOwned_walletPublicKey.tokens),
         [
             {
                 text: "Prev Page",
-                callback_data: "cb_prev_page",
+                callback_data: "cb_tokensOwned_page_previous",  // TODO: IMPLEMENT IDK
             },
             {
                 text: "Next Page",
-                callback_data: "next_page_cb",
+                callback_data: "cb_tokensOwned_page_next", // TODO: IMPLEMENT IDK
             },
         ],
     ];
 
     await ctx.reply(`
-  Select a token to sell ${tokensOwned.tokens.length}/${tokensOwned.tokens.length}
+  Select a token to sell ${tokensOwned_walletPublicKey.tokens.length}/${tokensOwned_walletPublicKey.tokens.length}
     `,
         {
             parse_mode: "Markdown",
@@ -86,6 +89,24 @@ async function cb_tokensOwned(ctx: BotContext) {
             },
         }
     );
+}
+
+async function cb_tokensOwned_refresh(ctx: BotContext) {
+    await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
+    await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
+
+    await tokensOwned_(ctx);
+    await ctx.answerCallbackQuery();
+}
+bot.callbackQuery("cb_tokensOwned_refresh", cb_tokensOwned_refresh);
+
+async function cb_tokensOwned(ctx: BotContext) {
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+
+    await tokensOwned_(ctx)
+    await ctx.answerCallbackQuery();
+
 }
 bot.callbackQuery("cb_tokensOwned", cb_tokensOwned);
 

@@ -33,7 +33,7 @@ bot.use(
 );
 bot.use(createConversation(conversation_buyButton, "conversation_buyButton"));
 
-export async function cb_settings(ctx: BotContext) {
+async function cb_root_settings_(ctx: BotContext) {
     const id = ctx.update.callback_query?.from.id;
 
     // FIXME: HJOSEOPH
@@ -88,35 +88,35 @@ export async function cb_settings(ctx: BotContext) {
                     [{ text: "-- Buy Amounts --", callback_data: "empty" }],
                     [
                         {
-                            text: `${ctx_session_cached.swapCoinToToken_amount_1} ${
-                                getBotShared().getCoinInformation().ticker
-                            } ✏️`,
+                            text: `${
+                                ctx_session_cached.swapCoinToToken_amount_1
+                            } ${getBotShared().getCoinInformation().ticker} ✏️`,
                             callback_data: "cb_buy_button_tl",
                         },
                         {
-                            text: `${ctx_session_cached.swapCoinToToken_amount_2} ${
-                                getBotShared().getCoinInformation().ticker
-                            } ✏️`,
+                            text: `${
+                                ctx_session_cached.swapCoinToToken_amount_2
+                            } ${getBotShared().getCoinInformation().ticker} ✏️`,
                             callback_data: "cb_buy_button_tc",
                         },
                         {
-                            text: `${ctx_session_cached.swapCoinToToken_amount_3} ${
-                                getBotShared().getCoinInformation().ticker
-                            } ✏️`,
+                            text: `${
+                                ctx_session_cached.swapCoinToToken_amount_3
+                            } ${getBotShared().getCoinInformation().ticker} ✏️`,
                             callback_data: "cb_buy_button_tr",
                         },
                     ],
                     [
                         {
-                            text: `${ctx_session_cached.swapCoinToToken_amount_4} ${
-                                getBotShared().getCoinInformation().ticker
-                            } ✏️`,
+                            text: `${
+                                ctx_session_cached.swapCoinToToken_amount_4
+                            } ${getBotShared().getCoinInformation().ticker} ✏️`,
                             callback_data: "cb_buy_button_bl",
                         },
                         {
-                            text: `${ctx_session_cached.swapCoinToToken_amount_5} ${
-                                getBotShared().getCoinInformation().ticker
-                            } ✏️`,
+                            text: `${
+                                ctx_session_cached.swapCoinToToken_amount_5
+                            } ${getBotShared().getCoinInformation().ticker} ✏️`,
                             callback_data: "cb_buy_button_br",
                         },
                     ],
@@ -148,10 +148,19 @@ export async function cb_settings(ctx: BotContext) {
             },
         }
     );
+}
 
+async function cb_root_settings(ctx: BotContext) {
+    await cb_root_settings_(ctx);
     await ctx.answerCallbackQuery();
 }
 
-bot.callbackQuery("cb_root_settings", cb_settings);
+bot.callbackQuery("cb_root_settings", cb_root_settings);
+
 // @ts-ignore
 // console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded
+
+const root_settings = {
+    cb_root_settings: cb_root_settings_,
+};
+export default root_settings;

@@ -3,7 +3,7 @@ import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
 
-async function cb_root(ctx: BotContext, next: NextFunction | null = null) {
+async function command_root_home_(ctx: BotContext, next: NextFunction | null = null) {
     const user_id = ctx?.from?.id;
 
     if (!user_id) {
@@ -68,10 +68,33 @@ Once done, tap refresh, and your balance will appear here.
         }
     );
 }
-bot.command("start", cb_root);
+
+async function command_root_home(ctx: BotContext) {
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+
+    await command_root_home_(ctx);
+}
+bot.command("start", command_root_home);
+
+
+bot.callbackQuery("cb_root_home", cb_root_refresh);
+
+async function cb_root_refresh(ctx: BotContext) {
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+    await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
+    
+    await command_root_home_(ctx);
+    await ctx.answerCallbackQuery();
+}
+
+bot.callbackQuery("cb_root_refresh", cb_root_refresh);
+
 
 // // FIXME: NOT USED // TODO: IDK FUCK
 async function help(ctx: BotContext, next: NextFunction | null = null) {
+    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+
     console.log("FROM HELP");
     console.log(ctx);
 
@@ -108,29 +131,8 @@ bot.command("help", help);
 //     });
 // };
 
-//TODO: IDK ABOUT NAME AND ABOUT cb_root_refresh
-async function cb_root_home(ctx: BotContext) {
-    await ctx.deleteMessage();  // Delete current message
-    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
-    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
-
-    await cb_root(ctx);
-    await ctx.answerCallbackQuery();
-}
-bot.callbackQuery("cb_root_home", cb_root_home);
-
-async function cb_root_refresh(ctx: BotContext) {
-    await ctx.deleteMessage();  // Delete current message
-    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
-    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
-    
-    await cb_root(ctx);
-    await ctx.answerCallbackQuery();
-}
-
-bot.callbackQuery("cb_root_refresh", cb_root_refresh);
 
 const Root = {
-    cb_root: cb_root,
+    cb_root: command_root_home_,
 };
 export default Root;

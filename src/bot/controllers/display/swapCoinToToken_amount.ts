@@ -132,8 +132,8 @@ bot.use(
 );
 
 async function cb_swapCoinToToken_amount_LOCATION_REGEX(ctx: BotContext) {
-    // await ctx.deleteMessage();  // Delete current message
     await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+    // await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
     await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
 
     await ctx.conversation.enter("conversation_swapCoinToToken_amount");

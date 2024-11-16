@@ -46,25 +46,16 @@ export async function conversation_swapCoinToToken_slippage_LOCATION_REGEX(
             );
 
             ctx = await conversation.wait();
-
             const { message } = ctx;
 
             const customSlippage = parseFloat(message?.text || "0");
 
             if (isNaN(customSlippage) || customSlippage < 0) {
-                return await ctx.reply(
+                await ctx.reply(
                     "Invalid slippage value. Please enter a valid percentage."
                 );
+                return 
             }
-
-            // const prisma = getPrismaClientSingleton();
-            // const updatedSettings = await prisma.settings.update({
-            //   where: { userId: userId.toString() },
-            //   data: {
-            //     slippageBuyCustom: customSlippage, // FIXME: Why is customSlippage here???????
-            //     selectedBuySlippage: customSlippage,
-            //   },
-            // });
 
             ctx.session.swapCoinToToken_slippage_custom = customSlippage;
             ctx.session.swapCoinToToken_slippage_selected = customSlippage; // Do not do "ctx.session.swapCoinToToken_slippage_selected = ctx.session.swapCoinToToken_slippage_custom" // This adds another read call
@@ -81,18 +72,6 @@ export async function conversation_swapCoinToToken_slippage_LOCATION_REGEX(
         }
         // Handle Predefined Slippage value
         else {
-            // const slippage = await fetchSlippageByButtonId(
-            //     userId.toString(),
-            //     callbackData
-            // );
-
-            // const prisma = getPrismaDatabaseClientSingleton();
-            // const updatedSettings = await prisma.settings.update({
-            //     where: { userId: userId.toString() },
-            //     data: {
-            //         selectedBuySlippage: slippage,
-            //     },
-            // });
 
             ctx.session.swapCoinToToken_slippage_selected =
                 ctx.session.swapCoinToToken_slippage_1;
@@ -123,9 +102,9 @@ bot.use(
 );
 
 async function cb_swapCoinToToken_slippage_LOCATION_REGEX(ctx: BotContext) {
-    // await ctx.deleteMessage();  // Delete current message
     await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
-    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior/ Answer any existing callback_query to prevent buggy behavior
+    // await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
 
     await ctx.conversation.enter("conversation_swapCoinToToken_slippage_LOCATION_REGEX");
     await ctx.answerCallbackQuery();

@@ -59,6 +59,17 @@ export class DatabaseClientHandlerPrisma extends AbstractDatabaseClientHandler{
                 data: data,
             });
 
+            // BELOW IS AN EXAMPLE
+            // const prisma = getPrismaDatabaseClientSingleton();
+            // const updatedSettings = await prisma.settings.update({
+            //     where: { userId: userId.toString() },
+            //     data: {
+            //         slippageSellCustom: customSlippage,
+            //         selectedSellSlippage: customSlippage,
+            //     },
+            // });
+
+
             return userUpdated;
         } catch (err) {
             console.log(err);

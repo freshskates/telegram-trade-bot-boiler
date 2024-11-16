@@ -56,7 +56,7 @@ async function swapTokenToCoin_(ctx: BotContext) {
             },
             {
                 text: "Refresh",
-                callback_data: "refresh_sell_page_cb",
+                callback_data: "cb_swapTokenToCoin_refresh",
             },
         ],
         [
@@ -152,7 +152,20 @@ async function swapTokenToCoin_(ctx: BotContext) {
     }
 }
 
+async function cb_swapTokenToCoin_refresh(ctx: BotContext) {
+    await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
+    await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
+    await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
+
+    await swapTokenToCoin_(ctx);
+    await ctx.answerCallbackQuery();
+}
+
+bot.callbackQuery("cb_swapTokenToCoin_refresh", cb_swapTokenToCoin_refresh);
+
+
 async function cb_swapTokenToCoin_ADDRESS_REGEX(ctx: BotContext) {
+    // TODO: FIX THIS SHIT, I DON'T THINK THERE WILL BE ERRORS ASSUMING SHIT IS WRITTEN CORRECTLY
     if (ctx.match == null) {
         return;
     }
@@ -163,9 +176,11 @@ async function cb_swapTokenToCoin_ADDRESS_REGEX(ctx: BotContext) {
     ctx.session.tokenAddress_selected = tokenAddress;
 
     await swapTokenToCoin_(ctx);
+    await ctx.answerCallbackQuery();
+
 }
 
-bot.callbackQuery(/cb_sTTC_ADDRESS_(.+)/, cb_swapTokenToCoin_ADDRESS_REGEX);
+bot.callbackQuery(/cb_sTTC_ADDRESS_([^\s]+)/, cb_swapTokenToCoin_ADDRESS_REGEX);
 
 /* 
 **************************************************

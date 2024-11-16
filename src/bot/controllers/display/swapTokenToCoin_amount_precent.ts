@@ -2,6 +2,7 @@ import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
 import { BotContext, BotConversation } from "../../utils/bot_utility";
 import { swapTokenToCoin } from "./swapTokenToCoin";
+import getBotShared, { BotShared } from "../../defined/BotShared";
 
 // Function to fetch sell percent by button ID
 async function fetchSellPercentByButtonId(ctx: BotContext): Promise<number> {
@@ -56,22 +57,29 @@ export async function conversation_sellTrx(
                 "Please enter the percent of TRX you wish to sell:"
             );
 
-            const { message } = await conversation.wait();
+            ctx = await conversation.wait();
+            const { message } = ctx;
 
-            const customPercent = parseFloat(message?.text || "0");
+            const customAmountPercent = parseFloat(message?.text || "0");
 
             if (
-                isNaN(customPercent) ||
-                customPercent < 0 ||
-                customPercent > 100
+                isNaN(customAmountPercent) ||
+                customAmountPercent < 0 ||
+                customAmountPercent > 100
             ) {
                 return await ctx.reply(
                     "Invalid percent. Please enter a valid number between 1 and 100."
                 );
             }
+            
+            if (!ctx.session.tokenAddress_selected){  // TODO: DO THIS CORRECTLY, NEED TO THROW I T GUESS
+                return
+            }
+            
+            const tokenInformation = await getBotShared().getTokenClient().getTokenInformation(ctx.session.tokenAddress_selected)
 
             await ctx.reply(
-                `You have selected to sell ${customPercent}% of your TRX.` // FIXME: Should be Coin Name not TRX
+                `You have selected to sell ${customAmountPercent}% of your ${tokenInformation.token.symbol}.` 
             );
 
             // const prisma = getDatabaseClientPrismaSingleton();
@@ -83,8 +91,8 @@ export async function conversation_sellTrx(
             //   },
             // });
 
-            ctx.session.swapTokenToCoin_amount_percent_custom = customPercent;
-            ctx.session.swapTokenToCoin_amount_percent_selected = customPercent;
+            ctx.session.swapTokenToCoin_amount_percent_custom = customAmountPercent;
+            ctx.session.swapTokenToCoin_amount_percent_selected = customAmountPercent;
 
             ctx.temp.shouldEditCurrentCTXMessage = true;
             ctx.temp.conversationMethodReturnedANewCTX = true;
@@ -133,7 +141,7 @@ bot.use(
 async function cb_swapTokenToCoin_amount_percent_LOCATION_REGEX(
     ctx: BotContext
 ) {
-    // await ctx.deleteMessage();  // Delete current message
+    // await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
     await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
     await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
 
