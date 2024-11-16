@@ -21,10 +21,10 @@ export const settingSellPercent = async (
     let selectedPercentField: string;
     let percentSetting: string;
 
-    if (callbackData === "cb_sell_percent_l") {
+    if (callbackData === "cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_0") {
         percentSetting = "Sell Left Percent";
         selectedPercentField = "sellLeftPercentX";
-    } else if (callbackData === "cb_sell_percent_r") {
+    } else if (callbackData === "cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_1") {
         percentSetting = "Sell Right Percent";
         selectedPercentField = "sellRightPercentX";
     } else {
@@ -85,12 +85,12 @@ bot.use(
     createConversation(settingSellPercent, "conversation_sellPercentSetting")
 );
 
-bot.callbackQuery("cb_sell_percent_l", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_0", async (ctx) => {
     await ctx.conversation.enter("conversation_sellPercentSetting");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_sell_percent_r", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_1", async (ctx) => {
     await ctx.conversation.enter("conversation_sellPercentSetting");
     await ctx.answerCallbackQuery();
 });

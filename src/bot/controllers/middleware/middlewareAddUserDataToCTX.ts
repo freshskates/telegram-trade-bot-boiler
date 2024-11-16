@@ -2,10 +2,12 @@ import { NextFunction } from "grammy";
 import getBotShared from "../../defined/BotShared";
 import { BotContext } from "../../utils/bot_utility";
 
+// TODO: YOU NEED TO CHECK IF THIS MIDDLEWARE WORKS PROPERLY BY DELETING THE USER
+
 export const middlewareAddUserDataToCTX = () => {
     return async (ctx: BotContext, next: NextFunction) => {
         const userId = ctx.from?.id;
-
+        
         // User does not exist via UserID
         if (!userId) {
             return next();

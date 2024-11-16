@@ -1,14 +1,16 @@
 import { createConversation } from "@grammyjs/conversations";
 import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
 import bot from "../../bot_init";
-import { BotConversation } from "../../utils/bot_utility";
+import { BotContext, BotConversation } from "../../utils/bot_utility";
 
-const prisma = getDatabaseClientPrismaSingleton();
 
-export const conversation_buyButtonLayout = async (
+// async function _getSession
+
+
+async function conversation_settings_swapCoinToToken_amount_LOCATION_REGEX(
     conversation: BotConversation,
-    ctx: any
-) => {
+    ctx: BotContext
+) {
     const userId = ctx.from?.id;
 
     if (!userId) {
@@ -16,24 +18,32 @@ export const conversation_buyButtonLayout = async (
         return;
     }
 
-    const callbackData = ctx.callbackQuery.data;
+    const callbackData = ctx.callbackQuery?.data;
 
     let settingField: string;
     let settingLabel: string;
 
-    if (callbackData === "cb_buy_button_tl") {
+    if (callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_0_0") {
         settingField = "buyTopLeftX";
         settingLabel = "Top Left";
-    } else if (callbackData === "cb_buy_button_tc") {
+    } else if (
+        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_0_1"
+    ) {
         settingField = "buyTopCenterX";
         settingLabel = "Top Center";
-    } else if (callbackData === "cb_buy_button_tr") {
+    } else if (
+        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_0_2"
+    ) {
         settingField = "buyTopRightX";
         settingLabel = "Top Right";
-    } else if (callbackData === "cb_buy_button_bl") {
+    } else if (
+        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_1_0"
+    ) {
         settingField = "buyBottomLeftX";
         settingLabel = "Bottom Left";
-    } else if (callbackData === "cb_buy_button_br") {
+    } else if (
+        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_1_1"
+    ) {
         settingField = "buyBottomRightX";
         settingLabel = "Bottom Right";
     } else {
@@ -83,8 +93,7 @@ export const conversation_buyButtonLayout = async (
     }
 
     // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
-
-};
+}
 
 /* 
 **************************************************
@@ -92,35 +101,19 @@ Buy Button TRX Settings Conversation
 ************************************************** 
 */
 
-
 bot.use(
     createConversation(
-        conversation_buyButtonLayout,
-        "conversation_trxAmountSetting"
+        conversation_settings_swapCoinToToken_amount_LOCATION_REGEX,
+        "conversation_settings_swapCoinToToken_amount_LOCATION_REGEX"
     )
 );
 
-bot.callbackQuery("cb_buy_button_tl", async (ctx) => {
-    await ctx.conversation.enter("conversation_trxAmountSetting");
-    await ctx.answerCallbackQuery(); 
-});
-
-bot.callbackQuery("cb_buy_button_tc", async (ctx) => {
-    await ctx.conversation.enter("conversation_trxAmountSetting");
-    await ctx.answerCallbackQuery(); 
-});
-
-bot.callbackQuery("cb_buy_button_tr", async (ctx) => {
-    await ctx.conversation.enter("conversation_trxAmountSetting");
-    await ctx.answerCallbackQuery(); 
-});
-
-bot.callbackQuery("cb_buy_button_bl", async (ctx) => {
-    await ctx.conversation.enter("conversation_trxAmountSetting");
-    await ctx.answerCallbackQuery(); 
-});
-
-bot.callbackQuery("cb_buy_button_br", async (ctx) => {
-    await ctx.conversation.enter("conversation_trxAmountSetting");
-    await ctx.answerCallbackQuery(); 
-});
+bot.callbackQuery(
+    /cb_settings_swapCoinToToken_amount_LOCATION_([^\s]+)/,
+    async (ctx) => {
+        await ctx.conversation.enter(
+            "conversation_settings_swapCoinToToken_amount_LOCATION_REGEX"
+        );
+        await ctx.answerCallbackQuery();
+    }
+);

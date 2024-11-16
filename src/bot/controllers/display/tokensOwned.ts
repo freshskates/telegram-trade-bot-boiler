@@ -58,7 +58,7 @@ async function tokensOwned_(ctx: BotContext){
     const inlineKeyboard = [
         [
             {
-                text: "Back",
+                text: "Home",
                 callback_data: "cb_root_home",
             },
             {

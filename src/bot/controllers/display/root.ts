@@ -50,7 +50,7 @@ Once done, tap refresh, and your balance will appear here.
                     [
                         {
                             text: "Settings",
-                            callback_data: "cb_root_settings",
+                            callback_data: "cb_settings",
                         },
                     ],
                     [

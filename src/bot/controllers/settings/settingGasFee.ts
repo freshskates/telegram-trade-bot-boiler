@@ -21,16 +21,16 @@ export const setGas = async (conversation: BotConversation, ctx: any) => {
 
     let gasSetting;
 
-    if (callbackData === "cb_set_gas_1") {
+    if (callbackData === "cb_settings_swapTokenToCoin_gas_fee_LOCATION_0_0") {
         gasSetting = "Economy 🐴";
         selectedGasFee = 50;
-    } else if (callbackData === "cb_set_gas_2") {
+    } else if (callbackData === "cb_settings_swapTokenToCoin_gas_fee_LOCATION_0_1") {
         gasSetting = "Normal 🚀";
         selectedGasFee = 100;
-    } else if (callbackData === "cb_set_gas_3") {
+    } else if (callbackData === "cb_settings_swapTokenToCoin_gas_fee_LOCATION_0_2") {
         gasSetting = "Ultra 🦄";
         selectedGasFee = 200;
-    } else if (callbackData === "cb_set_gas_x") {
+    } else if (callbackData === "cb_settings_swapTokenToCoin_gas_fee_LOCATION_CUSTOM") {
         await ctx.reply("Please enter your custom gas amount (in TRX):");
 
         const {
@@ -89,22 +89,22 @@ Gas Fees Setting Conversation
 */
 
 bot.use(createConversation(setGas, "conversation_gasSetting"));
-bot.callbackQuery("cb_set_gas_1", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_gas_fee_LOCATION_0_0", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_set_gas_2", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_gas_fee_LOCATION_0_1", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_set_gas_3", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_gas_fee_LOCATION_0_2", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_set_gas_x", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_gas_fee_LOCATION_CUSTOM", async (ctx) => {
     await ctx.conversation.enter("conversation_gasSetting");
     await ctx.answerCallbackQuery();
 });

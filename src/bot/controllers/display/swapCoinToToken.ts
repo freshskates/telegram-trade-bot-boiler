@@ -209,7 +209,7 @@ async function cb_swapCoinToToken(ctx: BotContext) {
 
 bot.callbackQuery("cb_swapCoinToToken", cb_swapCoinToToken);
 
-async function command_load_token_REGEX(ctx: BotContext) {
+async function hears_load_token_REGEX(ctx: BotContext) {
     await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
 
     if (!ctx?.message?.text) return;
@@ -220,7 +220,7 @@ async function command_load_token_REGEX(ctx: BotContext) {
     await swapCoinToToken_(ctx);
 }
 
-bot.hears(/^T[a-zA-Z0-9]{33}$/, command_load_token_REGEX);
+bot.hears(/^T[a-zA-Z0-9]{33}$/, hears_load_token_REGEX);
 
 // @ts-ignore
 // console.log(`${new URL(import.meta.url).pathname} Module Loaded `); // Check to see if this file is loaded

@@ -39,6 +39,7 @@ export interface UserSessionData {
     swapCoinToToken_gas_fee_1: number; // Value can be given by the user
     swapCoinToToken_gas_fee_2: number; // Value can be given by the user
     swapCoinToToken_gas_fee_3: number; // Value can be given by the user
+    swapCoinToToken_gas_fee_custom: number; // Value is given by the user
     swapCoinToToken_gas_fee_selected: number; // Value selected by user
 
     /* ----- Auto Buy Token (Coin to Token) ----- */
@@ -61,6 +62,7 @@ export interface UserSessionData {
     swapTokenToCoin_gas_fee_1: number; // Value can be given by the user
     swapTokenToCoin_gas_fee_2: number; // Value can be given by the user
     swapTokenToCoin_gas_fee_3: number; // Value can be given by the user
+    swapTokenToCoin_gas_fee_custom: number; // Value is given by the user
     swapTokenToCoin_gas_fee_selected: number; // Value selected by user
 }
 
@@ -98,6 +100,7 @@ export function GetNewInitialSessionData(): UserSessionData {
         swapCoinToToken_gas_fee_1: 10,
         swapCoinToToken_gas_fee_2: 20,
         swapCoinToToken_gas_fee_3: 30,
+        swapCoinToToken_gas_fee_custom: 0,
         swapCoinToToken_gas_fee_selected: 0,
 
         /* ----- Auto Buy Token (Coin to Token) ----- */
@@ -120,6 +123,7 @@ export function GetNewInitialSessionData(): UserSessionData {
         swapTokenToCoin_gas_fee_1: 10,
         swapTokenToCoin_gas_fee_2: 20,
         swapTokenToCoin_gas_fee_3: 30,
+        swapTokenToCoin_gas_fee_custom: 0,
         swapTokenToCoin_gas_fee_selected: 0,
     };
 }

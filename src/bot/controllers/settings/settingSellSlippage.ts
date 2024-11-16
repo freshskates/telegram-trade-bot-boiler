@@ -16,7 +16,7 @@ export const settingSellSlippage = async (
         return;
     }
 
-    if (callbackData !== "cb_sell_setting_slippage") {
+    if (callbackData !== "cb_settings_swapTokenToCoin_slippage_LOCATION_0_0") {
         await ctx.reply("Invalid selection.");
         return;
     }
