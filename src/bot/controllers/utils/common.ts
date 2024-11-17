@@ -1,7 +1,7 @@
 import { formatNumber } from "../../../utils/menu_helpers/homedata";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
-import { BotContext } from "../../utils/bot_utility";
+import { BotContext } from "../../utils/util_bot";
 import Root from "../display/root";
 // import { root } from ".";
 

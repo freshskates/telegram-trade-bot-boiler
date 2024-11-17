@@ -1,6 +1,6 @@
 import "dotenv/config";
 import bot from "../../bot_init";
-import { BotContext } from "../../utils/bot_utility";
+import { BotContext } from "../../utils/util_bot";
 import { getTokenHeaderFormatted } from "../utils/common";
 
 async function get_swapTokenToCoin_HeaderFormatted(
@@ -67,7 +67,7 @@ async function swapTokenToCoin_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Sell ${ctx_session_cached.swapTokenToCoin_amount_percent_1}%`,
-                callback_data: "cb_swapTokenToCoin_amount_percent_LOCATION_0_0",
+                callback_data: "cb_swapTokenToCoin_amount_percent_VALUE_1",
             },
             {
                 text: `${
@@ -76,7 +76,7 @@ async function swapTokenToCoin_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Sell ${ctx_session_cached.swapTokenToCoin_amount_percent_2}%`,
-                callback_data: "cb_swapTokenToCoin_amount_percent_LOCATION_0_1",
+                callback_data: "cb_swapTokenToCoin_amount_percent_VALUE_2",
             },
             {
                 text: `${
@@ -84,14 +84,14 @@ async function swapTokenToCoin_(ctx: BotContext) {
                     ctx_session_cached.swapTokenToCoin_amount_percent_custom
                         ? "✅ "
                         : ""
-                } Sell ${
+                }✏️ Sell ${
                     ctx_session_cached.swapTokenToCoin_amount_percent_custom <=
                     0
                         ? "(CUSTOM)"
                         : ctx_session_cached.swapTokenToCoin_amount_percent_custom
-                }% ✏️`,
+                }%`,
                 callback_data:
-                    "cb_swapTokenToCoin_amount_percent_LOCATION_CUSTOM",
+                    "cb_swapTokenToCoin_amount_percent_VALUE_custom",
             },
         ],
         [
@@ -102,7 +102,7 @@ async function swapTokenToCoin_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 } ${ctx_session_cached.swapTokenToCoin_slippage_1}% Slippage`,
-                callback_data: "cb_swapTokenToCoin_slippage_LOCATION_0_0",
+                callback_data: "cb_swapTokenToCoin_slippage_VALUE_1",
             },
             {
                 text: `${
@@ -110,12 +110,12 @@ async function swapTokenToCoin_(ctx: BotContext) {
                     ctx_session_cached.swapTokenToCoin_slippage_custom
                         ? "✅ "
                         : ""
-                }${
+                }✏️ ${
                     ctx_session_cached.swapTokenToCoin_slippage_custom <= 0
                         ? "(CUSTOM)"
                         : ctx_session_cached.swapTokenToCoin_slippage_custom
-                }% Slippage ✏️`,
-                callback_data: "cb_swapTokenToCoin_slippage_LOCATION_CUSTOM",
+                }% Slippage`,
+                callback_data: "cb_swapTokenToCoin_slippage_VALUE_custom",
             },
         ],
         [

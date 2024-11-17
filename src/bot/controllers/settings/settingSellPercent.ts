@@ -2,7 +2,7 @@ import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext } from "grammy";
 import bot from "../../bot_init";
 import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
-import { BotContext, BotConversation } from "../../utils/bot_utility";
+import { BotContext, BotConversation } from "../../utils/util_bot";
 
 const prisma = getDatabaseClientPrismaSingleton();
 
@@ -21,10 +21,10 @@ export const settingSellPercent = async (
     let selectedPercentField: string;
     let percentSetting: string;
 
-    if (callbackData === "cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_0") {
+    if (callbackData === "cb_settings_swapTokenToCoin_amount_precent_VALUE_1") {
         percentSetting = "Sell Left Percent";
         selectedPercentField = "sellLeftPercentX";
-    } else if (callbackData === "cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_1") {
+    } else if (callbackData === "cb_settings_swapTokenToCoin_amount_precent_VALUE_2") {
         percentSetting = "Sell Right Percent";
         selectedPercentField = "sellRightPercentX";
     } else {
@@ -85,12 +85,12 @@ bot.use(
     createConversation(settingSellPercent, "conversation_sellPercentSetting")
 );
 
-bot.callbackQuery("cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_0", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_amount_precent_VALUE_1", async (ctx) => {
     await ctx.conversation.enter("conversation_sellPercentSetting");
     await ctx.answerCallbackQuery();
 });
 
-bot.callbackQuery("cb_settings_swapTokenToCoin_amount_precent_LOCATION_0_1", async (ctx) => {
+bot.callbackQuery("cb_settings_swapTokenToCoin_amount_precent_VALUE_2", async (ctx) => {
     await ctx.conversation.enter("conversation_sellPercentSetting");
     await ctx.answerCallbackQuery();
 });

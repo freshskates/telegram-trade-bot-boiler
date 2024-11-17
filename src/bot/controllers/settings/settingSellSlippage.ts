@@ -1,6 +1,6 @@
 import { CallbackQueryContext } from "grammy";
 import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
-import { BotConversation, BotContext } from "../../utils/bot_utility";
+import { BotConversation, BotContext } from "../../utils/util_bot";
 
 const prisma = getDatabaseClientPrismaSingleton();
 
@@ -16,7 +16,7 @@ export const settingSellSlippage = async (
         return;
     }
 
-    if (callbackData !== "cb_settings_swapTokenToCoin_slippage_LOCATION_0_0") {
+    if (callbackData !== "cb_settings_swapTokenToCoin_slippage_VALUE_1") {
         await ctx.reply("Invalid selection.");
         return;
     }

@@ -136,14 +136,24 @@ Joseph's Notes
                     If you call a conversation method that returns a new context object (ctx), you must use that 
                     ctx because any previous ctx will not saved in the database.
 
-                    ExampleS of methods called that return a new ctx object (https://grammy.dev/ref/conversations/conversationhandle)
+                    Examples of methods called that return a new ctx object (https://grammy.dev/ref/conversations/conversationhandle)
                         conversation.wait()
                         conversation.waitFor()
                         conversation.waitFrom()
                         conversation.waitForReplyTo()
 
+                    Check out conversation.form, though the documentation is shit so good luck 
+                        Example
+
+                            // https://grammy.dev/plugins/conversations#forms
+                            const age: number = await conversation.form.number();
+                            
+                        Reference:
+                            https://grammy.dev/ref/conversations/conversationhandle#form
+
                 Reference:
                     https://grammy.dev/ref/conversations/conversationhandle#wait
+                    https://grammy.dev/plugins/conversations
 
             Inline Keyboard (It's actual buttons)
             

@@ -81,7 +81,7 @@ export interface UserSessionData {
  * @export
  * @returns {UserSessionData}
  */
-export function GetNewInitialSessionData(): UserSessionData {
+export function getNewInitialSessionData(): UserSessionData {
     return {
         /* ----- Buy Token (Coin to Token) ----- */
 

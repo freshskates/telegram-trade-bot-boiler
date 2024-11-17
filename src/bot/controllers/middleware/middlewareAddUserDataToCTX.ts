@@ -1,20 +1,26 @@
 import { NextFunction } from "grammy";
 import getBotShared from "../../defined/BotShared";
-import { BotContext } from "../../utils/bot_utility";
+import {
+    NoAuthorError,
+    UserDoesNotExistError,
+    UserSettingsDoesNotExistError,
+} from "../../utils/error";
+import { BotContext } from "../../utils/util_bot";
 
 // TODO: YOU NEED TO CHECK IF THIS MIDDLEWARE WORKS PROPERLY BY DELETING THE USER
 
 export const middlewareAddUserDataToCTX = () => {
     return async (ctx: BotContext, next: NextFunction) => {
         const userId = ctx.from?.id;
-        
-        // User does not exist via UserID
+
+        // If author does not exist
         if (!userId) {
-            return next();
+            // return next();
+            throw new NoAuthorError(`${userId}`);
         }
 
-        // UserID Exists, user may not
-        const user = await getBotShared()
+        // If UserID Exists, get User
+        let user = await getBotShared()
             .getDatabaseClientHandler()
             .getUser(userId.toString());
 
@@ -22,11 +28,11 @@ export const middlewareAddUserDataToCTX = () => {
         if (!user) {
             const referral = ctx.message?.text?.split("?r=")[1]?.trim();
 
-            const userWallet = await getBotShared()
+            const userWallet = await getBotShared() // TODO: Make a function that creates the User, UserSettings, and UserWallet at the same time or some shit... then return all 3
                 .getCoinClient()
                 .createCoinWallet();
 
-            await getBotShared()
+            user = await getBotShared()
                 .getDatabaseClientHandler()
                 .createUser(
                     userId.toString(),
@@ -34,8 +40,10 @@ export const middlewareAddUserDataToCTX = () => {
                     userWallet,
                     referral
                 );
+        }
 
-            return next(); // WARNING: IS THIS REALLY WHAT YOU WANT TO DO
+        if (!user) {
+            throw new UserDoesNotExistError(`${user}`);
         }
 
         const userData = {
@@ -49,7 +57,7 @@ export const middlewareAddUserDataToCTX = () => {
             .getUserSettings(userId.toString());
 
         if (!settings) {
-            return next(); // WARNING: IS THIS REALLY WHAT YOU WANT TO DO
+            throw new UserSettingsDoesNotExistError(`${user}`);
         }
 
         const settingsData = {};

@@ -1,7 +1,7 @@
 import { MonadCoinClient } from "../defined/CoinClientMonad";
 import { SwapClient } from "../defined/SwapClient";
 import bot from "../bot_init";
-import { BotContext } from "../utils/bot_utility";
+import { BotContext } from "../utils/util_bot";
 import BotSharedSingleton from "../defined/BotShared";
 import getBotShared from "../defined/BotShared";
 

@@ -1,6 +1,6 @@
 import { NextFunction } from "grammy";
 import { DatabaseClientHandlerPrisma } from "../../defined/DatabaseClientHandlerPrisma";
-import { BotContext } from "../../utils/bot_utility";
+import { BotContext } from "../../utils/util_bot";
 
 export const middlewareAddTempDataToCTX = () => {
     return async (ctx: BotContext, next: NextFunction) => {

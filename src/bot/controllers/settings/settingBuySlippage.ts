@@ -2,7 +2,7 @@ import { createConversation } from "@grammyjs/conversations";
 import { CallbackQueryContext } from "grammy";
 import bot from "../../bot_init";
 import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
-import { BotContext, BotConversation } from "../../utils/bot_utility";
+import { BotContext, BotConversation } from "../../utils/util_bot";
 import settings from "../display/settings";
 
 const prisma = getDatabaseClientPrismaSingleton();
@@ -19,7 +19,7 @@ export const conversation_settingBuySlippage = async (
         return;
     }
 
-    if (callbackData !== "cb_settings_swapCoinToToken_slippage_LOCATION_0_0") {
+    if (callbackData !== "cb_settings_swapCoinToToken_slippage_VALUE_1") {
         await ctx.reply("Invalid selection.");
         return;
     }
@@ -83,9 +83,9 @@ bot.use(
     )
 );
 
-async function cb_settings_swapCoinToToken_slippage_LOCATION_0_0(ctx: CallbackQueryContext<BotContext>) {
+async function cb_settings_swapCoinToToken_slippage_VALUE_1(ctx: CallbackQueryContext<BotContext>) {
     await ctx.conversation.enter("conversation_swapBuySlippageSetting");
     await ctx.answerCallbackQuery();
 }
 
-bot.callbackQuery("cb_settings_swapCoinToToken_slippage_LOCATION_0_0", cb_settings_swapCoinToToken_slippage_LOCATION_0_0);
+bot.callbackQuery("cb_settings_swapCoinToToken_slippage_VALUE_1", cb_settings_swapCoinToToken_slippage_VALUE_1);

@@ -1,7 +1,12 @@
 import "dotenv/config";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
-import { BotContext } from "../../utils/bot_utility";
+import {
+    NoAuthorError,
+    NoTokenAddressError,
+    UserSettingsDoesNotExistError,
+} from "../../utils/error";
+import { BotContext } from "../../utils/util_bot";
 import { getTokenHeaderFormatted } from "../utils/common";
 
 async function get_swapCoinToToken_HeaderFormatted(
@@ -13,18 +18,27 @@ async function get_swapCoinToToken_HeaderFormatted(
 
 async function swapCoinToToken_(ctx: BotContext) {
     const tokenAddress = ctx.session.tokenAddress_selected;
-    const userId = ctx.from?.id; // Gets the author of the message, callback query, or other things
 
-    // TODO: FUCKING FIX THIS
-    if (!userId || !tokenAddress) {
-        return;
+    if (!tokenAddress) {
+        throw new NoTokenAddressError(`${tokenAddress}`);
+    }
+    const userId = ctx.from?.id;
+
+    if (!userId) {
+        throw new NoAuthorError(`${userId}`);
     }
 
-    // const userSettings = await UserClient.getUserSettings(userId.toString());
+    const userSettings = await getBotShared()
+        .getDatabaseClientHandler()
+        .getUserSettings(userId.toString());
 
-    // if (!userSettings) {
-    //     return;
-    // }
+    if (!userSettings) {
+        throw new UserSettingsDoesNotExistError(`${userId}`);
+    }
+
+    const tokenInformation = await getBotShared()
+        .getTokenClient()
+        .getTokenInformation(tokenAddress);
 
     // This should reduce read/writes
     let ctx_session_cached = ctx.session;
@@ -41,8 +55,6 @@ async function swapCoinToToken_(ctx: BotContext) {
 
     // Update the cache // This should reduce read/writes
     ctx_session_cached = ctx.session;
-
-    console.log("swapCoinToToken_", ctx_session_cached);
 
     const inlineKeyboard = [
         [
@@ -63,9 +75,9 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_1} ${
-                    getBotShared().getCoinInformation().ticker
+                    tokenInformation.token.symbol
                 }`,
-                callback_data: "cb_swapCoinToToken_amount_LOCATION_0_0",
+                callback_data: "cb_swapCoinToToken_amount_VALUE_1",
             },
             {
                 text: `${
@@ -74,9 +86,9 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_2} ${
-                    getBotShared().getCoinInformation().ticker
+                    tokenInformation.token.symbol
                 }`,
-                callback_data: "cb_swapCoinToToken_amount_LOCATION_0_1",
+                callback_data: "cb_swapCoinToToken_amount_VALUE_2",
             },
             {
                 text: `${
@@ -85,9 +97,9 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_3} ${
-                    getBotShared().getCoinInformation().ticker
+                    tokenInformation.token.symbol
                 }`,
-                callback_data: "cb_swapCoinToToken_amount_LOCATION_0_2",
+                callback_data: "cb_swapCoinToToken_amount_VALUE_3",
             },
         ],
         [
@@ -98,9 +110,9 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_4} ${
-                    getBotShared().getCoinInformation().ticker
+                    tokenInformation.token.symbol
                 }`,
-                callback_data: "cb_swapCoinToToken_amount_LOCATION_1_0",
+                callback_data: "cb_swapCoinToToken_amount_VALUE_4",
             },
             {
                 text: `${
@@ -109,9 +121,9 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_5} ${
-                    getBotShared().getCoinInformation().ticker
+                    tokenInformation.token.symbol
                 }`,
-                callback_data: "cb_swapCoinToToken_amount_LOCATION_1_1",
+                callback_data: "cb_swapCoinToToken_amount_VALUE_5",
             },
             {
                 text: `${
@@ -119,12 +131,12 @@ async function swapCoinToToken_(ctx: BotContext) {
                     ctx_session_cached.swapCoinToToken_amount_custom
                         ? "✅ "
                         : ""
-                }Buy ${
+                }✏️ Buy ${
                     ctx_session_cached.swapCoinToToken_amount_custom <= 0
                         ? "(CUSTOM)"
                         : ctx_session_cached.swapCoinToToken_amount_custom
-                } ${getBotShared().getCoinInformation().ticker} ✏️`,
-                callback_data: "cb_swapCoinToToken_amount_LOCATION_CUSTOM",
+                } ${tokenInformation.token.symbol}`,
+                callback_data: "cb_swapCoinToToken_amount_VALUE_custom",
             },
         ],
         [
@@ -135,7 +147,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }${ctx_session_cached.swapCoinToToken_slippage_1}% Slippage`,
-                callback_data: "cb_swapCoinToToken_slippage_LOCATION_0_0",
+                callback_data: "cb_swapCoinToToken_slippage_VALUE_1",
             },
             {
                 text: `${
@@ -143,12 +155,12 @@ async function swapCoinToToken_(ctx: BotContext) {
                     ctx_session_cached.swapCoinToToken_slippage_custom
                         ? "✅ "
                         : ""
-                }${
+                }✏️ ${
                     ctx_session_cached.swapCoinToToken_slippage_custom <= 0
                         ? "(CUSTOM)"
                         : ctx_session_cached.swapCoinToToken_slippage_custom
-                }% Slippage ✏️`,
-                callback_data: "cb_swapCoinToToken_slippage_LOCATION_CUSTOM",
+                }% Slippage`,
+                callback_data: "cb_swapCoinToToken_slippage_VALUE_custom",
             },
         ],
         [
@@ -185,10 +197,9 @@ async function swapCoinToToken_(ctx: BotContext) {
     }
 }
 
-
 async function cb_swapCoinToToken_refresh(ctx: BotContext) {
     await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
-    await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
+    await ctx.deleteMessage(); // Delete the most recent message relative to where this method was called
     await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
 
     await swapCoinToToken_(ctx);
@@ -236,3 +247,4 @@ const swapCoinToToken = {
 };
 
 export { swapCoinToToken };
+

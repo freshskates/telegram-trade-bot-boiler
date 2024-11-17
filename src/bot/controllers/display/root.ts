@@ -1,7 +1,7 @@
 import { NextFunction } from "grammy";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
-import { BotContext } from "../../utils/bot_utility";
+import { BotContext } from "../../utils/util_bot";
 
 async function command_root_home_(ctx: BotContext, next: NextFunction | null = null) {
     const user_id = ctx?.from?.id;

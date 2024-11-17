@@ -39,9 +39,9 @@ import getBotShared from "./defined/BotShared";
 import getDatabaseClientPrismaSingleton from "./defined/DatabaseClientPrisma";
 import {
     BotContext,
-    GetNewInitialSessionData,
+    getNewInitialSessionData,
     UserSessionData,
-} from "./utils/bot_utility";
+} from "./utils/util_bot";
 
 // TODO: refresh_cb?
 // TODO: referrals_cb?
@@ -117,7 +117,7 @@ async function main() {
             // lazySession({ // Uncomment this line and comment out "session({"" if you want Lazy Sessions
             // initial option in the configuration object, which correctly initializes session objects for new chats.
             initial() {
-                return GetNewInitialSessionData(); // return empty object (The object created here must always be a new object and not referenced outside this function otherwise you might share data )
+                return getNewInitialSessionData(); // return empty object (The object created here must always be a new object and not referenced outside this function otherwise you might share data )
             },
 
             // storage: new PrismaAdapter<SessionData>(getPrismaClientSingleton().session),  // Original version

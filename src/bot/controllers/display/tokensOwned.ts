@@ -2,7 +2,7 @@ import "dotenv/config";
 import { UserTokenPosition } from "../../../utils/types";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
-import { BotContext } from "../../utils/bot_utility";
+import { BotContext } from "../../utils/util_bot";
 
 // TODO: FIX THIS SHIT, LOOKS UGLY
 function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {

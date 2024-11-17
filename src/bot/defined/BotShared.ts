@@ -68,7 +68,7 @@ export class BotShared {
     }
 
     /* ------ Special Functions ------ */
-    getStorageAdaptorClass(): new <T>(...args: any[]) => StorageAdapter<T> {
+    getStorageAdaptorClass(): new <T>(...args: any[]) => StorageAdapter<T> {  // JOSEPH NOTES: THIS SHIT LOOKS DANK IN THIS LANGUAGE
         // Alternative Return Type: "new <T>(repository: SessionDelegate) => StorageAdapter<T>"
         return PrismaAdapter;
     }

@@ -1,13 +1,12 @@
 import { createConversation } from "@grammyjs/conversations";
-import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma";
 import bot from "../../bot_init";
-import { BotContext, BotConversation } from "../../utils/bot_utility";
-
+import { BotContext, BotConversation } from "../../utils/util_bot";
+import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "../utils/util";
+import getBotShared from "../../defined/BotShared";
 
 // async function _getSession
 
-
-async function conversation_settings_swapCoinToToken_amount_LOCATION_REGEX(
+async function conversation_settings_swapCoinToToken_amount_VALUE_REGEX(
     conversation: BotConversation,
     ctx: BotContext
 ) {
@@ -20,39 +19,42 @@ async function conversation_settings_swapCoinToToken_amount_LOCATION_REGEX(
 
     const callbackData = ctx.callbackQuery?.data;
 
-    let settingField: string;
-    let settingLabel: string;
-
-    if (callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_0_0") {
-        settingField = "buyTopLeftX";
-        settingLabel = "Top Left";
-    } else if (
-        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_0_1"
-    ) {
-        settingField = "buyTopCenterX";
-        settingLabel = "Top Center";
-    } else if (
-        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_0_2"
-    ) {
-        settingField = "buyTopRightX";
-        settingLabel = "Top Right";
-    } else if (
-        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_1_0"
-    ) {
-        settingField = "buyBottomLeftX";
-        settingLabel = "Bottom Left";
-    } else if (
-        callbackData === "cb_settings_swapCoinToToken_amount_LOCATION_1_1"
-    ) {
-        settingField = "buyBottomRightX";
-        settingLabel = "Bottom Right";
-    } else {
-        await ctx.reply("Invalid selection.");
-        return;
+    // TODO: FIX ME ASSHOLE, NEED TO BE STRING, IDK HOW YOU WANT HANDLE
+    if (!callbackData){
+        return
     }
 
+
+    console.log("FUCK YOU");
+
+    console.log(callbackData);
+    console.log(await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(callbackData, "cb_settings_"));
+
+    let settingField: string;
+    // let settingLabel: string;
+
+    // if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_1") {
+    //     settingField = "buyTopLeftX";
+    //     // settingLabel = "Top Left";
+    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_2") {
+    //     settingField = "buyTopCenterX";
+    //     // settingLabel = "Top Center";
+    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_3") {
+    //     settingField = "buyTopRightX";
+    //     // settingLabel = "Top Right";
+    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_4") {
+    //     settingField = "buyBottomLeftX";
+    //     // settingLabel = "Bottom Left";
+    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_5") {
+    //     settingField = "buyBottomRightX";
+    //     // settingLabel = "Bottom Right";
+    // } else {
+    //     await ctx.reply("Invalid selection.");
+    //     return;
+    // }
+
     await ctx.reply(
-        `You selected ${settingLabel}. Please enter the TRX amount:`
+        `Please enter the ${getBotShared().getCoinInformation().ticker} amount:`
     );
 
     const {
@@ -103,17 +105,19 @@ Buy Button TRX Settings Conversation
 
 bot.use(
     createConversation(
-        conversation_settings_swapCoinToToken_amount_LOCATION_REGEX,
-        "conversation_settings_swapCoinToToken_amount_LOCATION_REGEX"
+        conversation_settings_swapCoinToToken_amount_VALUE_REGEX,
+        "conversation_settings_swapCoinToToken_amount_VALUE_REGEX"
     )
 );
 
+async function cb_settings_swapCoinToToken_amount_VALUE_REGEX(ctx: BotContext) {
+    await ctx.conversation.enter(
+        "conversation_settings_swapCoinToToken_amount_VALUE_REGEX"
+    );
+    await ctx.answerCallbackQuery();
+}
+
 bot.callbackQuery(
-    /cb_settings_swapCoinToToken_amount_LOCATION_([^\s]+)/,
-    async (ctx) => {
-        await ctx.conversation.enter(
-            "conversation_settings_swapCoinToToken_amount_LOCATION_REGEX"
-        );
-        await ctx.answerCallbackQuery();
-    }
+    /cb_settings_swapCoinToToken_amount_VALUE_([^\s]+)/,
+    cb_settings_swapCoinToToken_amount_VALUE_REGEX,
 );

@@ -1,7 +1,7 @@
 import { Bot } from "grammy";
 import config from "../config/config";
 
-import { BotContext } from "./utils/bot_utility";
+import { BotContext } from "./utils/util_bot";
 
 const bot = new Bot<BotContext>(config.getTelegramBotToken());
 
