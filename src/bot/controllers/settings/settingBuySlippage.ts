@@ -5,8 +5,6 @@ import getDatabaseClientPrismaSingleton from "../../defined/DatabaseClientPrisma
 import { BotContext, BotConversation } from "../../utils/util_bot";
 import settings from "../display/settings";
 
-const prisma = getDatabaseClientPrismaSingleton();
-
 export const conversation_settingBuySlippage = async (
     conversation: BotConversation,
     ctx: BotContext
@@ -26,7 +24,8 @@ export const conversation_settingBuySlippage = async (
 
     await ctx.reply("Please enter the new slippage percentage for Buy:");
 
-    const { message } = await conversation.waitFor("message");
+    ctx = await conversation.wait();
+    const { message } = ctx;
 
     const newSlippageAmount = parseFloat(message?.text || "0");
 
@@ -71,11 +70,6 @@ export const start = async (ctx: CallbackQueryContext<BotContext>) => {
     await ctx.answerCallbackQuery();
 };
 
-/* 
-**************************************************
-Settings Menu - Set Buy Slippage
-**************************************************
-*/
 bot.use(
     createConversation(
         conversation_settingBuySlippage,
@@ -83,9 +77,14 @@ bot.use(
     )
 );
 
-async function cb_settings_swapCoinToToken_slippage_VALUE_1(ctx: CallbackQueryContext<BotContext>) {
+async function cb_settings_swapCoinToToken_slippage_VALUE_1(
+    ctx: CallbackQueryContext<BotContext>
+) {
     await ctx.conversation.enter("conversation_swapBuySlippageSetting");
     await ctx.answerCallbackQuery();
 }
 
-bot.callbackQuery("cb_settings_swapCoinToToken_slippage_VALUE_1", cb_settings_swapCoinToToken_slippage_VALUE_1);
+bot.callbackQuery(
+    "cb_settings_swapCoinToToken_slippage_VALUE_1",
+    cb_settings_swapCoinToToken_slippage_VALUE_1
+);

@@ -1,7 +1,12 @@
 import "dotenv/config";
 import bot from "../../bot_init";
 import { BotContext } from "../../utils/util_bot";
-import { getTokenHeaderFormatted } from "../utils/common";
+import {
+    getGrammyUser,
+    getTokenAddress,
+    getTokenHeaderFormatted,
+    getUserSettings,
+} from "../utils/common";
 
 async function get_swapTokenToCoin_HeaderFormatted(
     ctx: BotContext,
@@ -11,26 +16,16 @@ async function get_swapTokenToCoin_HeaderFormatted(
 }
 
 async function swapTokenToCoin_(ctx: BotContext) {
-    const tokenAddress = ctx.session.tokenAddress_selected;
-    const userId = ctx.from?.id;
+    
+    const [tokenAddress, grammyUser] = await Promise.all([
+        getTokenAddress(ctx),
+        getGrammyUser(ctx),
+    ]);
 
-    // TODO: FIX THIS SHIT
-    if (!userId || !tokenAddress) {
-        return;
-    }
+    // const userId = ctx.update.callback_query?.from.id;
+    const grammyUserId = grammyUser.id;
 
-    // const tokenDetails = await getBotShared()
-    //     .getCoinClient()
-    //     .getTokenMarketDetails(tokenAddress);
-    // const walletBalance = await getBotShared()
-    //     .getCoinClient()
-    //     .getCoinWalletBalance(ctx.user.user.walletPublicKey);
-
-    // const settings = await BotShared.getDatabaseClientHandler().getUserSettings(userId.toString());
-
-    // if (!settings) {
-    //     return;
-    // }
+    const userSettings = await getUserSettings(grammyUserId);
 
     // This should reduce read/writes
     let ctx_session_cached = ctx.session;
@@ -90,8 +85,7 @@ async function swapTokenToCoin_(ctx: BotContext) {
                         ? "(CUSTOM)"
                         : ctx_session_cached.swapTokenToCoin_amount_percent_custom
                 }%`,
-                callback_data:
-                    "cb_swapTokenToCoin_amount_percent_VALUE_custom",
+                callback_data: "cb_swapTokenToCoin_amount_percent_VALUE_custom",
             },
         ],
         [
@@ -154,7 +148,7 @@ async function swapTokenToCoin_(ctx: BotContext) {
 
 async function cb_swapTokenToCoin_refresh(ctx: BotContext) {
     await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
-    await ctx.deleteMessage();  // Delete the most recent message relative to where this method was called
+    await ctx.deleteMessage(); // Delete the most recent message relative to where this method was called
     await ctx.answerCallbackQuery(); // Answer any existing callback_query to prevent buggy behavior
 
     await swapTokenToCoin_(ctx);
@@ -162,7 +156,6 @@ async function cb_swapTokenToCoin_refresh(ctx: BotContext) {
 }
 
 bot.callbackQuery("cb_swapTokenToCoin_refresh", cb_swapTokenToCoin_refresh);
-
 
 async function cb_swapTokenToCoin_ADDRESS_REGEX(ctx: BotContext) {
     // TODO: FIX THIS SHIT, I DON'T THINK THERE WILL BE ERRORS ASSUMING SHIT IS WRITTEN CORRECTLY
@@ -177,7 +170,6 @@ async function cb_swapTokenToCoin_ADDRESS_REGEX(ctx: BotContext) {
 
     await swapTokenToCoin_(ctx);
     await ctx.answerCallbackQuery();
-
 }
 
 bot.callbackQuery(/cb_sTTC_ADDRESS_([^\s]+)/, cb_swapTokenToCoin_ADDRESS_REGEX);

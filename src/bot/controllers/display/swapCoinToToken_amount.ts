@@ -1,8 +1,8 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
-import { NoCallbackDataError, NoTokenAddressError } from "../../utils/error";
 import { BotContext, BotConversation } from "../../utils/util_bot";
+import { getCallbackData, getTokenAddress } from "../utils/common";
 import { getUserSessionDataPropertyValueFromCTX } from "../utils/util";
 import { swapCoinToToken } from "./swapCoinToToken";
 
@@ -10,26 +10,19 @@ export async function conversation_swapCoinToToken_amount(
     conversation: BotConversation,
     ctx: BotContext
 ) {
-    const tokenAdress = ctx.session.tokenAddress_selected;
-
-    if (!tokenAdress) {
-        throw new NoTokenAddressError(`${tokenAdress}`);
-    }
-
-    const callbackData = ctx.callbackQuery?.data;
-
-    if (!callbackData) {
-        throw new NoCallbackDataError(`${callbackData}`);
-    }
+    const [callbackData, tokenAddress] = await Promise.all([
+        getCallbackData(ctx),
+        getTokenAddress(ctx),
+    ]);
 
     const tokenInformation = await getBotShared()
         .getTokenClient()
-        .getTokenInformation(tokenAdress);
+        .getTokenInformation(tokenAddress);
 
     // Handle Custom Amount
     if (callbackData === "cb_swapCoinToToken_amount_VALUE_custom") {
         await ctx.reply(
-            `Please enter the amount of ${tokenInformation.token.symbol} you wish to buy:`
+            `Please enter the amount of ${tokenInformation.ticker} you wish to buy:`
         );
 
         ctx = await conversation.wait();
@@ -40,7 +33,9 @@ export async function conversation_swapCoinToToken_amount(
         // const customAmount = await conversation.form.number(); // TODO: TEST THIS METHOD
 
         if (isNaN(customAmount) || customAmount < 0) {
-            await ctx.reply("Invalid amount.");
+            await ctx.reply(
+                `Invalid Invalid ${tokenInformation.ticker} amount. amount.`
+            );
             await swapCoinToToken.swapCoinToToken(ctx);
             return;
             // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
@@ -51,7 +46,7 @@ export async function conversation_swapCoinToToken_amount(
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
         ctx.temp.conversationMethodReturnedANewCTX = true;
-    } 
+    }
     // Handled Predefined Amount
     else {
         const tokenBuyAmount =
@@ -60,7 +55,6 @@ export async function conversation_swapCoinToToken_amount(
         ctx.session.swapCoinToToken_amount_selected = tokenBuyAmount;
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
-
     }
     await swapCoinToToken.swapCoinToToken(ctx);
 }

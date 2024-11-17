@@ -1,8 +1,10 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
-import { BotContext, BotConversation } from "../../utils/util_bot";
-import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "../utils/util";
 import getBotShared from "../../defined/BotShared";
+import { BotContext, BotConversation } from "../../utils/util_bot";
+import { getCallbackData, getTokenAddress } from "../utils/common";
+import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "../utils/util";
+import settings from "./settings";
 
 // async function _getSession
 
@@ -10,91 +12,47 @@ async function conversation_settings_swapCoinToToken_amount_VALUE_REGEX(
     conversation: BotConversation,
     ctx: BotContext
 ) {
-    const userId = ctx.from?.id;
+    const [tokenAddress, callbackData] = await Promise.all([
+        getTokenAddress(ctx),
+        getCallbackData(ctx),
+    ]);
 
-    if (!userId) {
-        await ctx.reply("User ID not found.");
-        return;
-    }
-
-    const callbackData = ctx.callbackQuery?.data;
-
-    // TODO: FIX ME ASSHOLE, NEED TO BE STRING, IDK HOW YOU WANT HANDLE
-    if (!callbackData){
-        return
-    }
-
-
-    console.log("FUCK YOU");
-
-    console.log(callbackData);
-    console.log(await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(callbackData, "cb_settings_"));
-
-    let settingField: string;
-    // let settingLabel: string;
-
-    // if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_1") {
-    //     settingField = "buyTopLeftX";
-    //     // settingLabel = "Top Left";
-    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_2") {
-    //     settingField = "buyTopCenterX";
-    //     // settingLabel = "Top Center";
-    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_3") {
-    //     settingField = "buyTopRightX";
-    //     // settingLabel = "Top Right";
-    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_4") {
-    //     settingField = "buyBottomLeftX";
-    //     // settingLabel = "Bottom Left";
-    // } else if (callbackData === "cb_settings_swapCoinToToken_amount_VALUE_5") {
-    //     settingField = "buyBottomRightX";
-    //     // settingLabel = "Bottom Right";
-    // } else {
-    //     await ctx.reply("Invalid selection.");
-    //     return;
-    // }
+    const tokenInformation = await getBotShared()
+        .getTokenClient()
+        .getTokenInformation(tokenAddress);
+    
+    const {userSessionDataPropertyName, userSessionDataPropertyName_VALUE} = await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(
+        callbackData,
+        "cb_settings_"
+    )
 
     await ctx.reply(
-        `Please enter the ${getBotShared().getCoinInformation().ticker} amount:`
+        `Please enter a ${tokenInformation.ticker} amount for Buy Slot ${userSessionDataPropertyName_VALUE}:`
     );
 
-    const {
-        msg: { text: trxAmountText },
-    } = await conversation.waitFor("message");
+    ctx = await conversation.wait();
+    const { message } = ctx;
 
-    if (!trxAmountText) {
-        await ctx.reply("Invalid input. Please enter a numeric TRX amount.");
+    const customAmount = parseFloat(message?.text || "0");
+
+    if (isNaN(customAmount) || customAmount <= 0) {
+        await ctx.reply(`Invalid ${tokenInformation.ticker} amount.`);
+        await settings.settings(ctx);
         return;
+        // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
     }
 
-    const trxAmount = parseFloat(trxAmountText);
+    (ctx.session[userSessionDataPropertyName] as number) = customAmount
 
-    if (isNaN(trxAmount) || trxAmount <= 0) {
-        await ctx.reply(
-            "Invalid input. Please enter a valid numeric TRX amount."
-        );
-        return;
-    }
+    ctx.temp.shouldEditCurrentCTXMessage = true;
+    ctx.temp.conversationMethodReturnedANewCTX = true;
 
-    // Update the database with the new value
-    try {
-        const updatedSettings = await prisma.settings.update({
-            where: { userId: userId.toString() },
-            data: {
-                [settingField]: trxAmount,
-            },
-        });
+    await ctx.reply(
+        `Setting saved: Slot ${userSessionDataPropertyName_VALUE} set to ${customAmount} ${tokenInformation.ticker}.`
+    );
 
-        await ctx.reply(
-            `Setting saved: ${settingLabel} TRX amount set to ${trxAmount} TRX.`
-        );
-    } catch (error) {
-        console.error("Error updating settings:", error);
-        await ctx.reply(
-            "There was an error saving your settings. Please try again."
-        );
-    }
+    await settings.settings(ctx);
 
-    // await ctx.answerCallbackQuery();  // FIXME: TO BE LOGICALLY CORRECT, THIS SHOULD BE PLACED IN A CALLBACKQUERY NOT A CONVERSATION
 }
 
 /* 
@@ -119,5 +77,5 @@ async function cb_settings_swapCoinToToken_amount_VALUE_REGEX(ctx: BotContext) {
 
 bot.callbackQuery(
     /cb_settings_swapCoinToToken_amount_VALUE_([^\s]+)/,
-    cb_settings_swapCoinToToken_amount_VALUE_REGEX,
+    cb_settings_swapCoinToToken_amount_VALUE_REGEX
 );

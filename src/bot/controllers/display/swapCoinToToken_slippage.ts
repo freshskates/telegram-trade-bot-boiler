@@ -1,18 +1,14 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
-import { NoCallbackDataError } from "../../utils/error";
 import { BotContext, BotConversation } from "../../utils/util_bot";
+import { getCallbackData } from "../utils/common";
 import { swapCoinToToken } from "./swapCoinToToken";
 
 export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
     conversation: BotConversation,
     ctx: BotContext
 ) {
-    const callbackData = ctx.callbackQuery?.data;
-
-    if (!callbackData) {
-        throw new NoCallbackDataError(`${callbackData}`);
-    }
+    const callbackData = await getCallbackData(ctx);
 
     // Handle Custom Slippage value
     if (callbackData === "cb_swapCoinToToken_slippage_VALUE_custom") {
@@ -48,14 +44,12 @@ export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
 
-        
         await ctx.reply(
             `You have selected to use ${ctx.session.swapCoinToToken_slippage_selected}% slippage.`
         );
     }
     await swapCoinToToken.swapCoinToToken(ctx);
 }
-
 
 bot.use(
     createConversation(

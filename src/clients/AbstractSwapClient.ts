@@ -8,6 +8,6 @@ export abstract class AbstractSwapClient {
         amountIn: string,
         slippage: number
     ): Promise<
-        SwapTransaction & ServerError
+        SwapTransaction
     >;
 }

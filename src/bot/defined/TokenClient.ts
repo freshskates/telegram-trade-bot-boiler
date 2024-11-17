@@ -1,19 +1,18 @@
 import { AbstractTokenClient } from "../../clients/AbstractTokenClient";
 import {
-    ServerError,
     TokenInformation,
-    TokenMarketDetails,
+    TokenMarketDetails
 } from "../../utils/types";
 
 export class TokenClient extends AbstractTokenClient {
     async getTokenBalance(
         publicWalletAddress: string,
         tokenContractAddress: string
-    ): Promise<{ tokenBalance: number } & ServerError> {
+    ): Promise<{ tokenBalance: number }> {
         return {
             tokenBalance: 28,
-            message: "",
-            err: false,
+            // message: "",
+            // err: false,
         };
     }
 
@@ -22,54 +21,46 @@ export class TokenClient extends AbstractTokenClient {
         walletPrivateKey: string,
         toAddress: string,
         amount: string
-    ): Promise<{ txId: string } & ServerError> {
+    ): Promise<{ txId: string }> {
         // FIXME: WTF IS txId
         return {
             txId: "0x1234",
-            message: "",
-            err: false,
+            // message: "",
+            // err: false,
         };
     }
 
-    async getTokenInformation(
-        tokenAddress: string
-    ): Promise<{ token: TokenInformation } & ServerError> {
+    async getTokenInformation(tokenAddress: string): Promise<TokenInformation> {
         return {
-            token: {
-                name: "Test Token",
-                address: "0x1234",
-                symbol: "TST",
-                decimals: 18,
-                description: "This is a test token",
-            },
-            message: "",
-            err: false,
+            name: "Test Token",
+            address: "0x1234",
+            ticker: "TST",
+            symbol:"T",
+            decimals: 18,
+            description: "This is a test token",
         };
     }
 
     async getTokenMarketDetails(
         tokenAddress: string
-    ): Promise<{ token: TokenMarketDetails } & ServerError> {
+    ): Promise<TokenMarketDetails> {
         return {
-            token: {
-                name: "Test Token",
-                address: "0x1234",
-                symbol: "TST",
-                decimals: 9,
-                description: "This is a test token",
-                priceInUsd: 11,
-                marketCap: 1000020,
-                volume24h: 324555,
-                liquidity: 50000,
-                URL_image: "imageurl",
-                URL_website: "https://website.com",
-                URL_twitter: "https://x.com/twitter",
-                URL_telegram: "https://tg.me/telegram",
-                URL_dexscreener: "https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6",
-                
-            },
-            message: "",
-            err: false,
+            name: "Test Token",
+            address: "0x1234",
+            ticker: "TST",
+            symbol:"T",
+            decimals: 9,
+            description: "This is a test token",
+            priceInUsd: 11,
+            marketCap: 1000020,
+            volume24h: 324555,
+            liquidity: 50000,
+            URL_image: "imageurl",
+            URL_website: "https://website.com",
+            URL_twitter: "https://x.com/twitter",
+            URL_telegram: "https://tg.me/telegram",
+            URL_dexscreener:
+                "https://dexscreener.com/tron/tz4ur8mfkfykuftmsxcda7rs3r49yy2gl6",
         };
     }
 }

@@ -18,7 +18,7 @@ function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
         const row = [];
 
         // Format token symbol and address
-        const formatTokenSymbol = tokens[i].symbol.slice(0, 4);
+        const formatTokenSymbol = tokens[i].ticker.slice(0, 4);
         const formatTokenAddress = `${tokens[i].address.slice(0, 3)}...${tokens[
             i
         ].address.slice(-2)}`;
@@ -29,7 +29,7 @@ function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
         });
 
         if (i + 1 < tokens.length) {
-            const formatTokenSymbolNext = tokens[i + 1].symbol.slice(0, 4);
+            const formatTokenSymbolNext = tokens[i + 1].ticker.slice(0, 4);
             const formatTokenAddressNext = `${tokens[i + 1].address.slice(
                 0,
                 3

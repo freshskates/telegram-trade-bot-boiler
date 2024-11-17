@@ -1,8 +1,15 @@
+import { User } from "grammy/types";
 import { formatNumber } from "../../../utils/menu_helpers/homedata";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
+import {
+    NoAuthorError as NoGrammyUserError,
+    NoCallbackDataError,
+    NoTokenAddressError,
+    UserSettingsDoesNotExistError,
+} from "../../utils/error";
 import { BotContext } from "../../utils/util_bot";
-import Root from "../display/root";
+import { UserSettings } from "../../../utils/types";
 // import { root } from ".";
 
 // Former was ctx: CallbackQueryContext<Context>
@@ -53,14 +60,12 @@ Join our Telegram group @electron and one of our admins can assist you.
 
 bot.callbackQuery("cb_root_help", cb_help);
 
-
-
 export async function getTokenHeaderFormatted(
     ctx: BotContext,
     tokenAddress: string,
     headerLineFirst: string
 ): Promise<string> {
-    const tokenDetails = await getBotShared()
+    const tokenMarketDetails = await getBotShared()
         .getTokenClient()
         .getTokenMarketDetails(tokenAddress);
     const walletBalance = await getBotShared()
@@ -68,22 +73,61 @@ export async function getTokenHeaderFormatted(
         .getCoinWalletBalance(ctx.user.user.walletPublicKey);
 
     const headerTextComplete = `
-${headerLineFirst} [${tokenDetails.token.name}](${
-        tokenDetails.token.URL_dexscreener
-    }) [📉](${tokenDetails.token.URL_dexscreener}) 
+${headerLineFirst} [${tokenMarketDetails.name}](${
+        tokenMarketDetails.URL_dexscreener
+    }) [📉](${tokenMarketDetails.URL_dexscreener}) 
 \`${tokenAddress}\`
   
 Balance: *${walletBalance.coinBalance} ${
         getBotShared().getCoinInformation().name
     }* 
 Price: *\$${formatNumber(
-        tokenDetails.token.priceInUsd
+        tokenMarketDetails.priceInUsd
     )}* — VOL: *\$${formatNumber(
-        tokenDetails.token.volume24h
-    )}* — MC: *\$${formatNumber(tokenDetails.token.marketCap)}*
+        tokenMarketDetails.volume24h
+    )}* — MC: *\$${formatNumber(tokenMarketDetails.marketCap)}*
   
 // insert quote details here
         `;
 
     return headerTextComplete;
 }
+
+export async function getTokenAddress(ctx: BotContext): Promise<string> {
+    const tokenAddress = ctx.session.tokenAddress_selected;
+
+    if (!tokenAddress) {
+        throw new NoTokenAddressError(`${tokenAddress}`);
+    }
+    return tokenAddress;
+}
+export async function getCallbackData(ctx: BotContext): Promise<string> {
+    const callbackData = ctx.callbackQuery?.data;
+
+    if (!callbackData) {
+        throw new NoCallbackDataError(`${callbackData}`);
+    }
+    return callbackData;
+}
+
+export async function getGrammyUser(ctx: BotContext): Promise<User> {
+    const grammyUser = ctx.from;
+
+    if (!grammyUser) {
+        throw new NoGrammyUserError(`${grammyUser}`);
+    }
+
+    return grammyUser;
+}
+
+export async function getUserSettings(grammyUserId: number): Promise<UserSettings> {
+    const userSettings = await getBotShared()
+        .getDatabaseClientHandler()
+        .getUserSettings(grammyUserId.toString());
+
+    if (!userSettings) {
+        throw new UserSettingsDoesNotExistError(`${grammyUserId}`);
+    }
+    return userSettings;
+}
+

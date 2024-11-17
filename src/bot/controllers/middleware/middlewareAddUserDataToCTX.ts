@@ -6,23 +6,21 @@ import {
     UserSettingsDoesNotExistError,
 } from "../../utils/error";
 import { BotContext } from "../../utils/util_bot";
+import { getGrammyUser as getGrammyUser, getUserSettings } from "../utils/common";
 
 // TODO: YOU NEED TO CHECK IF THIS MIDDLEWARE WORKS PROPERLY BY DELETING THE USER
 
 export const middlewareAddUserDataToCTX = () => {
     return async (ctx: BotContext, next: NextFunction) => {
-        const userId = ctx.from?.id;
 
-        // If author does not exist
-        if (!userId) {
-            // return next();
-            throw new NoAuthorError(`${userId}`);
-        }
+        const grammyUser = await getGrammyUser(ctx)
+
+        const grammyUserId = grammyUser.id;
 
         // If UserID Exists, get User
         let user = await getBotShared()
             .getDatabaseClientHandler()
-            .getUser(userId.toString());
+            .getUser(grammyUserId.toString());
 
         // Create user if not exists
         if (!user) {
@@ -35,7 +33,7 @@ export const middlewareAddUserDataToCTX = () => {
             user = await getBotShared()
                 .getDatabaseClientHandler()
                 .createUser(
-                    userId.toString(),
+                    grammyUserId.toString(),
                     ctx.message?.from.username || "anon",
                     userWallet,
                     referral
@@ -52,15 +50,7 @@ export const middlewareAddUserDataToCTX = () => {
         };
 
         // UserID's Settings
-        const settings = await getBotShared()
-            .getDatabaseClientHandler()
-            .getUserSettings(userId.toString());
-
-        if (!settings) {
-            throw new UserSettingsDoesNotExistError(`${user}`);
-        }
-
-        const settingsData = {};
+        const settingsData = await getUserSettings(grammyUserId);
 
         ctx.user = { user: userData, settings: settingsData };
 

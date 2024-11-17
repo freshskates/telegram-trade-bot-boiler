@@ -1,12 +1,13 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
 import getBotShared from "../../defined/BotShared";
-import {
-    NoAuthorError,
-    NoCallbackDataError,
-    NoTokenAddressError,
-} from "../../utils/error";
 import { BotContext, BotConversation } from "../../utils/util_bot";
+import {
+    getCallbackData,
+    getGrammyUser,
+    getTokenAddress,
+    getUserSettings,
+} from "../utils/common";
 import { getUserSessionDataPropertyValueFromCTX } from "../utils/util";
 import { swapTokenToCoin } from "./swapTokenToCoin";
 
@@ -47,24 +48,20 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
     conversation: BotConversation,
     ctx: BotContext
 ) {
-    const tokenAdress = ctx.session.tokenAddress_selected;
-
-    if (!tokenAdress) {
-        throw new NoTokenAddressError(`${tokenAdress}`);
-    }
-
-    const callbackData = ctx.callbackQuery?.data;
-
-    if (!callbackData) {
-        throw new NoCallbackDataError(`${callbackData}`);
-    }
+    const [callbackData, tokenAddress, grammyUser] = await Promise.all([
+        getCallbackData(ctx),
+        getTokenAddress(ctx),
+        getGrammyUser(ctx),
+    ]);
 
     // const userId = ctx.update.callback_query?.from.id;
-    const userId = ctx.from?.id;
+    const grammyUserId = grammyUser.id;
 
-    if (!userId) {
-        throw new NoAuthorError(`${userId}`);
-    }
+    const tokenInformation = await getBotShared()
+        .getTokenClient()
+        .getTokenInformation(tokenAddress);
+
+    const userSettings = await getUserSettings(grammyUserId);
 
     if (callbackData === "cb_swapTokenToCoin_amount_percent_VALUE_custom") {
         await ctx.reply("Please enter the percent of TRX you wish to sell:");
@@ -83,17 +80,16 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
                 "Invalid percent. Valid value must be between 1 and 100."
             );
             await swapTokenToCoin.swapTokenToCoin(ctx);
-            return 
+            return;
             // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
-
         }
 
         const tokenInformation = await getBotShared()
             .getTokenClient()
-            .getTokenInformation(tokenAdress);
+            .getTokenInformation(tokenAddress);
 
         await ctx.reply(
-            `You have selected to sell ${customAmountPercent}% of your ${tokenInformation.token.symbol}.`
+            `You have selected to sell ${customAmountPercent}% of your ${tokenInformation.ticker}.`
         );
 
         ctx.session.swapTokenToCoin_amount_percent_custom = customAmountPercent;
@@ -112,7 +108,6 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
     }
     await swapTokenToCoin.swapTokenToCoin(ctx);
 }
-
 
 bot.use(
     createConversation(

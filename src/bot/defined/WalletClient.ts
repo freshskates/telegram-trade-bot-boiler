@@ -4,7 +4,7 @@ import { ServerError, UserTokenPosition } from "../../utils/types";
 export class WalletClient extends AbstractWalletClient {
     async getOwnedTokens(
         walletPublicKey: string
-    ): Promise<{ tokens: UserTokenPosition[] } & ServerError> {
+    ): Promise<{ tokens: UserTokenPosition[] }> {
 
 
         const tokens = []
@@ -21,8 +21,8 @@ export class WalletClient extends AbstractWalletClient {
         }
         return {
             tokens: tokens,
-            message: "",
-            err: false,
+            // message: "",
+            // err: false,
         };
     }
 }

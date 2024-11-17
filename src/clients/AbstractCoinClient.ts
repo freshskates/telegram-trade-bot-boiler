@@ -8,34 +8,34 @@ import {
 export abstract class AbstractCoinClient {
     constructor() {}
 
-    abstract createCoinWallet(): Promise<UserWallet & ServerError>;
+    abstract createCoinWallet(): Promise<UserWallet>;
 
     abstract getCoinWalletBalance(
-        publicWalletAdress: string
-    ): Promise<{ coinBalance: number } & ServerError>;
+        publicWalletAddress: string
+    ): Promise<{ coinBalance: number }>;
 
-    abstract getCoinPrice(): Promise<{ coinPrice: number } & ServerError>;
+    abstract getCoinPrice(): Promise<{ coinPrice: number }>;
 
     // abstract getTokenBalance(
     //     publicWalletAddress: string,
     //     tokenContractAddress: string
-    // ): Promise<{ tokenBalance: number } & ServerError>;
+    // ): Promise<{ tokenBalance: number }>;
 
     // abstract withdrawAmount(
     //     walletPrivateKey: string,
     //     toAddress: string,
     //     amount: string
-    // ): Promise<{ txId: string } & ServerError>;
+    // ): Promise<{ txId: string }>;
 
     // abstract getTokenInformation(
     //     tokenAddress: string
-    // ): Promise<{ token: TokenInformation } & ServerError>;
+    // ): Promise<{ token: TokenInformation }>;
 
     // abstract getTokenMarketDetails(
     //     tokenAddress: string
-    // ): Promise<{ token: TokenMarketDetails } & ServerError>;
+    // ): Promise<{ token: TokenMarketDetails }>;
 
     // abstract getTokenDexScreenerURL(): Promise<
-    //     { token: TokenMarketDetails } & ServerError
+    //     { token: TokenMarketDetails }
     // >;
 }

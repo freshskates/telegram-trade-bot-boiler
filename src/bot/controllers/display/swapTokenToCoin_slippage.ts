@@ -1,24 +1,24 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../../bot_init";
+import { NoAuthorError } from "../../utils/error";
 import { BotContext, BotConversation } from "../../utils/util_bot";
+import { getCallbackData, getGrammyUser } from "../utils/common";
 import { swapTokenToCoin } from "./swapTokenToCoin";
-import { NoAuthorError, NoCallbackDataError } from "../../utils/error";
 
 export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
     conversation: BotConversation,
     ctx: BotContext
 ) {
-    const callbackData = ctx.callbackQuery?.data;
-
-    if (!callbackData) {
-        throw new NoCallbackDataError(`${callbackData}`);
-    }
+    const [callbackData, grammyUser] = await Promise.all([
+        getCallbackData(ctx),
+        getGrammyUser(ctx),
+    ]);
 
     // const userId = ctx.update.callback_query?.from.id;
-    const userId = ctx.from?.id;
+    const grammyUserId = grammyUser.id;
 
-    if (!userId) {
-        throw new NoAuthorError(`${userId}`);
+    if (!grammyUserId) {
+        throw new NoAuthorError(`${grammyUserId}`);
     }
 
     if (callbackData === "cb_swapTokenToCoin_slippage_VALUE_custom") {
@@ -37,9 +37,8 @@ export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
             );
             await swapTokenToCoin.swapTokenToCoin(ctx);
             return;
-            
-            // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
 
+            // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
         }
 
         ctx.session.swapTokenToCoin_slippage_custom = customSlippage;

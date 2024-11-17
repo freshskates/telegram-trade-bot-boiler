@@ -9,14 +9,14 @@ export class SwapClient extends AbstractSwapClient {
     amountIn: string,
     slippage: number
   ): Promise<
-    { transactionId: string; quoteIn: string; quoteOut: string } & ServerError
+    { transactionId: string; quoteIn: string; quoteOut: string }
   > {
     return {
       transactionId: "0x1234",
       quoteIn: "100",
       quoteOut: "200",
-      message: "",
-      err: false,
+      // message: "",
+      // err: false,
     };
   }
 }

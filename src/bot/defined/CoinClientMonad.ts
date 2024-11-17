@@ -9,30 +9,30 @@ export class MonadCoinClient extends AbstractCoinClient {
         super();
     }
 
-    async createCoinWallet(): Promise<UserWallet & ServerError> {
+    async createCoinWallet(): Promise<UserWallet> {
         return {
             walletPublicKey: "0x1234",
             walletPrivateKey: "0x1234",
-            message: "",
-            err: false,
+            // message: "",
+            // err: false,
         };
     }
 
     async getCoinWalletBalance(
-        publicWalletAdress: string
-    ): Promise<{ coinBalance: number } & ServerError> {
+        publicWalletAddress: string
+    ): Promise<{ coinBalance: number }> {
         return {
             coinBalance: 1020,
-            message: "",
-            err: false,
+            // message: "",
+            // err: false,
         };
     }
 
-    async getCoinPrice(): Promise<{ coinPrice: number } & ServerError> {
+    async getCoinPrice(): Promise<{ coinPrice: number }> {
         return {
             coinPrice: 124.1,
-            message: "",
-            err: false,
+            // message: "",
+            // err: false,
         };
     }
 }

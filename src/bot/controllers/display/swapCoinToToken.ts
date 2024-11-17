@@ -7,7 +7,12 @@ import {
     UserSettingsDoesNotExistError,
 } from "../../utils/error";
 import { BotContext } from "../../utils/util_bot";
-import { getTokenHeaderFormatted } from "../utils/common";
+import {
+    getGrammyUser,
+    getTokenAddress,
+    getTokenHeaderFormatted,
+    getUserSettings,
+} from "../utils/common";
 
 async function get_swapCoinToToken_HeaderFormatted(
     ctx: BotContext,
@@ -17,24 +22,15 @@ async function get_swapCoinToToken_HeaderFormatted(
 }
 
 async function swapCoinToToken_(ctx: BotContext) {
-    const tokenAddress = ctx.session.tokenAddress_selected;
 
-    if (!tokenAddress) {
-        throw new NoTokenAddressError(`${tokenAddress}`);
-    }
-    const userId = ctx.from?.id;
+    const [tokenAddress, grammyUser] = await Promise.all([
+        getTokenAddress(ctx),
+        getGrammyUser(ctx),
+    ]);
 
-    if (!userId) {
-        throw new NoAuthorError(`${userId}`);
-    }
+    const grammyUserId = grammyUser.id;
 
-    const userSettings = await getBotShared()
-        .getDatabaseClientHandler()
-        .getUserSettings(userId.toString());
-
-    if (!userSettings) {
-        throw new UserSettingsDoesNotExistError(`${userId}`);
-    }
+    const userSettings = await getUserSettings(grammyUserId);
 
     const tokenInformation = await getBotShared()
         .getTokenClient()
@@ -75,7 +71,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_1} ${
-                    tokenInformation.token.symbol
+                    tokenInformation.ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_VALUE_1",
             },
@@ -86,7 +82,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_2} ${
-                    tokenInformation.token.symbol
+                    tokenInformation.ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_VALUE_2",
             },
@@ -97,7 +93,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_3} ${
-                    tokenInformation.token.symbol
+                    tokenInformation.ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_VALUE_3",
             },
@@ -110,7 +106,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_4} ${
-                    tokenInformation.token.symbol
+                    tokenInformation.ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_VALUE_4",
             },
@@ -121,7 +117,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                         ? "✅ "
                         : ""
                 }Buy ${ctx_session_cached.swapCoinToToken_amount_5} ${
-                    tokenInformation.token.symbol
+                    tokenInformation.ticker
                 }`,
                 callback_data: "cb_swapCoinToToken_amount_VALUE_5",
             },
@@ -135,7 +131,7 @@ async function swapCoinToToken_(ctx: BotContext) {
                     ctx_session_cached.swapCoinToToken_amount_custom <= 0
                         ? "(CUSTOM)"
                         : ctx_session_cached.swapCoinToToken_amount_custom
-                } ${tokenInformation.token.symbol}`,
+                } ${tokenInformation.ticker}`,
                 callback_data: "cb_swapCoinToToken_amount_VALUE_custom",
             },
         ],
@@ -247,4 +243,3 @@ const swapCoinToToken = {
 };
 
 export { swapCoinToToken };
-

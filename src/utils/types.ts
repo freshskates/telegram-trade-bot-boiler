@@ -5,6 +5,7 @@ export interface ServerError {
 
 export interface TokenInformation {
     name: string;
+    ticker: string;
     symbol: string;
     address: string;
     decimals: number;
@@ -52,7 +53,7 @@ export interface UserSettings {
 }
 
 export interface UserTokenPosition
-    extends Pick<TokenInformation, "name" | "symbol" | "address"> {
+    extends Pick<TokenInformation, "name" | "symbol" | "address" | "ticker"> {
     balance: number;
     balanceUSD: number;
 }

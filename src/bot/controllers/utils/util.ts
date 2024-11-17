@@ -1,7 +1,4 @@
-import {
-    NoTokenAddressError,
-    NoCallbackDataError,
-} from "../../utils/error";
+import { NoCallbackDataError, NoTokenAddressError } from "../../utils/error";
 import {
     BotContext,
     getNewInitialSessionData as getNewInitialUserSessionData,
@@ -55,9 +52,7 @@ export async function getUserSessionDataPropertyNameAndPropertyNameVALUEFromCall
             userSessionDataPropertyName as keyof UserSessionData
         )
     ) {
-        throw new NoTokenAddressError(
-            `${userSessionDataPropertyName}`
-        );
+        throw new NoTokenAddressError(`${userSessionDataPropertyName}`);
     }
 
     const userSessionDataPropertyName_Valid =
@@ -71,7 +66,7 @@ export async function getUserSessionDataPropertyNameAndPropertyNameVALUEFromCall
 
 export async function getUserSessionDataPropertyValueFromCTX<
     T extends string | number | boolean
->(ctx: BotContext): Promise<T> {
+>(ctx: BotContext, prefix: string = "cb_"): Promise<T> {
     const callbackData = ctx.callbackQuery?.data;
 
     if (!callbackData) {
@@ -80,7 +75,8 @@ export async function getUserSessionDataPropertyValueFromCTX<
 
     const { userSessionDataPropertyName, userSessionDataPropertyName_VALUE } =
         await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(
-            callbackData
+            callbackData,
+            prefix
         );
 
     const value: string | number | boolean | undefined =

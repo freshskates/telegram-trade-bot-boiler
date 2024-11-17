@@ -6,20 +6,20 @@ export abstract class AbstractTokenClient {
     abstract getTokenBalance(
         publicWalletAddress: string,
         tokenContractAddress: string
-    ): Promise<{ tokenBalance: number } & ServerError>;
+    ): Promise<{ tokenBalance: number }>;
 
     abstract withdrawAmount(
         walletPrivateKey: string,
         toAddress: string,
         amount: string
-    ): Promise<{ txId: string } & ServerError>;
+    ): Promise<{ txId: string }>;
 
     abstract getTokenInformation(
         tokenAddress: string
-    ): Promise<{ token: TokenInformation } & ServerError>;
+    ): Promise<TokenInformation>;
 
     abstract getTokenMarketDetails(
         tokenAddress: string
-    ): Promise<{ token: TokenMarketDetails } & ServerError>;
+    ): Promise<TokenMarketDetails>;
     
 }
