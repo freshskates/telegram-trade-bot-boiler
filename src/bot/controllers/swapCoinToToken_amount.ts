@@ -1,9 +1,9 @@
 import { createConversation } from "@grammyjs/conversations";
-import bot from "../../bot_init";
-import getBotShared from "../../defined/BotShared";
-import { BotContext, BotConversation } from "../../utils/util_bot";
-import { getCallbackData, getTokenAddress } from "../utils/common";
-import { getUserSessionDataPropertyValueFromCTX } from "../utils/util";
+import bot from "../bot_init";
+import getBotShared from "../defined/BotShared";
+import { BotContext, BotConversation } from "../utils/util_bot";
+import { formatAndValidateInput_number_greater_than_or_equal_to_0, getCallbackData, getTokenAddress } from "./utils/common";
+import { getUserSessionDataPropertyValueFromCTX } from "./utils/util";
 import { swapCoinToToken } from "./swapCoinToToken";
 
 export async function conversation_swapCoinToToken_amount(
@@ -28,11 +28,15 @@ export async function conversation_swapCoinToToken_amount(
         ctx = await conversation.wait();
         const { message } = ctx;
 
-        const customAmount = parseFloat(message?.text || "0");
-
         // const customAmount = await conversation.form.number(); // TODO: TEST THIS METHOD
 
-        if (isNaN(customAmount) || customAmount < 0) {
+        const {
+            resultFormattedValidated: resultFormattedValidated,
+            isResultValid: isResultValid,
+        } = await formatAndValidateInput_number_greater_than_or_equal_to_0(message?.text);
+    
+
+        if (!isResultValid || !resultFormattedValidated) {
             await ctx.reply(
                 `Invalid Invalid ${tokenInformation.ticker} amount. amount.`
             );
@@ -41,8 +45,8 @@ export async function conversation_swapCoinToToken_amount(
             // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
         }
 
-        ctx.session.swapCoinToToken_amount_custom = customAmount;
-        ctx.session.swapCoinToToken_amount_selected = customAmount;
+        ctx.session.swapCoinToToken_amount_custom = resultFormattedValidated;
+        ctx.session.swapCoinToToken_amount_selected = resultFormattedValidated;
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
         ctx.temp.conversationMethodReturnedANewCTX = true;

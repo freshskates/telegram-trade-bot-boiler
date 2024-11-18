@@ -1,64 +1,15 @@
 import { User } from "grammy/types";
 import { formatNumber } from "../../../utils/menu_helpers/homedata";
-import bot from "../../bot_init";
+import { UserSettings } from "../../../utils/types";
 import getBotShared from "../../defined/BotShared";
 import {
-    NoAuthorError as NoGrammyUserError,
     NoCallbackDataError,
+    NoAuthorError as NoGrammyUserError,
     NoTokenAddressError,
     UserSettingsDoesNotExistError,
 } from "../../utils/error";
 import { BotContext } from "../../utils/util_bot";
-import { UserSettings } from "../../../utils/types";
-// import { root } from ".";
-
-// Former was ctx: CallbackQueryContext<Context>
-async function cb_cancel(ctx: BotContext) {
-    await ctx.deleteMessage();
-    await ctx.answerCallbackQuery();
-}
-
-bot.callbackQuery("cb_cancel", cb_cancel);
-
-// Former was ctx: CallbackQueryContext<Context>
-async function cb_help(ctx: BotContext) {
-    await ctx.reply(
-        `
-*How do I use Electron?*
-Check out our [Youtube playlist](https://www.youtube.com/@ElectronOnTron) where we explain it all.
-
-*Which tokens can I trade?*
-Any TRC-20 token that is tradeable via JustSwap, including TRX and USDT pairs. We also support directly trading through SunSwap if JustSwap fails to find a route. You can trade newly created TRX pairs (not USDT) directly through SunSwap.
-
-*Where can I find my referral code?*
-Open the /start menu and click 💰Referrals.
-
-*My transaction timed out. What happened?*
-Transaction timeouts can occur when there is heavy network load or instability. This is simply the nature of the current Tron network.
-
-*What are the fees for using Electron?*
-Transactions through Electron incur a fee of 1%, or 0.9% if you were referred by another user. We don't charge a subscription fee or pay-wall any features.
-
-*My net profit seems wrong, why is that?*
-The net profit of a trade takes into consideration the trade's transaction fees. Confirm the details of your trade on TronScan.org to verify the net profit.
-
-*Additional questions or need support?*
-Join our Telegram group @electron and one of our admins can assist you.
-    `,
-        {
-            parse_mode: "Markdown",
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: "Close", callback_data: "cb_cancel" }],
-                ],
-            },
-        }
-    );
-
-    await ctx.answerCallbackQuery();
-}
-
-bot.callbackQuery("cb_root_help", cb_help);
+import { FormatAndValidateInput } from "./types";
 
 export async function getTokenHeaderFormatted(
     ctx: BotContext,
@@ -120,7 +71,9 @@ export async function getGrammyUser(ctx: BotContext): Promise<User> {
     return grammyUser;
 }
 
-export async function getUserSettings(grammyUserId: number): Promise<UserSettings> {
+export async function getUserSettings(
+    grammyUserId: number
+): Promise<UserSettings> {
     const userSettings = await getBotShared()
         .getDatabaseClientHandler()
         .getUserSettings(grammyUserId.toString());
@@ -131,3 +84,26 @@ export async function getUserSettings(grammyUserId: number): Promise<UserSetting
     return userSettings;
 }
 
+export const formatAndValidateInput_number_greater_than_or_equal_to_0: FormatAndValidateInput<
+    number
+> = async (input: string | undefined) => {
+    const amount = parseFloat(input || "0");
+
+    if (isNaN(amount) || amount < 0) {
+        return { resultFormattedValidated: null, isResultValid: false };
+    }
+
+    return { resultFormattedValidated: amount, isResultValid: true };
+};
+
+export const formatAndValidateInput_number_between_0_and_100: FormatAndValidateInput<
+    number
+> = async (input: string | undefined) => {
+    const amount = parseFloat(input || "0");
+
+    if (isNaN(amount) || amount < 0 || amount > 100) {
+        return { resultFormattedValidated: null, isResultValid: false };
+    }
+
+    return { resultFormattedValidated: amount, isResultValid: true };
+};

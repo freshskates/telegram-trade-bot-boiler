@@ -1,7 +1,7 @@
 import { createConversation } from "@grammyjs/conversations";
-import bot from "../../bot_init";
-import { BotContext, BotConversation } from "../../utils/util_bot";
-import { getCallbackData } from "../utils/common";
+import bot from "../bot_init";
+import { BotContext, BotConversation } from "../utils/util_bot";
+import { formatAndValidateInput_number_greater_than_or_equal_to_0, getCallbackData } from "./utils/common";
 import { swapCoinToToken } from "./swapCoinToToken";
 
 export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
@@ -19,23 +19,28 @@ export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
         ctx = await conversation.wait();
         const { message } = ctx;
 
-        const customSlippage = parseFloat(message?.text || "0");
+        const {
+            resultFormattedValidated: resultFormattedValidated,
+            isResultValid: isResultValid,
+        } = await formatAndValidateInput_number_greater_than_or_equal_to_0(message?.text);
+    
 
-        if (isNaN(customSlippage) || customSlippage < 0) {
+        if (!isResultValid || !resultFormattedValidated) {
             await ctx.reply("Invalid slippage percentage.");
             await swapCoinToToken.swapCoinToToken(ctx);
             return;
             // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
         }
 
-        ctx.session.swapCoinToToken_slippage_custom = customSlippage;
-        ctx.session.swapCoinToToken_slippage_selected = customSlippage; // Do not do "ctx.session.swapCoinToToken_slippage_selected = ctx.session.swapCoinToToken_slippage_custom" // This adds another read call
+        ctx.session.swapCoinToToken_slippage_custom = resultFormattedValidated;
+        ctx.session.swapCoinToToken_slippage_selected = resultFormattedValidated; // Do not do "ctx.session.swapCoinToToken_slippage_selected = ctx.session.swapCoinToToken_slippage_custom" // This adds another read call
         ctx.temp.shouldEditCurrentCTXMessage = true;
         ctx.temp.conversationMethodReturnedANewCTX = true;
 
-        await ctx.reply(
-            `You have selected to use ${customSlippage}% slippage.`
-        );
+        // await ctx.reply(
+        //     `You have selected to use ${ctx.session.swapCoinToToken_slippage_selected}% slippage.`
+        // );
+
     }
     // Handle Predefined Slippage value
     else {
@@ -44,10 +49,9 @@ export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
 
-        await ctx.reply(
-            `You have selected to use ${ctx.session.swapCoinToToken_slippage_selected}% slippage.`
-        );
+
     }
+
     await swapCoinToToken.swapCoinToToken(ctx);
 }
 

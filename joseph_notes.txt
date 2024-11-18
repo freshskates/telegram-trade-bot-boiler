@@ -147,9 +147,12 @@ Joseph's Notes
 
                             // https://grammy.dev/plugins/conversations#forms
                             const age: number = await conversation.form.number();
-                            
+
                         Reference:
                             https://grammy.dev/ref/conversations/conversationhandle#form
+
+                    Check out Example
+                        await ctx.conversation.reenter("conversation_buyButton");  // I have not tried this yet
 
                 Reference:
                     https://grammy.dev/ref/conversations/conversationhandle#wait

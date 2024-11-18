@@ -1,12 +1,12 @@
 import "dotenv/config";
-import bot from "../../bot_init";
-import { BotContext } from "../../utils/util_bot";
+import bot from "../bot_init";
+import { BotContext } from "../utils/util_bot";
 import {
     getGrammyUser,
     getTokenAddress,
     getTokenHeaderFormatted,
     getUserSettings,
-} from "../utils/common";
+} from "./utils/common";
 
 async function get_swapTokenToCoin_HeaderFormatted(
     ctx: BotContext,

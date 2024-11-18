@@ -1,8 +1,8 @@
 import "dotenv/config";
-import { UserTokenPosition } from "../../../utils/types";
-import bot from "../../bot_init";
-import getBotShared from "../../defined/BotShared";
-import { BotContext } from "../../utils/util_bot";
+import { UserTokenPosition } from "../../utils/types";
+import bot from "../bot_init";
+import getBotShared from "../defined/BotShared";
+import { BotContext } from "../utils/util_bot";
 
 // TODO: FIX THIS SHIT, LOOKS UGLY
 function _createTokenInlineKeyboard(tokens: UserTokenPosition[]) {
@@ -66,7 +66,7 @@ async function tokensOwned_(ctx: BotContext){
                 callback_data: "cb_tokensOwned_refresh",
             },
         ],
-        ..._createTokenInlineKeyboard(tokensOwned_walletPublicKey.tokens),
+        ..._createTokenInlineKeyboard(tokensOwned_walletPublicKey),
         [
             {
                 text: "Prev Page",
@@ -80,7 +80,7 @@ async function tokensOwned_(ctx: BotContext){
     ];
 
     await ctx.reply(`
-  Select a token to sell ${tokensOwned_walletPublicKey.tokens.length}/${tokensOwned_walletPublicKey.tokens.length}
+Select a token to sell ${tokensOwned_walletPublicKey.length}/${tokensOwned_walletPublicKey.length}
     `,
         {
             parse_mode: "Markdown",

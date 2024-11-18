@@ -5,19 +5,28 @@ import {
     UserSessionData,
 } from "../../utils/util_bot";
 
-const EXAMPLE_USER_SESSION_DATA: UserSessionData =
-    getNewInitialUserSessionData();
-// Validate and assert the type
-const KEYS_OF_EXAMPLE_USER_SESSION_DATA: string[] = Object.keys(
-    EXAMPLE_USER_SESSION_DATA
+const DUMMY_USER_SESSION_DATA: UserSessionData = getNewInitialUserSessionData();
+
+const KEYS_OF_DUMMY_USER_SESSION_DATA: string[] = Object.keys(
+    DUMMY_USER_SESSION_DATA
 );
 
 /**
- * Description placeholder
+ * Get the UserSessionData property name and property name's VALUE from callback data
  *
  * Notes:
  *      This function can be generic but validation will be difficult
  *      Alternative type of "UserSessionData" can be 'BotContext["session"]'
+ *
+ * Example:
+ *      Input
+ *          cb_settings_swapTokenToCoin_gas_fee_VALUE_custom, cb_settings_
+ *
+ *      Output
+ *          {
+ *              userSessionDataPropertyName: "swapTokenToCoin_gas_fee_custom",
+ *              userSessionDataPropertyName_VALUE: "custom"
+ *          }
  *
  * @export
  * @async
@@ -48,7 +57,7 @@ export async function getUserSessionDataPropertyNameAndPropertyNameVALUEFromCall
         userSessionDataPropertyName_NoPrefix_HasVALUE.replace("_VALUE", "");
 
     if (
-        !KEYS_OF_EXAMPLE_USER_SESSION_DATA.includes(
+        !KEYS_OF_DUMMY_USER_SESSION_DATA.includes(
             userSessionDataPropertyName as keyof UserSessionData
         )
     ) {
@@ -64,9 +73,34 @@ export async function getUserSessionDataPropertyNameAndPropertyNameVALUEFromCall
     };
 }
 
-export async function getUserSessionDataPropertyValueFromCTX<
-    T extends string | number | boolean
->(ctx: BotContext, prefix: string = "cb_"): Promise<T> {
+
+/**
+ * Get a UserSessionData property value given a CTX
+ *
+ * Notes:
+ *      It gets uses ctx.callbackQuery
+ *
+ * Example:
+ *      Assume
+ *          ctx.session.swapTokenToCoin_gas_fee_custom = 44
+ *
+ *      Input
+ *          cb_swapTokenToCoin_gas_fee_VALUE_custom, cb_
+ *
+ *      Output
+ *          44
+ *
+ * @export
+ * @async
+ * @template T
+ * @param {BotContext} ctx
+ * @param {string} [prefix="cb_"]
+ * @returns {unknown}
+ */
+export async function getUserSessionDataPropertyValueFromCTX<T>(
+    ctx: BotContext,
+    prefix: string = "cb_"
+){
     const callbackData = ctx.callbackQuery?.data;
 
     if (!callbackData) {
@@ -79,16 +113,7 @@ export async function getUserSessionDataPropertyValueFromCTX<
             prefix
         );
 
-    const value: string | number | boolean | undefined =
-        ctx.session[userSessionDataPropertyName];
+    return ctx.session[userSessionDataPropertyName] as T;
 
-    if (typeof value === "string") {
-        return value as T;
-    } else if (typeof value === "number" && !isNaN(value)) {
-        return value as T;
-    } else if (typeof value === "boolean") {
-        return value as T;
-    }
-
-    throw new Error(`Value Undefined: ${value}`);
+    // throw new Error(`Value Undefined: ${value}`);
 }

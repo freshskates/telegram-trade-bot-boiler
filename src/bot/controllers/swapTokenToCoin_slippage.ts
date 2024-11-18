@@ -1,8 +1,12 @@
 import { createConversation } from "@grammyjs/conversations";
-import bot from "../../bot_init";
-import { NoAuthorError } from "../../utils/error";
-import { BotContext, BotConversation } from "../../utils/util_bot";
-import { getCallbackData, getGrammyUser } from "../utils/common";
+import bot from "../bot_init";
+import { NoAuthorError } from "../utils/error";
+import { BotContext, BotConversation } from "../utils/util_bot";
+import {
+    formatAndValidateInput_number_greater_than_or_equal_to_0,
+    getCallbackData,
+    getGrammyUser,
+} from "./utils/common";
 import { swapTokenToCoin } from "./swapTokenToCoin";
 
 export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
@@ -29,9 +33,14 @@ export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
         ctx = await conversation.wait();
         const { message } = ctx;
 
-        const customSlippage = parseFloat(message?.text || "0");
+        const {
+            resultFormattedValidated: resultFormattedValidated,
+            isResultValid: isResultValid,
+        } = await formatAndValidateInput_number_greater_than_or_equal_to_0(
+            message?.text
+        );
 
-        if (isNaN(customSlippage) || customSlippage < 0) {
+        if (!isResultValid || !resultFormattedValidated) {
             await ctx.reply(
                 "Invalid slippage value. Please enter a valid percentage."
             );
@@ -41,13 +50,14 @@ export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
             // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
         }
 
-        ctx.session.swapTokenToCoin_slippage_custom = customSlippage;
-        ctx.session.swapTokenToCoin_slippage_selected = customSlippage;
+        ctx.session.swapTokenToCoin_slippage_custom = resultFormattedValidated;
+        ctx.session.swapTokenToCoin_slippage_selected =
+            resultFormattedValidated;
         ctx.temp.shouldEditCurrentCTXMessage = true;
         ctx.temp.conversationMethodReturnedANewCTX = true;
 
         await ctx.reply(
-            `You have selected to use ${customSlippage}% slippage.`
+            `You have selected to use ${resultFormattedValidated}% slippage.`
         );
     } else {
         ctx.session.swapTokenToCoin_slippage_selected =

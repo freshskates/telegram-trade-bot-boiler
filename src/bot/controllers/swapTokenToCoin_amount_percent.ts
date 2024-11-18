@@ -1,14 +1,15 @@
 import { createConversation } from "@grammyjs/conversations";
-import bot from "../../bot_init";
-import getBotShared from "../../defined/BotShared";
-import { BotContext, BotConversation } from "../../utils/util_bot";
+import bot from "../bot_init";
+import getBotShared from "../defined/BotShared";
+import { BotContext, BotConversation } from "../utils/util_bot";
 import {
+    formatAndValidateInput_number_between_0_and_100,
     getCallbackData,
     getGrammyUser,
     getTokenAddress,
     getUserSettings,
-} from "../utils/common";
-import { getUserSessionDataPropertyValueFromCTX } from "../utils/util";
+} from "./utils/common";
+import { getUserSessionDataPropertyValueFromCTX } from "./utils/util";
 import { swapTokenToCoin } from "./swapTokenToCoin";
 
 // // Function to fetch sell percent by button ID
@@ -69,13 +70,14 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
         ctx = await conversation.wait();
         const { message } = ctx;
 
-        const customAmountPercent = parseFloat(message?.text || "0");
+        const {
+            resultFormattedValidated: resultFormattedValidated,
+            isResultValid: isResultValid,
+        } = await formatAndValidateInput_number_between_0_and_100(
+            message?.text
+        );
 
-        if (
-            isNaN(customAmountPercent) ||
-            customAmountPercent < 0 ||
-            customAmountPercent > 100
-        ) {
+        if (!isResultValid || !resultFormattedValidated) {
             await ctx.reply(
                 "Invalid percent. Valid value must be between 1 and 100."
             );
@@ -89,12 +91,13 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
             .getTokenInformation(tokenAddress);
 
         await ctx.reply(
-            `You have selected to sell ${customAmountPercent}% of your ${tokenInformation.ticker}.`
+            `You have selected to sell ${resultFormattedValidated}% of your ${tokenInformation.name}.`
         );
 
-        ctx.session.swapTokenToCoin_amount_percent_custom = customAmountPercent;
+        ctx.session.swapTokenToCoin_amount_percent_custom =
+            resultFormattedValidated;
         ctx.session.swapTokenToCoin_amount_percent_selected =
-            customAmountPercent;
+            resultFormattedValidated;
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
         ctx.temp.conversationMethodReturnedANewCTX = true;

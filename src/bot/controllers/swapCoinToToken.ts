@@ -1,18 +1,18 @@
 import "dotenv/config";
-import bot from "../../bot_init";
-import getBotShared from "../../defined/BotShared";
+import bot from "../bot_init";
+import getBotShared from "../defined/BotShared";
 import {
     NoAuthorError,
     NoTokenAddressError,
     UserSettingsDoesNotExistError,
-} from "../../utils/error";
-import { BotContext } from "../../utils/util_bot";
+} from "../utils/error";
+import { BotContext } from "../utils/util_bot";
 import {
     getGrammyUser,
     getTokenAddress,
     getTokenHeaderFormatted,
     getUserSettings,
-} from "../utils/common";
+} from "./utils/common";
 
 async function get_swapCoinToToken_HeaderFormatted(
     ctx: BotContext,
