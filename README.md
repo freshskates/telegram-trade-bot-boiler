@@ -22,7 +22,7 @@ This bot is designed for cryptocurrency token swapping and features a codebase t
 - Show current positions
 
 #### Settings
-- Advanced should be able to reset `ctx.session`
+- Advanced button should show reset `ctx.session`
 
 ---
 
@@ -38,7 +38,7 @@ This bot is designed for cryptocurrency token swapping and features a codebase t
 - **Custom Value Indicators**
   - Use distinct colors or indicators for buttons that accept custom values and reflect those values dynamically
 
-## Running
+## Running (Assuming ORM is Prisma)
 
 #### Before Running
 Get the .env
@@ -74,11 +74,11 @@ npx prisma migrate dev --create-only
 
 npx prisma generate  
 ```
-#### You want to apply all pending migrations to your production database (Prisma)
+#### You want to apply all pending migrations to your production database 
 ```
 npx prisma migrate deploy
 ```
-#### You want to see the Prisma DB Locally
+#### You want to see the Prisma DB Locally (Run this in a separate terminal/shell from the server)
 ```
 npx prisma studio
 ```
