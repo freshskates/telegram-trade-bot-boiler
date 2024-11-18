@@ -1,12 +1,12 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
 import { BotContext, BotConversation } from "../utils/util_bot";
+import { partial_conversation_settings__GENERALIZED__VALUE_REGEX } from "./partial_conversation/partial_conversation_settings__GENERALIZED__VALUE_REGEX";
 import {
     formatAndValidateInput_number_greater_than_or_equal_to_0,
     getCallbackData,
 } from "./utils/common";
 import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "./utils/util";
-import settings from "./settings";
 
 export const conversation_settings_swapTokenToCoin_amount_percent_VALUE_REGEX =
     async (conversation: BotConversation, ctx: BotContext) => {
@@ -31,7 +31,7 @@ export const conversation_settings_swapTokenToCoin_amount_percent_VALUE_REGEX =
             return `Sell Percentage Amount Position (${userSessionDataPropertyName_VALUE}) set to ${result}.`;
         }
 
-        await settings.conversation_settings__GENERALIZED__VALUE_REGEX<number>(
+        await partial_conversation_settings__GENERALIZED__VALUE_REGEX<number>(
             conversation,
             ctx,
             message_ask,

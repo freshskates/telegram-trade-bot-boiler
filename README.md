@@ -1,15 +1,21 @@
 # Telegram Cryptocurrency Token Swapping Bot
 
 ## :page_facing_up: About
-This bot is designed for cryptocurrency token swapping and features a codebase that is generalized, semi-automatic, and semi-dynamic.
+This bot is designed for cryptocurrency token swapping and features a codebase that is Generalized, Semi-Modular, and Semi-dynamic.
 
-- **Generalized**: The code is structured to support virtually any cryptocurrency coin and its associated tokens, providing flexibility for diverse applications.
-- **Semi-Automatic**: The bot's functionality is modular, allowing you to define various bot functions independently. This means that you do not need to consolidate all functionalities into a single file, enhancing organization and maintainability.
+- **Generalized**: The code is structured to support possibly any cryptocurrency coin and its associated tokens by adding a few files and targeting those files. 
+- **Semi-Modular**: The bot's functionality is modular, allowing you to define various bot functions independently. This means that you do not need to consolidate all functionalities into a single file, enhancing organization and maintainability.
 - **Semi-Dynamic**: If you add additional properties to ctx.session in a manner consistent with existing properties, the code will seamlessly support these new properties along with their corresponding functionalities. However, if you introduce entirely new properties that differ from the existing ones, additional coding will be necessary to ensure those properties function correctly.
 
 #### Design choice
-On the topic of throwing errors, technically if a throw happens, then you should not allow any further operations
-because those further operations are dependent on code that does not throw. Basically, ***"I can't play an online videogame without first being logged in. If I was able to play without logging in, then any of my data pulled would be null and would be saved to nowhere which would bug out everything in the game menu and in game."***
+On the topic of throwing errors, technically if a throw happens, then you should not allow any further operations because those further operations are dependent on code that does not throw. Basically, ***"I can't play an online videogame without first being logged in. If I was able to play without logging in, then any of my data pulled would be null and would be saved to nowhere which would bug out everything in the game menu and in game."***
+
+When it comes to modular design, if you've worked with Grammy.js projects, you may have observed that much of the bot's functionality—both the registration and the actual implementation—tends to be contained within the `bot.ts` file (or a similar file). This approach can quickly become overwhelming and result in a bloated codebase. In this project, `auto_load_module.ts` indirectly decouples the bot from the `bot.ts` file, enabling you to define and manage bot-related logic in separate, more manageable files without the need to import them directly into `bot.ts`.
+
+The naming of Callback Data function names, `ctx.session` property names, and conversation function names, are very similar. This allows for the developers to recognize what functionality would happen next and it allows for the code to dynamically support new `ctx.session` properties assuming there is code functionality that corresponds to those properties.
+
+#### Adding New Code
+Assuming that all the code is logically correct, if you were to add new functionality such as support for a different cryptocurrency, then you would add/modify files in `bot/defined`.
 
 ---
 ## :rocket: Running (Assuming ORM is Prisma)

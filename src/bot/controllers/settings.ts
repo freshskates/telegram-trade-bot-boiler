@@ -14,59 +14,7 @@ import {
 } from "./utils/types";
 import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "./utils/util";
 
-async function conversation_settings__GENERALIZED__VALUE_REGEX<T>(
-    conversation: BotConversation,
-    ctx: BotContext,
-    message_ask: string,
-    formatAndValidateInput: FormatAndValidateInput<T>,
-    getMessageResultInvalid: GetMessageResultInvalid,
-    getMessageDone: GetMessageDone
-) {
-    const [callbackData] = await Promise.all([getCallbackData(ctx)]);
 
-    const { userSessionDataPropertyName, userSessionDataPropertyName_VALUE } =
-        await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(
-            callbackData,
-            "cb_settings_"
-        );
-
-    // Ask user for input
-    await ctx.reply(message_ask);
-
-    ctx = await conversation.wait();
-    const { message } = ctx; // Get user's message from their response
-
-    // Format and Validate user's input
-    const {
-        resultFormattedValidated: resultFormattedValidated,
-        isResultValid: isResultValid,
-    } = await formatAndValidateInput(message?.text);
-
-    // Invalid message from user
-    if (!isResultValid) {
-        await ctx.reply(
-            await getMessageResultInvalid(`${resultFormattedValidated}`)
-        );
-        await settings.settings(ctx);
-        return;
-        // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
-    }
-    
-    console.log("FUCK", );
-    console.log(ctx.session[userSessionDataPropertyName], resultFormattedValidated);
-    
-
-    // Assign user's result to the corresponding session property
-    (ctx.session[userSessionDataPropertyName] as T | null) =
-        resultFormattedValidated;
-
-    ctx.temp.shouldEditCurrentCTXMessage = true;
-    ctx.temp.conversationMethodReturnedANewCTX = true;
-
-    await ctx.reply(await getMessageDone(`${resultFormattedValidated}`));
-
-    await settings.settings(ctx);
-}
 
 async function settings_(ctx: BotContext) {
     const [tokenAddress, grammyUser] = await Promise.all([
@@ -243,7 +191,5 @@ bot.callbackQuery("cb_settings", cb_settings);
 
 const settings = {
     settings: settings_,
-    conversation_settings__GENERALIZED__VALUE_REGEX:
-        conversation_settings__GENERALIZED__VALUE_REGEX,
 };
 export default settings;

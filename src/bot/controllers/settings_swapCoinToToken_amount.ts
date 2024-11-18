@@ -1,12 +1,12 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
 import { BotContext, BotConversation } from "../utils/util_bot";
+import { partial_conversation_settings__GENERALIZED__VALUE_REGEX } from "./partial_conversation/partial_conversation_settings__GENERALIZED__VALUE_REGEX";
 import {
     formatAndValidateInput_number_greater_than_or_equal_to_0,
-    getCallbackData
+    getCallbackData,
 } from "./utils/common";
 import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "./utils/util";
-import settings from "./settings";
 
 // IMPORTANT: THE BELOW IS THE OLD STYLE, KEEP THIS AS REFERNCE
 // async function conversation_settings_swapCoinToToken_amount_VALUE_REGEX(
@@ -78,7 +78,7 @@ async function conversation_settings_swapCoinToToken_amount_VALUE_REGEX(
         return `Buy Amount Position (${userSessionDataPropertyName_VALUE}) set to ${result}.`;
     }
 
-    await settings.conversation_settings__GENERALIZED__VALUE_REGEX<number>(
+    await partial_conversation_settings__GENERALIZED__VALUE_REGEX<number>(
         conversation,
         ctx,
         message_ask,
