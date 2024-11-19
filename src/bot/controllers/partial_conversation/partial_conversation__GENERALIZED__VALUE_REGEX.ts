@@ -1,34 +1,30 @@
 import getBotShared from "../../defined/BotShared";
 import { BotContext, BotConversation } from "../../utils/util_bot";
-import settings from "../settings";
 import {
-    formatAndValidateInput_number_greater_than_or_equal_to_0,
-    getCallbackData,
+    formatAndValidateInput_number_greater_than_or_equal_to_0
 } from "../utils/common";
 import {
     FormatAndValidateInput,
     GetMessageDone,
     GetMessageResultInvalid,
 } from "../utils/types";
-import {
-    UserSessionPropertyName_Data
-} from "../utils/util";
+import { UserSessionPropertyName_Data } from "../utils/util";
 
-export interface PartialConversationCTXData{
-    ctx: BotContext,
-    isResultValid: boolean,
-} 
+export interface PartialConversationCTXData {
+    ctx: BotContext;
+    isResultValid: boolean;
+}
 
 /**
  * Asks user for input and automatically assigns that input value to the correct ctx.session property.
- * 
+ *
  * Notes:
  *      1. Asks users for input
  *      2. Format and Validate input
  *          2a. Continue if Valid input
  *          2b. Fail to assign, return PartialConversationCTXData
  *      3. Assign Valid/formatted input to ctx.session
- *      4. return PartialConversationCTXData 
+ *      4. return PartialConversationCTXData
  *
  * @export
  * @async
@@ -51,7 +47,6 @@ export async function partial_conversation__GENERALIZED__VALUE_REGEX<T>(
     getMessageResultInvalid: GetMessageResultInvalid,
     getMessageDone: GetMessageDone
 ): Promise<PartialConversationCTXData> {
-
     // Ask user for input
     await ctx.reply(message_ask);
 
@@ -62,14 +57,21 @@ export async function partial_conversation__GENERALIZED__VALUE_REGEX<T>(
     const {
         resultFormattedValidated: resultFormattedValidated,
         isResultValid: isResultValid,
-    } = await formatAndValidateInput(message?.text);
+    } = await formatAndValidateInput(
+        message?.text,
+        `${
+            ctx.session[
+                userSessionDataProperty_data.userSessionDataPropertyName
+            ]
+        }`
+    );
 
     // Invalid message from user
     if (!isResultValid) {
         await ctx.reply(
             await getMessageResultInvalid(`${resultFormattedValidated}`)
         );
-        return {ctx, isResultValid};
+        return { ctx, isResultValid };
 
         // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
     }
@@ -84,7 +86,7 @@ export async function partial_conversation__GENERALIZED__VALUE_REGEX<T>(
 
     await ctx.reply(await getMessageDone(`${resultFormattedValidated}`));
 
-    return {ctx, isResultValid};
+    return { ctx, isResultValid };
 }
 
 export async function partial_conversation_swapCoinToToken_amount_VALUE_REGEX(

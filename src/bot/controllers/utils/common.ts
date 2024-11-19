@@ -86,8 +86,10 @@ export async function getUserSettings(
 
 export const formatAndValidateInput_number_greater_than_or_equal_to_0: FormatAndValidateInput<
     number
-> = async (input: string | undefined) => {
-    const amount = parseFloat(input || "0");
+> = async (input: string | undefined, default_value: string = "0") => {
+
+    // Triple check if not null/undefined/empty string: Use input else use default_value else use "0"
+    const amount = parseFloat(input || default_value || "0");
 
     if (isNaN(amount) || amount < 0) {
         return { resultFormattedValidated: null, isResultValid: false };
@@ -98,8 +100,10 @@ export const formatAndValidateInput_number_greater_than_or_equal_to_0: FormatAnd
 
 export const formatAndValidateInput_number_between_0_and_100: FormatAndValidateInput<
     number
-> = async (input: string | undefined) => {
-    const amount = parseFloat(input || "0");
+> = async (input: string | undefined, default_value: string = "0") => {
+
+    // Triple check if not null/undefined/empty string: Use input else use default_value else use "0"
+    const amount = parseFloat(input || default_value || "0");
 
     if (isNaN(amount) || amount < 0 || amount > 100) {
         return { resultFormattedValidated: null, isResultValid: false };

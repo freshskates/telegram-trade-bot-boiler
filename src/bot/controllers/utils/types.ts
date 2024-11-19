@@ -1,4 +1,4 @@
-export type FormatAndValidateInput<T> = (input: string | undefined) => Promise<{
+export type FormatAndValidateInput<T> = (input: string | undefined, default_value: string) => Promise<{
     resultFormattedValidated: T | null;
     isResultValid: boolean;
 }>;
