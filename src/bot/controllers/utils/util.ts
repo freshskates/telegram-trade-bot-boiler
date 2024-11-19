@@ -11,6 +11,11 @@ const KEYS_OF_DUMMY_USER_SESSION_DATA: string[] = Object.keys(
     DUMMY_USER_SESSION_DATA
 );
 
+export interface UserSessionPropertyName_Data {
+    userSessionDataPropertyName: keyof UserSessionData;
+    userSessionDataPropertyName_VALUE: string | null;
+}
+
 /**
  * Get the UserSessionData property name and property name's VALUE from callback data
  *
@@ -31,21 +36,18 @@ const KEYS_OF_DUMMY_USER_SESSION_DATA: string[] = Object.keys(
  * @export
  * @async
  * @param {string} callbackName
- * @param {string} [prefix="cb_"]
+ * @param {string} [prefix_of_callback_data="cb_"]
  * @returns {Promise<{
  *     userSessionDataPropertyName: keyof UserSessionData;
  *     userSessionDataPropertyName_VALUE: string | null;
  * }>}
  */
-export async function getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData( // JOSEPH NOTES: THIS SHIT LOOKS DANK IN THIS LANGUAGE keyof
+export async function getUserSessionDataPropertyNameAndVALUEFromCallbackData( // JOSEPH NOTES: THIS SHIT LOOKS DANK IN THIS LANGUAGE keyof
     callbackName: string,
-    prefix: string = "cb_"
-): Promise<{
-    userSessionDataPropertyName: keyof UserSessionData;
-    userSessionDataPropertyName_VALUE: string | null;
-}> {
+    prefix_of_callback_data: string = "cb_"
+): Promise<UserSessionPropertyName_Data> {
     const userSessionDataPropertyName_NoPrefix_HasVALUE = callbackName.replace(
-        prefix,
+        prefix_of_callback_data,
         ""
     );
 
@@ -73,7 +75,6 @@ export async function getUserSessionDataPropertyNameAndPropertyNameVALUEFromCall
     };
 }
 
-
 /**
  * Get a UserSessionData property value given a CTX
  *
@@ -100,7 +101,7 @@ export async function getUserSessionDataPropertyNameAndPropertyNameVALUEFromCall
 export async function getUserSessionDataPropertyValueFromCTX<T>(
     ctx: BotContext,
     prefix: string = "cb_"
-){
+) {
     const callbackData = ctx.callbackQuery?.data;
 
     if (!callbackData) {
@@ -108,7 +109,7 @@ export async function getUserSessionDataPropertyValueFromCTX<T>(
     }
 
     const { userSessionDataPropertyName, userSessionDataPropertyName_VALUE } =
-        await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(
+        await getUserSessionDataPropertyNameAndVALUEFromCallbackData(
             callbackData,
             prefix
         );

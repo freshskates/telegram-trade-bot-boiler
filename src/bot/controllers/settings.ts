@@ -1,20 +1,11 @@
 import bot from "../bot_init";
 import getBotShared from "../defined/BotShared";
-import { BotContext, BotConversation } from "../utils/util_bot";
+import { BotContext } from "../utils/util_bot";
 import {
-    getCallbackData,
     getGrammyUser,
     getTokenAddress,
-    getUserSettings,
+    getUserSettings
 } from "./utils/common";
-import {
-    FormatAndValidateInput,
-    GetMessageResultInvalid,
-    GetMessageDone,
-} from "./utils/types";
-import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "./utils/util";
-
-
 
 async function settings_(ctx: BotContext) {
     const [tokenAddress, grammyUser] = await Promise.all([

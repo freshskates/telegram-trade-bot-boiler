@@ -1,8 +1,10 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
 import { BotContext, BotConversation } from "../utils/util_bot";
-import { formatAndValidateInput_number_greater_than_or_equal_to_0, getCallbackData } from "./utils/common";
+import { partial_conversation_swapCoinToToken_slippage_VALUE_REGEX } from "./partial_conversation/partial_conversation__GENERALIZED__VALUE_REGEX";
 import { swapCoinToToken } from "./swapCoinToToken";
+import { getCallbackData } from "./utils/common";
+import { getUserSessionDataPropertyNameAndVALUEFromCallbackData } from "./utils/util";
 
 export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
     conversation: BotConversation,
@@ -10,37 +12,30 @@ export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
 ) {
     const callbackData = await getCallbackData(ctx);
 
-    // Handle Custom Slippage value
-    if (callbackData === "cb_swapCoinToToken_slippage_VALUE_custom") {
-        await ctx.reply(
-            "Please enter the custom slippage percentage you wish to use:"
+    const userSessionDataProperty_data =
+        await getUserSessionDataPropertyNameAndVALUEFromCallbackData(
+            callbackData,
+            "cb_"
         );
 
-        ctx = await conversation.wait();
-        const { message } = ctx;
+    // Handle Custom Slippage value
+    if (callbackData === "cb_swapCoinToToken_slippage_VALUE_custom") {
+        const result =
+            await partial_conversation_swapCoinToToken_slippage_VALUE_REGEX(
+                conversation,
+                ctx,
+                userSessionDataProperty_data
+            );
 
-        const {
-            resultFormattedValidated: resultFormattedValidated,
-            isResultValid: isResultValid,
-        } = await formatAndValidateInput_number_greater_than_or_equal_to_0(message?.text);
-    
+        ctx = result.ctx;
 
-        if (!isResultValid || !resultFormattedValidated) {
-            await ctx.reply("Invalid slippage percentage.");
-            await swapCoinToToken.swapCoinToToken(ctx);
-            return;
-            // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
+        if (result.isResultValid) {
+            ctx.session.swapCoinToToken_slippage_selected =
+                ctx.session.swapCoinToToken_slippage_custom;
+
+            ctx.temp.shouldEditCurrentCTXMessage = true; // Unnecessary due to partial_conversation_swapCoinToToken_slippage_VALUE_REGEX
+            ctx.temp.conversationMethodReturnedANewCTX = true; // Unnecessary due to partial_conversation_swapCoinToToken_slippage_VALUE_REGEX
         }
-
-        ctx.session.swapCoinToToken_slippage_custom = resultFormattedValidated;
-        ctx.session.swapCoinToToken_slippage_selected = resultFormattedValidated; // Do not do "ctx.session.swapCoinToToken_slippage_selected = ctx.session.swapCoinToToken_slippage_custom" // This adds another read call
-        ctx.temp.shouldEditCurrentCTXMessage = true;
-        ctx.temp.conversationMethodReturnedANewCTX = true;
-
-        // await ctx.reply(
-        //     `You have selected to use ${ctx.session.swapCoinToToken_slippage_selected}% slippage.`
-        // );
-
     }
     // Handle Predefined Slippage value
     else {
@@ -48,8 +43,6 @@ export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
             ctx.session.swapCoinToToken_slippage_1;
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
-
-
     }
 
     await swapCoinToToken.swapCoinToToken(ctx);

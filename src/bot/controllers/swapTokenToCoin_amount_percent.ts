@@ -2,15 +2,18 @@ import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
 import getBotShared from "../defined/BotShared";
 import { BotContext, BotConversation } from "../utils/util_bot";
+import { partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX } from "./partial_conversation/partial_conversation__GENERALIZED__VALUE_REGEX";
+import { swapTokenToCoin } from "./swapTokenToCoin";
 import {
-    formatAndValidateInput_number_between_0_and_100,
     getCallbackData,
     getGrammyUser,
     getTokenAddress,
     getUserSettings,
 } from "./utils/common";
-import { getUserSessionDataPropertyValueFromCTX } from "./utils/util";
-import { swapTokenToCoin } from "./swapTokenToCoin";
+import {
+    getUserSessionDataPropertyNameAndVALUEFromCallbackData,
+    getUserSessionDataPropertyValueFromCTX,
+} from "./utils/util";
 
 // // Function to fetch sell percent by button ID
 // async function fetchSellPercentByButtonId(ctx: BotContext): Promise<number> {
@@ -55,6 +58,12 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
         getGrammyUser(ctx),
     ]);
 
+    const userSessionDataProperty_data =
+        await getUserSessionDataPropertyNameAndVALUEFromCallbackData(
+            callbackData,
+            "cb_"
+        );
+
     // const userId = ctx.update.callback_query?.from.id;
     const grammyUserId = grammyUser.id;
 
@@ -65,42 +74,22 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
     const userSettings = await getUserSettings(grammyUserId);
 
     if (callbackData === "cb_swapTokenToCoin_amount_percent_VALUE_custom") {
-        await ctx.reply("Please enter the percent of TRX you wish to sell:");
-
-        ctx = await conversation.wait();
-        const { message } = ctx;
-
-        const {
-            resultFormattedValidated: resultFormattedValidated,
-            isResultValid: isResultValid,
-        } = await formatAndValidateInput_number_between_0_and_100(
-            message?.text
-        );
-
-        if (!isResultValid || !resultFormattedValidated) {
-            await ctx.reply(
-                "Invalid percent. Valid value must be between 1 and 100."
+        const result =
+            await partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
+                conversation,
+                ctx,
+                userSessionDataProperty_data
             );
-            await swapTokenToCoin.swapTokenToCoin(ctx);
-            return;
-            // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
+
+        ctx = result.ctx;
+
+        if (result.isResultValid) {
+            ctx.session.swapTokenToCoin_amount_percent_selected =
+                ctx.session.swapTokenToCoin_amount_percent_custom;
+
+            ctx.temp.shouldEditCurrentCTXMessage = true; // Unnecessary do to partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX
+            ctx.temp.conversationMethodReturnedANewCTX = true; // Unnecessary do to partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX
         }
-
-        const tokenInformation = await getBotShared()
-            .getTokenClient()
-            .getTokenInformation(tokenAddress);
-
-        await ctx.reply(
-            `You have selected to sell ${resultFormattedValidated}% of your ${tokenInformation.name}.`
-        );
-
-        ctx.session.swapTokenToCoin_amount_percent_custom =
-            resultFormattedValidated;
-        ctx.session.swapTokenToCoin_amount_percent_selected =
-            resultFormattedValidated;
-
-        ctx.temp.shouldEditCurrentCTXMessage = true;
-        ctx.temp.conversationMethodReturnedANewCTX = true;
     } else {
         const amountPercent =
             await getUserSessionDataPropertyValueFromCTX<number>(ctx);

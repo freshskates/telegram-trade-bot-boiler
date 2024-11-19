@@ -1,45 +1,34 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
 import { BotContext, BotConversation } from "../utils/util_bot";
-import { partial_conversation_settings__GENERALIZED__VALUE_REGEX } from "./partial_conversation/partial_conversation_settings__GENERALIZED__VALUE_REGEX";
-import {
-    formatAndValidateInput_number_greater_than_or_equal_to_0,
-    getCallbackData,
-} from "./utils/common";
-import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "./utils/util";
+import { partial_conversation_swapCoinToToken_slippage_VALUE_REGEX } from "./partial_conversation/partial_conversation__GENERALIZED__VALUE_REGEX";
+import settings from "./settings";
+import { getCallbackData } from "./utils/common";
+import { getUserSessionDataPropertyNameAndVALUEFromCallbackData } from "./utils/util";
 
-export const conversation_settings_swapCoinToToken_slippage_VALUE_REGEX =
-    async (conversation: BotConversation, ctx: BotContext) => {
-        const callbackData = await getCallbackData(ctx);
+async function conversation_settings_swapCoinToToken_slippage_VALUE_REGEX(
+    conversation: BotConversation,
+    ctx: BotContext
+) {
+    const callbackData = await getCallbackData(ctx);
 
-        const {
-            userSessionDataPropertyName,
-            userSessionDataPropertyName_VALUE,
-        } =
-            await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(
-                callbackData,
-                "cb_settings_"
-            );
+    const userSessionDataProperty_data =
+        await getUserSessionDataPropertyNameAndVALUEFromCallbackData(
+            callbackData,
+            "cb_settings_"
+        );
 
-        const message_ask = `Please enter a Slippage Percentage for Buy Slippage Percentage Position (${userSessionDataPropertyName_VALUE}):`;
-
-        async function getMessageResultInvalid(result: string) {
-            return `Invalid Slippage Percentage for Buy Slippage Percentage Position (${userSessionDataPropertyName_VALUE}).`;
-        }
-
-        async function getMessageDone(result: string) {
-            return `Buy Slippage Percentage Position (${userSessionDataPropertyName_VALUE}) set to ${result}.`;
-        }
-
-        await partial_conversation_settings__GENERALIZED__VALUE_REGEX<number>(
+    const result =
+        await partial_conversation_swapCoinToToken_slippage_VALUE_REGEX(
             conversation,
             ctx,
-            message_ask,
-            formatAndValidateInput_number_greater_than_or_equal_to_0,
-            getMessageResultInvalid,
-            getMessageDone
+            userSessionDataProperty_data
         );
-    };
+        
+    ctx = result.ctx;
+
+    await settings.settings(ctx);
+}
 
 bot.use(
     createConversation(

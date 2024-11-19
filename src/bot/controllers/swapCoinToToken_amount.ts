@@ -1,10 +1,13 @@
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
-import getBotShared from "../defined/BotShared";
 import { BotContext, BotConversation } from "../utils/util_bot";
-import { formatAndValidateInput_number_greater_than_or_equal_to_0, getCallbackData, getTokenAddress } from "./utils/common";
-import { getUserSessionDataPropertyValueFromCTX } from "./utils/util";
+import { partial_conversation_swapCoinToToken_amount_VALUE_REGEX } from "./partial_conversation/partial_conversation__GENERALIZED__VALUE_REGEX";
 import { swapCoinToToken } from "./swapCoinToToken";
+import { getCallbackData, getTokenAddress } from "./utils/common";
+import {
+    getUserSessionDataPropertyNameAndVALUEFromCallbackData,
+    getUserSessionDataPropertyValueFromCTX,
+} from "./utils/util";
 
 export async function conversation_swapCoinToToken_amount(
     conversation: BotConversation,
@@ -15,41 +18,30 @@ export async function conversation_swapCoinToToken_amount(
         getTokenAddress(ctx),
     ]);
 
-    const tokenInformation = await getBotShared()
-        .getTokenClient()
-        .getTokenInformation(tokenAddress);
+    const userSessionDataProperty_data =
+        await getUserSessionDataPropertyNameAndVALUEFromCallbackData(
+            callbackData,
+            "cb_"
+        );
 
     // Handle Custom Amount
     if (callbackData === "cb_swapCoinToToken_amount_VALUE_custom") {
-        await ctx.reply(
-            `Please enter the amount of ${tokenInformation.ticker} you wish to buy:`
-        );
-
-        ctx = await conversation.wait();
-        const { message } = ctx;
-
-        // const customAmount = await conversation.form.number(); // TODO: TEST THIS METHOD
-
-        const {
-            resultFormattedValidated: resultFormattedValidated,
-            isResultValid: isResultValid,
-        } = await formatAndValidateInput_number_greater_than_or_equal_to_0(message?.text);
-    
-
-        if (!isResultValid || !resultFormattedValidated) {
-            await ctx.reply(
-                `Invalid Invalid ${tokenInformation.ticker} amount. amount.`
+        const result =
+            await partial_conversation_swapCoinToToken_amount_VALUE_REGEX(
+                conversation,
+                ctx,
+                userSessionDataProperty_data
             );
-            await swapCoinToToken.swapCoinToToken(ctx);
-            return;
-            // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
+
+        ctx = result.ctx;
+
+        if (result.isResultValid) {
+            ctx.session.swapCoinToToken_amount_selected =
+                ctx.session.swapCoinToToken_amount_custom;
+
+            ctx.temp.shouldEditCurrentCTXMessage = true; // Unnecessary due to partial_conversation_swapCoinToToken_amount_VALUE_REGEX
+            ctx.temp.conversationMethodReturnedANewCTX = true; // Unnecessary due to partial_conversation_swapCoinToToken_amount_VALUE_REGEX
         }
-
-        ctx.session.swapCoinToToken_amount_custom = resultFormattedValidated;
-        ctx.session.swapCoinToToken_amount_selected = resultFormattedValidated;
-
-        ctx.temp.shouldEditCurrentCTXMessage = true;
-        ctx.temp.conversationMethodReturnedANewCTX = true;
     }
     // Handled Predefined Amount
     else {

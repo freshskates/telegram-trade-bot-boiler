@@ -2,12 +2,10 @@ import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
 import { NoAuthorError } from "../utils/error";
 import { BotContext, BotConversation } from "../utils/util_bot";
-import {
-    formatAndValidateInput_number_greater_than_or_equal_to_0,
-    getCallbackData,
-    getGrammyUser,
-} from "./utils/common";
+import { partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX } from "./partial_conversation/partial_conversation__GENERALIZED__VALUE_REGEX";
 import { swapTokenToCoin } from "./swapTokenToCoin";
+import { getCallbackData, getGrammyUser } from "./utils/common";
+import { getUserSessionDataPropertyNameAndVALUEFromCallbackData } from "./utils/util";
 
 export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
     conversation: BotConversation,
@@ -18,6 +16,12 @@ export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
         getGrammyUser(ctx),
     ]);
 
+    const userSessionDataProperty_data =
+        await getUserSessionDataPropertyNameAndVALUEFromCallbackData(
+            callbackData,
+            "cb_"
+        );
+
     // const userId = ctx.update.callback_query?.from.id;
     const grammyUserId = grammyUser.id;
 
@@ -26,48 +30,27 @@ export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
     }
 
     if (callbackData === "cb_swapTokenToCoin_slippage_VALUE_custom") {
-        await ctx.reply(
-            "Please enter the custom slippage percentage you wish to use:"
-        );
-
-        ctx = await conversation.wait();
-        const { message } = ctx;
-
-        const {
-            resultFormattedValidated: resultFormattedValidated,
-            isResultValid: isResultValid,
-        } = await formatAndValidateInput_number_greater_than_or_equal_to_0(
-            message?.text
-        );
-
-        if (!isResultValid || !resultFormattedValidated) {
-            await ctx.reply(
-                "Invalid slippage value. Please enter a valid percentage."
+        const reuslt =
+            await partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX(
+                conversation,
+                ctx,
+                userSessionDataProperty_data
             );
-            await swapTokenToCoin.swapTokenToCoin(ctx);
-            return;
 
-            // TODO: MAYBE RE-ENTER CONVERSATION AND ASK AGAIN?
+        ctx = reuslt.ctx;
+
+        if (reuslt.isResultValid) {
+            ctx.session.swapTokenToCoin_slippage_selected =
+                ctx.session.swapTokenToCoin_slippage_custom;
+
+            ctx.temp.shouldEditCurrentCTXMessage = true; // Unnecessary due to partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX
+            ctx.temp.conversationMethodReturnedANewCTX = true; // Unnecessary due to partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX
         }
-
-        ctx.session.swapTokenToCoin_slippage_custom = resultFormattedValidated;
-        ctx.session.swapTokenToCoin_slippage_selected =
-            resultFormattedValidated;
-        ctx.temp.shouldEditCurrentCTXMessage = true;
-        ctx.temp.conversationMethodReturnedANewCTX = true;
-
-        await ctx.reply(
-            `You have selected to use ${resultFormattedValidated}% slippage.`
-        );
     } else {
         ctx.session.swapTokenToCoin_slippage_selected =
             ctx.session.swapTokenToCoin_slippage_1;
 
         ctx.temp.shouldEditCurrentCTXMessage = true;
-
-        await ctx.reply(
-            `You have selected to use ${ctx.session.swapTokenToCoin_slippage_selected}% slippage.`
-        );
     }
     await swapTokenToCoin.swapTokenToCoin(ctx);
 }

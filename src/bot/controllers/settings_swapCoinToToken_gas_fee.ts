@@ -1,47 +1,34 @@
 // import { gasFee } from "../..";
 import { createConversation } from "@grammyjs/conversations";
 import bot from "../bot_init";
-import getBotShared from "../defined/BotShared";
 import { BotContext, BotConversation } from "../utils/util_bot";
-import { partial_conversation_settings__GENERALIZED__VALUE_REGEX } from "./partial_conversation/partial_conversation_settings__GENERALIZED__VALUE_REGEX";
-import {
-    formatAndValidateInput_number_greater_than_or_equal_to_0,
-    getCallbackData,
-} from "./utils/common";
-import { getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData } from "./utils/util";
+import { partial_conversation_swapCoinToToken_gas_fee_VALUE_REGEX } from "./partial_conversation/partial_conversation__GENERALIZED__VALUE_REGEX";
+import settings from "./settings";
+import { getCallbackData } from "./utils/common";
+import { getUserSessionDataPropertyNameAndVALUEFromCallbackData } from "./utils/util";
 
 async function conversation_settings_swapCoinToToken_gas_fee_VALUE_REGEX(
     conversation: BotConversation,
-    ctx: any
+    ctx: BotContext
 ) {
     const callbackData = await getCallbackData(ctx);
 
-    const { userSessionDataPropertyName, userSessionDataPropertyName_VALUE } =
-        await getUserSessionDataPropertyNameAndPropertyNameVALUEFromCallbackData(
+    const userSessionDataProperty_data =
+        await getUserSessionDataPropertyNameAndVALUEFromCallbackData(
             callbackData,
             "cb_settings_"
         );
 
-    const coinInformation = await getBotShared().getCoinInformation();
+    const result =
+        await partial_conversation_swapCoinToToken_gas_fee_VALUE_REGEX(
+            conversation,
+            ctx,
+            userSessionDataProperty_data
+        );
 
-    const message_ask = `Please enter a Gas Fee Amount in ${coinInformation.ticker} for Buy Gas Fee Amount Position (${userSessionDataPropertyName_VALUE}):`;
+    ctx = result.ctx;
 
-    async function getMessageResultInvalid(result: string) {
-        return `Invalid Gas Fee Amount for Buy Gas Fee Amount Position (${userSessionDataPropertyName_VALUE}).`;
-    }
-
-    async function getMessageDone(result: string) {
-        return `Buy Gas Fee Amount Position (${userSessionDataPropertyName_VALUE}) set to ${result}.`;
-    }
-
-    await partial_conversation_settings__GENERALIZED__VALUE_REGEX<number>(
-        conversation,
-        ctx,
-        message_ask,
-        formatAndValidateInput_number_greater_than_or_equal_to_0,
-        getMessageResultInvalid,
-        getMessageDone
-    );
+    await settings.settings(ctx);
 }
 
 bot.use(
