@@ -23,19 +23,31 @@ Assuming that all the code is logically correct, if you were to add new function
 #### Before Running
 Get the .env
 
-#### Development Run
+#### Development Run (First Run, if you have `schema.prisma`)
 1. Install/Update modules
 2. Make Prisma stuff 
-3. Synchronize your Prisma schema 
-4. Accurately reflects changes made directly in the database
+4. Generate the Prisma client using the Prisma schema
 5. Run server
 ```
 npm install
 npx prisma init
-npx prisma db pull  
-npx prisma db introspect 
+npx prisma generate
 npm run dev
 ```
+#### Development Run (First Run, if you don't have `schema.prisma`)
+1. Install/Update modules
+2. Make Prisma stuff 
+3. Synchronize your Prisma schema based on the DB
+4. Generate the Prisma client using the Prisma schema
+5. Run server
+```
+npm install
+npx prisma init
+npx prisma db pull
+npx prisma generate
+npm run dev
+```
+
 #### You updated the Prisma Schema (Make sure nothing is accessing the DB)
 `npx prisma generate` will generate the Prisma Client code based on the data model defined in your `schema.prisma` file.
 
