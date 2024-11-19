@@ -26,9 +26,9 @@ export interface PartialConversationCTXData{
  *      1. Asks users for input
  *      2. Format and Validate input
  *          2a. Continue if Valid input
- *          2b. Fail to assign, return ctx
+ *          2b. Fail to assign, return PartialConversationCTXData
  *      3. Assign Valid/formatted input to ctx.session
- *      4. return ctx 
+ *      4. return PartialConversationCTXData 
  *
  * @export
  * @async

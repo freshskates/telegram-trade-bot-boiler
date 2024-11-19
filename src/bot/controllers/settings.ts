@@ -8,17 +8,16 @@ import {
 } from "./utils/common";
 
 async function settings_(ctx: BotContext) {
-    const [tokenAddress, grammyUser] = await Promise.all([
-        getTokenAddress(ctx),
-        getGrammyUser(ctx),
-    ]);
+
+    const grammyUser = await getGrammyUser(ctx)
 
     // const userId = ctx.update.callback_query?.from.id;
     const grammyUserId = grammyUser.id;
 
-    const tokenInformation = await getBotShared()
-        .getTokenClient()
-        .getTokenInformation(tokenAddress);
+    // ANY TOKEN RELATED STUFF SHOULD NOT BE IN SETTINGS BECAUSE THE USER CAN CHANGE TO ANY TOKEN
+    // const tokenInformation = await getBotShared()
+    //     .getTokenClient()
+    //     .getTokenInformation(tokenAddress);
 
     const coinInformation = await getBotShared().getCoinInformation();
 
@@ -107,29 +106,29 @@ async function settings_(ctx: BotContext) {
                     [{ text: "-- Buy Amounts --", callback_data: "empty" }],
                     [
                         {
-                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_1} ${tokenInformation.ticker}`,
+                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_1} ${""}`,
                             callback_data:
                                 "cb_settings_swapCoinToToken_amount_VALUE_1",
                         },
                         {
-                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_2} ${tokenInformation.ticker}`,
+                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_2} ${""}`,
                             callback_data:
                                 "cb_settings_swapCoinToToken_amount_VALUE_2",
                         },
                         {
-                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_3} ${tokenInformation.ticker}`,
+                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_3} ${""}`,
                             callback_data:
                                 "cb_settings_swapCoinToToken_amount_VALUE_3",
                         },
                     ],
                     [
                         {
-                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_4} ${tokenInformation.ticker}`,
+                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_4} ${""}`,
                             callback_data:
                                 "cb_settings_swapCoinToToken_amount_VALUE_4",
                         },
                         {
-                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_5} ${tokenInformation.ticker}`,
+                            text: `✏️ ${ctx_session_cached.swapCoinToToken_amount_5} ${""}`,
                             callback_data:
                                 "cb_settings_swapCoinToToken_amount_VALUE_5",
                         },
@@ -169,7 +168,7 @@ async function settings_(ctx: BotContext) {
 }
 
 async function cb_settings(ctx: BotContext) {
-    await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
+    // await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
 
     await settings_(ctx);
     await ctx.answerCallbackQuery();

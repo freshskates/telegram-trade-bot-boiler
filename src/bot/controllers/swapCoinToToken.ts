@@ -206,7 +206,7 @@ bot.callbackQuery("cb_swapCoinToToken_refresh", cb_swapCoinToToken_refresh);
 
 // FIXME: The Type CallbackQueryContext<BotContext> IS THAT CORRECT? IDK
 async function cb_swapCoinToToken(ctx: BotContext) {
-    await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
+    // await ctx.conversation.exit(); // Exit any existing conversation to prevent buggy behavior
 
     await ctx.reply(
         "Enter a valid Monad token address:\n(temp example: TUFonyWZ4Tza5MzgDj6g2u5rfdGoRVYG7g)"
@@ -217,7 +217,7 @@ async function cb_swapCoinToToken(ctx: BotContext) {
 bot.callbackQuery("cb_swapCoinToToken", cb_swapCoinToToken);
 
 async function hears_load_token_REGEX(ctx: BotContext) {
-    await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
+    // await ctx.conversation.exit(); // Exit any exist conversation to prevent buggy behavior
 
     if (!ctx?.message?.text) return;
 
