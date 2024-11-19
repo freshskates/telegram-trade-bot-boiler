@@ -92,6 +92,4 @@ npx prisma studio
 - **Custom Value Indicators**
   - Use distinct colors or indicators for buttons that accept custom values and reflect those values dynamically
 
-#### Joseph Fix
-- Remove token stuff where it shouldn't be shown such as in setting
-- Generalize the settings because the assignment of some session properties is used elsewhere not just in the settings.  
+#### Joseph Fix this shit
