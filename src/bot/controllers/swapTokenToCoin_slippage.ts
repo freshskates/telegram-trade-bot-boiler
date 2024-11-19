@@ -43,8 +43,8 @@ export async function conversation_swapTokenToCoin_slippage_VALUE_REGEX(
             ctx.session.swapTokenToCoin_slippage_selected =
                 ctx.session.swapTokenToCoin_slippage_custom;
 
-            ctx.temp.shouldEditCurrentCTXMessage = true; // Unnecessary due to partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX
-            ctx.temp.conversationMethodReturnedANewCTX = true; // Unnecessary due to partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX
+            ctx.temp.shouldEditCurrentCTXMessage = true; // Already assigned by partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX
+            ctx.temp.conversationMethodReturnedANewCTX = true; // Already assigned by partial_conversation_swapTokenToCoin_slippage_VALUE_REGEX
         }
     } else {
         ctx.session.swapTokenToCoin_slippage_selected =

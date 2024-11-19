@@ -33,8 +33,8 @@ export async function conversation_swapCoinToToken_slippage_VALUE_REGEX(
             ctx.session.swapCoinToToken_slippage_selected =
                 ctx.session.swapCoinToToken_slippage_custom;
 
-            ctx.temp.shouldEditCurrentCTXMessage = true; // Unnecessary due to partial_conversation_swapCoinToToken_slippage_VALUE_REGEX
-            ctx.temp.conversationMethodReturnedANewCTX = true; // Unnecessary due to partial_conversation_swapCoinToToken_slippage_VALUE_REGEX
+            ctx.temp.shouldEditCurrentCTXMessage = true; // Already assigned by partial_conversation_swapCoinToToken_slippage_VALUE_REGEX
+            ctx.temp.conversationMethodReturnedANewCTX = true; // Already assigned by partial_conversation_swapCoinToToken_slippage_VALUE_REGEX
         }
     }
     // Handle Predefined Slippage value

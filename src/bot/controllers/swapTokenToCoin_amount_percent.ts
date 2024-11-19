@@ -87,8 +87,8 @@ export async function conversation_swapTokenToCoin_amount_percent_VALUE_REGEX(
             ctx.session.swapTokenToCoin_amount_percent_selected =
                 ctx.session.swapTokenToCoin_amount_percent_custom;
 
-            ctx.temp.shouldEditCurrentCTXMessage = true; // Unnecessary do to partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX
-            ctx.temp.conversationMethodReturnedANewCTX = true; // Unnecessary do to partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX
+            ctx.temp.shouldEditCurrentCTXMessage = true; // Already assigned to partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX
+            ctx.temp.conversationMethodReturnedANewCTX = true; // Already assigned to partial_conversation_swapTokenToCoin_amount_percent_VALUE_REGEX
         }
     } else {
         const amountPercent =
