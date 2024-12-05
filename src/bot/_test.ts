@@ -1,5 +1,5 @@
 import { Menu, MenuRange } from "@grammyjs/menu";
-import { BotContext } from "../utils";
+import { BotContext } from "./utils/util_bot";
 
 /** This is how the dishes look that this bot is managing */
 interface Dish {
@@ -61,28 +61,28 @@ dishMenu.dynamic((ctx) => {
 });
 /** Creates a menu that can render any given dish */
 function createDishMenu(dish: string) {
-    return new MenuRange<BotContext>()
-        .text(
-            {
-                text: (ctx) =>
-                    ctx.session.favoriteIds.includes(dish) ? "Yummy!" : "Meh.",
-                payload: dish,
-            },
-            (ctx) => {
-                const set = new Set(ctx.session.favoriteIds);
-                if (!set.delete(dish)) set.add(dish);
-                ctx.session.favoriteIds = Array.from(set.values());
-                ctx.menu.update();
-            }
-        )
-        .row()
-        .back({ text: "X Delete", payload: dish }, async (ctx) => {
-            const index = dishDatabase.findIndex((d) => d.id === dish);
-            dishDatabase.splice(index, 1);
-            await ctx.editMessageText("Pick a dish to rate it!");
-        })
-        .row()
-        .back({ text: "Back", payload: dish });
+    // return new MenuRange<BotContext>()
+    //     .text(
+    //         {
+    //             text: (ctx) =>
+    //                 ctx.session.favoriteIds.includes(dish) ? "Yummy!" : "Meh.",
+    //             payload: dish,
+    //         },
+    //         (ctx) => {
+    //             const set = new Set(ctx.session.favoriteIds);
+    //             if (!set.delete(dish)) set.add(dish);
+    //             ctx.session.favoriteIds = Array.from(set.values());
+    //             ctx.menu.update();
+    //         }
+    //     )
+    //     .row()
+    //     .back({ text: "X Delete", payload: dish }, async (ctx) => {
+    //         const index = dishDatabase.findIndex((d) => d.id === dish);
+    //         dishDatabase.splice(index, 1);
+    //         await ctx.editMessageText("Pick a dish to rate it!");
+    //     })
+    //     .row()
+    //     .back({ text: "Back", payload: dish });
 }
 
 mainMenu.register(dishMenu);

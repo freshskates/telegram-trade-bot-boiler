@@ -1,4 +1,4 @@
-import { BotConversation } from "../../../utils";
+import { BotConversation } from "../../utils/util_bot";
 
 export const slippageSetting = async (
   conversation: BotConversation,
